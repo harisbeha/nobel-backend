@@ -16,6 +16,9 @@ class Building(BaseModel):
     state = models.TextField('state abbreviation', max_length=2)
     zip = models.TextField('zip code', max_length=15)
 
+    def __str__(self):
+        return '%s, %s, %s, %s' % (self.address, self.city, self.state, self.zip)
+
 
 class Vendor(BaseModel):
     name = models.TextField('company name of the vendor')
@@ -52,6 +55,9 @@ class WorkOrder(BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = (('invoice', 'order_number'),)
         abstract = False    # we inherit an abstract class and mark it final in this incarnation
+
+    storm_name = models.TextField('name of the storm', max_length=100)
+    building = models.ForeignKey('invoices.Building')
 
     deice_rate = models.DecimalField(
         'cost in dollars without tax per de-icing service', max_digits=8, decimal_places=2)
