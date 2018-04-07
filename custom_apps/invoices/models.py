@@ -71,11 +71,13 @@ class JobManager(models.Manager):
     def get_queryset(self):
         return super(JobManager, self).get_queryset().annotate(
             deice_fee=models.Case(
-                models.When(provided_deicing=True, then=models.F('work_order__deice_cost')),
+                models.When(provided_deicing=True, then=
+                            models.F('work_order__deice_rate') + models.F('work_order__deice_tax')),
                 default=models.Value(0),
                 output_field=models.DecimalField(max_digits=8, decimal_places=2)),
             plow_fee=models.Case(
-                models.When(provided_plowing=True, then=models.F('work_order__plow_cost')),
+                models.When(provided_plowing=True, then=
+                            models.F('work_order__plow_rate') + models.F('work_order__plow_tax')),
                 default=models.Value(0),
                 output_field=models.DecimalField(max_digits=8, decimal_places=2)),
         ).annotate(
