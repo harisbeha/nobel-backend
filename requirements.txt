@@ -8,3 +8,4 @@ waitress
 django-extensions
 djangorestframework
 ipython<6
+django-debug-toolbar

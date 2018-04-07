@@ -40,12 +40,13 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-SUPPORT_APPS = ['rest_framework', 'django_extensions']
+SUPPORT_APPS = ['rest_framework', 'django_extensions', 'debug_toolbar']
 CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils']
 
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -165,4 +166,12 @@ LOGGING = {
             'level': 'INFO'
         }
     }
+}
+
+# debug toolbar settings
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_COLLAPSED': True,
+    'RESULTS_CACHE_SIZE': 1000,
+    'RENDER_PANELS': True,
+    'SHOW_TOOLBAR_CALLBACK': 'custom_apps.utils.djdt.callback'
 }
