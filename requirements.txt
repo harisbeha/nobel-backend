@@ -7,3 +7,4 @@ psycopg2
 waitress
 django-extensions
 djangorestframework
+ipython<6
