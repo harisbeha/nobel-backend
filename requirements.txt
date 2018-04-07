@@ -5,3 +5,5 @@ django-requestlogging
 django-log-request-id
 psycopg2
 waitress
+django-extensions
+djangorestframework

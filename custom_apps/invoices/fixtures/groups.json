@@ -1,0 +1,37 @@
+[
+  {
+    "model": "auth.group",
+    "fields": {
+      "name": "Provider",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
+      "name": "Client Invoice Administrator",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
+      "name": "Regional Manager",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
+      "name": "Service Provider",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
+      "name": "Internal Staff",
+      "permissions": []
+    }
+  }
+]
