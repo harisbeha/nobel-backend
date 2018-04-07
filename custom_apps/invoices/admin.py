@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 
 import json
 from django.contrib import admin
+from nested_admin.nested import NestedModelAdmin, NestedStackedInline
 
 from custom_apps.utils.admin_utils import generate_field_getter
-from .models import Invoice
+from .models import Invoice, WorkOrder, Job
 
 
 class CustomModelAdmin(admin.ModelAdmin):
@@ -15,16 +16,23 @@ class CustomModelAdmin(admin.ModelAdmin):
         super(CustomModelAdmin, self).__init__(model, admin_site)
 
 
+class JobInline(NestedStackedInline):
+    model = Job
 
 
+class WorkOrderInline(NestedStackedInline):
+    model = WorkOrder
+    inlines = [JobInline]
 
-class InvoiceAdmin(admin.ModelAdmin):
+
+class InvoiceAdmin(NestedModelAdmin):
     get_vendor_name = generate_field_getter('vendor.name', 'Vendor Name')
     get_vendor_address = generate_field_getter('vendor.address', 'Vendor Address')
     list_display = [get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address', 'first_event']
 
     search_fields = ['vendor__name', 'invoice_number']
     list_filter = ['vendor__name']
+    inlines = [WorkOrderInline]
     #list_display = ['storm_name',
     #                'building',
     #                'vendor__name',

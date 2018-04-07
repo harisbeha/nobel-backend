@@ -9,3 +9,4 @@ django-extensions
 djangorestframework
 ipython<6
 django-debug-toolbar
+django-nested-admin
