@@ -24,7 +24,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     list_display = [get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address', 'first_event']
 
     search_fields = ['vendor__name', 'invoice_number']
-    list_filter = ['vendor']
+    list_filter = ['vendor__name']
     #list_display = ['storm_name',
     #                'building',
     #                'vendor__name',
