@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
 from django.contrib import admin
 from nested_admin.nested import NestedModelAdmin, NestedStackedInline
 
@@ -16,11 +15,15 @@ class CustomModelAdmin(admin.ModelAdmin):
         super(CustomModelAdmin, self).__init__(model, admin_site)
 
 
-class JobInline(NestedStackedInline):
+class BaseInline(NestedStackedInline):
+    extra = 0
+
+
+class JobInline(BaseInline):
     model = Job
 
 
-class WorkOrderInline(NestedStackedInline):
+class WorkOrderInline(BaseInline):
     model = WorkOrder
     inlines = [JobInline]
 
@@ -33,7 +36,7 @@ class InvoiceAdmin(NestedModelAdmin):
     search_fields = ['vendor__name', 'invoice_number']
     list_filter = ['vendor__name']
     inlines = [WorkOrderInline]
-    #list_display = ['storm_name',
+    # list_display = ['storm_name',
     #                'building',
     #                'vendor__name',
     #                'deice_rate',
