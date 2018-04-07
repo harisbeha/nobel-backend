@@ -1,0 +1,5 @@
+django<2
+dj-database-url
+conversion
+django-requestlogging
+django-log-request-id

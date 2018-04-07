@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | NWA{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">NWA</a>
+    </h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+
+{% block extrahead %}
+    <link rel="icon" href="{% static 'favicon.ico' %}"/>
+{% endblock %}
