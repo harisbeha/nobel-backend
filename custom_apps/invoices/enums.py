@@ -34,3 +34,14 @@ class ReportState(ChoiceEnum):
     FINALIZED = 10
 
     REJECTED = -1
+
+
+class BuildingType(ChoiceEnum):
+    STANDALONE = 1
+    MIXED_USE = 2
+
+
+class SnowStatus(ChoiceEnum):
+    NONE = 0
+    NEEDS_STACKING = 1
+    NEEDS_HAULING = 2
