@@ -178,3 +178,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # google specific setup
 GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', 'AIzaSyAFd7fBl1dVKvfNFxLDFchKbYxeC_QU490')
+
+# email
+EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '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')
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False

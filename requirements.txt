@@ -11,3 +11,4 @@ ipython<6
 django-debug-toolbar
 django-nested-admin
 python-google-places
+django-sendgrid-v5
