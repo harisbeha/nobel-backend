@@ -103,16 +103,19 @@ class Job(BaseModel):
     objects = JobManager()
 
 
-for i in [{'model': WorkOrder, 'field': 'building_address'},
-          {'model': Vendor},
-          {'model': Invoice, 'field': 'remission_address'}]:
-    def handler(sender, instance, **kwargs):
-        field_name = i.get('field', 'address')
-        formal_address = maps.formalize_address(getattr(instance, field_name))
-        if not formal_address:
-            raise ValidationError('Address not found on Google')
-        setattr(instance, field_name,
-                formal_address)
+validatable_models = {id(WorkOrder): 'building_address',
+                      id(Vendor): 'address',
+                      id(Invoice): 'remission_address'}
+def validation_handler(sender, instance, **kwargs):
+    model = type(instance)
+    field_name = validatable_models[id(model)]
+    address = getattr(instance, field_name)
+    formal_address = maps.formalize_address(address)
 
+    if not formal_address:
+        raise ValidationError('Address not found on Google')
+    setattr(instance, field_name, formal_address)
 
-    pre_save.connect(handler, i['model'])
+pre_save.connect(validation_handler, WorkOrder)
+pre_save.connect(validation_handler, Vendor)
+pre_save.connect(validation_handler, Invoice)
