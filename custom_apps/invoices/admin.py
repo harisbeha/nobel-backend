@@ -141,7 +141,7 @@ def address_form_factory(model_cls, exclude_list, address_field):
 
 # model admins
 class BaseModelAdmin(NestedModelAdmin):
-    PERM_CONFIGS = {'Internal Staff': {'perms': ['add', 'change', 'list']}}
+    PERM_CONFIGS = {'Internal Staff': {'perms': ['add', 'change', 'list'], 'hidden_fields': ['plow_tax']}}
 
     def get_actions(self, request):
         actions = super(BaseModelAdmin, self).get_actions(request)
@@ -171,6 +171,24 @@ class BaseModelAdmin(NestedModelAdmin):
 
     def has_module_permission(self, request):
         return self._do_check(request, 'list')
+
+    def _get_hidden_fields(self, request):
+        if request.user.is_superuser:
+            return []
+        # TODO handle clashes with multiple groups
+        user_perms = request.user.groups.filter(name__in=self.PERM_CONFIGS.keys()).values_list('name', flat=True)
+        for perm in user_perms:
+            return self.PERM_CONFIGS.get(perm, {}).get('hidden_fields', [])
+        return []
+
+    def get_formsets_with_inlines(self, request, obj=None):
+        hidden_fields = self._get_hidden_fields(request)
+        formsets = super(BaseModelAdmin, self).get_formsets_with_inlines(request, obj=obj)
+        for formset, inline in formsets:
+            for h in hidden_fields:
+                if h in formset.form.base_fields:
+                    del formset.form.base_fields[h]
+            yield formset, inline
 
 
 class BaseInline(NestedStackedInline):
