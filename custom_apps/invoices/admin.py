@@ -219,6 +219,8 @@ class JobAdmin(BaseModelAdmin):
     list_display = [get_state, 'work_order', 'response_time_start', 'response_time_end', 'provided_deicing',
                     'provided_plowing', get_visit_subtotal]
 
+    exclude = ['state']
+
 
 class WorkOrderAdmin(BaseModelAdmin):
     get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
