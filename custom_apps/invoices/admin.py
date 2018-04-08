@@ -121,6 +121,8 @@ def address_form_factory(model_cls, exclude_list, address_field):
 
 # model admins
 class BaseModelAdmin(NestedModelAdmin):
+    APPROVED_PERMS = ['Internal Staff']
+
     def has_delete_permission(self, request, obj=None):
         try:
             if request.user.is_superuser:
@@ -128,6 +130,20 @@ class BaseModelAdmin(NestedModelAdmin):
         except:
             pass
         return False
+
+    def _do_check(self, request):
+        if request.user.is_superuser or request.user.groups.filter(name__in=self.APPROVED_PERMS).count() > 0:
+            return True
+        return False
+
+    def has_add_permission(self, request):
+        return self._do_check(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self._do_check(request)
+
+    def has_module_permission(self, request):
+        return self._do_check(request)
 
 
 class BaseInline(NestedStackedInline):
@@ -165,9 +181,12 @@ class VendorAdmin(BaseModelAdmin):
 
 class JobAdmin(BaseModelAdmin):
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
-    actions = [make_state_ticker_action('Approve safety report', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED, "These jobs are not all in the \"ready to review\" state.")]
+    actions = [
+        make_state_ticker_action('Approve safety report', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED,
+                                 "These jobs are not all in the \"ready to review\" state.")]
 
-    list_display = ['work_order', 'response_time_start', 'response_time_end', 'provided_deicing', 'provided_plowing', 'state', get_visit_subtotal]
+    list_display = ['work_order', 'response_time_start', 'response_time_end', 'provided_deicing', 'provided_plowing',
+                    'state', get_visit_subtotal]
 
 
 class WorkOrderAdmin(BaseModelAdmin):
