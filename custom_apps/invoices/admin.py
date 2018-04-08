@@ -77,7 +77,7 @@ def close_safety_review(modeladmin, request, queryset):
     def failure():
         modeladmin.message_user(
             request,
-            "Some of the jobs in the selected invoices have not had their safety reviews closed.",
+            "Some of the jobs in the selected invoices have not had their safety reviews approved.",
             level=messages.ERROR)
 
     def success():
