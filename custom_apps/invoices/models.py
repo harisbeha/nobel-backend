@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models import functions
 from model_utils import FieldTracker
 
 from custom_apps.invoices.enums import ReportState
@@ -25,6 +26,13 @@ class Vendor(BaseModel):
         return self.name
 
 
+class InvoiceManger(models.Manager):
+    def get_queryset(self):
+        return super(InvoiceManger, self).get_queryset().annotate(
+            state=functions.Least(models.F('workorder__job__state')),
+        )
+
+
 class Invoice(BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = (('vendor', 'invoice_number'),)
@@ -35,6 +43,8 @@ class Invoice(BaseModel):
     invoice_number = models.CharField('numerical identifier for the invoice', max_length=50, null=True)
 
     remission_address = AddressField('full mailing addresses to send remission', null=True)
+
+    objects = InvoiceManger()
 
     def __str__(self):
         if self.invoice_number is None:
@@ -49,6 +59,7 @@ class WorkOrderManager(models.Manager):
         return super(WorkOrderManager, self).get_queryset().annotate(
             deice_cost=models.F("deice_rate") + models.F("deice_tax"),
             plow_cost=models.F("plow_rate") + models.F("plow_tax"),
+            state=functions.Least(models.F('job__state')),
         )
 
 

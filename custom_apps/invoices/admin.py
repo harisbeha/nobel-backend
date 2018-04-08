@@ -170,7 +170,9 @@ class WorkOrderInline(BaseInline):
 class InvoiceAdmin(BaseModelAdmin):
     get_vendor_name = generate_field_getter('vendor.name', 'Vendor Name')
     get_vendor_address = generate_field_getter('vendor.address', 'Vendor Address')
-    list_display = [get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address']
+    get_state = generate_field_getter('state', 'Report State')
+
+    list_display = [get_state, get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address']
 
     search_fields = ['vendor__name', 'invoice_number']
     list_filter = ['vendor__name']
@@ -192,13 +194,15 @@ class JobAdmin(BaseModelAdmin):
                                         ReportState.SAFETY_REVIEWED,
                                         "These jobs are not all in the \"ready to review\" state.")]
 
-    list_display = ['work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing',
-                    'provided_plowing', 'state', get_visit_subtotal]
+    list_display = ['state', 'work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing',
+                    'provided_plowing', get_visit_subtotal]
 
 
 class WorkOrderAdmin(BaseModelAdmin):
+    get_state = generate_field_getter('state', 'Report State')
+
     form = address_form_factory(WorkOrder, ['id'], 'building_address')
-    list_display = ['order_number', 'invoice', 'storm_name', 'building_address']
+    list_display = [get_state, 'order_number', 'invoice', 'storm_name', 'building_address']
 
 
 admin.site.register(Vendor, VendorAdmin)
