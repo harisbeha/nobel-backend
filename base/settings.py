@@ -181,5 +181,16 @@ GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', 'AIzaSyAFd7fBl1d
 
 # email
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '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')
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY',
+                                  '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')
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+# celery
+if 'BROKER_URL' in os.environ:
+    CELERY_BROKER_URL = os.environ.get('BROKER_URL')
+    CELERY_TASK_ACKS_LATE = True
+    CELERY_TASK_REJECT_ON_WORKER_LOSS = True
+else:
+    CELERY_TASK_ALWAYS_EAGER = True
+
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
