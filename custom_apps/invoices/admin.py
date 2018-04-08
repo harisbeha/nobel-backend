@@ -181,9 +181,12 @@ class VendorAdmin(BaseModelAdmin):
 
 class JobAdmin(BaseModelAdmin):
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
-    actions = [make_state_ticker_action('Approve safety report for selected', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED, "These jobs are not all in the \"ready to review\" state.")]
+    actions = [make_state_ticker_action('Approve safety report for selected', 'state', ReportState.INITIALIZED,
+                                        ReportState.SAFETY_REVIEWED,
+                                        "These jobs are not all in the \"ready to review\" state.")]
 
-    list_display = ['work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing', 'provided_plowing', 'state', get_visit_subtotal]
+    list_display = ['work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing',
+                    'provided_plowing', 'state', get_visit_subtotal]
 
 
 class WorkOrderAdmin(BaseModelAdmin):
