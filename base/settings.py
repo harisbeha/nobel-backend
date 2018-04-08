@@ -175,3 +175,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'RENDER_PANELS': True,
     'SHOW_TOOLBAR_CALLBACK': 'custom_apps.utils.djdt.callback'
 }
+
+# google specific setup
+GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', 'AIzaSyAFd7fBl1dVKvfNFxLDFchKbYxeC_QU490')
