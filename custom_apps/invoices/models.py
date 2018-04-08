@@ -29,7 +29,7 @@ class Vendor(BaseModel):
 class InvoiceManger(models.Manager):
     def get_queryset(self):
         return super(InvoiceManger, self).get_queryset().annotate(
-            state=functions.Least(models.F('workorder__job__state')),
+            state=models.Min('workorder__job__state')
         )
 
 
@@ -59,7 +59,7 @@ class WorkOrderManager(models.Manager):
         return super(WorkOrderManager, self).get_queryset().annotate(
             deice_cost=models.F("deice_rate") + models.F("deice_tax"),
             plow_cost=models.F("plow_rate") + models.F("plow_tax"),
-            state=functions.Least(models.F('job__state')),
+            state=models.Min('job__state'),
         )
 
 
