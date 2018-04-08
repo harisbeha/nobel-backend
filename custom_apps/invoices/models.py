@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import pre_save
 
 from custom_apps.utils import maps
 from ..utils.models import BaseModel
@@ -21,10 +22,13 @@ class Vendor(BaseModel):
     name = models.CharField('company name of the vendor', max_length=100)
     address = AddressField('full mailing address')
 
+    def __str__(self):
+        return self.name
+
 
 class Invoice(BaseModel):
     vendor = models.ForeignKey('invoices.Vendor')
-    invoice_number = models.IntegerField('numerical identifier for the invoice')
+    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50)
 
     # The above two fields are the "primary key"
     class Meta(BaseModel.Meta):
@@ -32,7 +36,6 @@ class Invoice(BaseModel):
         abstract = False  # we inherit an abstract class and mark it final in this incarnation
 
     remission_address = AddressField('full mailing addresses to send remission')
-    first_event = models.DateTimeField('date of the first storm event in this invoice')
 
 
 # manager for the below relation
@@ -53,19 +56,19 @@ class WorkOrder(BaseModel):
         unique_together = (('invoice', 'order_number'),)
         abstract = False  # we inherit an abstract class and mark it final in this incarnation
 
-    storm_name = models.CharField('name of the storm', max_length=100)
-    building_id = models.CharField('identifier for the building', max_length=50)
-    building_address = AddressField('full address of the building that was worked on')
+    storm_name = models.CharField('name of the storm work to which work is being done in response', max_length=100)
+    building_id = models.CharField('identifier for the building on which work was done', max_length=50)
+    building_address = AddressField('full address of the building on which work was done')
 
     deice_rate = models.DecimalField(
         'cost in dollars without tax per de-icing service', max_digits=8, decimal_places=2)
     deice_tax = models.DecimalField(
         'tax in dollars per de-icing service', max_digits=8, decimal_places=2)
     plow_rate = models.DecimalField(
-        'cost in dollars without tax per plow service, includes plowing and shoveling only',
+        'cost in dollars without tax per plow service',
         max_digits=8, decimal_places=2)
     plow_tax = models.DecimalField(
-        'tax in dollars per plow service, includes plowing and shoveling only', max_digits=8, decimal_places=2)
+        'tax in dollars per plow service', max_digits=8, decimal_places=2)
 
     objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
 
@@ -94,22 +97,25 @@ class Job(BaseModel):
     response_time_start = models.DateTimeField('time clocked in')
     response_time_end = models.DateTimeField('time clocked out')
 
-    provided_deicing = models.BooleanField('whether de-icing services were provided')
-    provided_plowing = models.BooleanField('whether plowing services were provided')
+    provided_deicing = models.BooleanField('were de-icing services provided?')
+    provided_plowing = models.BooleanField('were plowing services provided (includes plowing and shoveling ONLY)?')
 
     objects = JobManager()
 
 
-for i in [{'model': WorkOrder, 'field': 'building_address'},
-          {'model': Vendor},
-          {'model': Invoice, 'field': 'remission_address'}]:
-    def handler(sender, instance):
-        field_name = i.get('field', 'address')
-        formal_address = maps.formalize_address(getattr(instance, field_name))
-        if not formal_address:
-            raise ValidationError('Address not found on Google')
-        setattr(instance, field_name,
-                formal_address)
+validatable_models = {id(WorkOrder): 'building_address',
+                      id(Vendor): 'address',
+                      id(Invoice): 'remission_address'}
+def validation_handler(sender, instance, **kwargs):
+    model = type(instance)
+    field_name = validatable_models[id(model)]
+    address = getattr(instance, field_name)
+    formal_address = maps.formalize_address(address)
 
+    if not formal_address:
+        raise ValidationError('Address not found on Google')
+    setattr(instance, field_name, formal_address)
 
-    pre_save.connect(handler, i['model'])
+pre_save.connect(validation_handler, WorkOrder)
+pre_save.connect(validation_handler, Vendor)
+pre_save.connect(validation_handler, Invoice)
