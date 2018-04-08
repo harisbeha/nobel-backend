@@ -20,3 +20,4 @@ django-model-utils
 django-audit-trail
 django-auto-one-to-one
 python-dateutil
+redis
