@@ -2,9 +2,7 @@
 import os
 import sys
 
-from custom_apps.utils import debugger
 
-debugger.setup()
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
     try:
@@ -22,4 +20,6 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
+    from custom_apps.utils import debugger
+    debugger.setup()
     execute_from_command_line(sys.argv)
