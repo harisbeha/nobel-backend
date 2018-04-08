@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
 from django.db.models.query_utils import Q
@@ -146,7 +147,12 @@ class BaseModelAdmin(NestedModelAdmin):
     This terrible class allows control of module and field visibility based on user groups.
     PERM_CONFIGS allows configuration of the behaviors.
     """
-    PERM_CONFIGS = {'Internal Staff': {'perms': ['add', 'change', 'list'], 'hidden_fields': ['plow_tax']}}
+    PERM_CONFIGS = {'Internal Staff':
+        {
+            'perms': ['add', 'change', 'list'],
+            'hidden_fields': {id(WorkOrder): ['plow_tax']},
+        }
+    }
 
     def get_actions(self, request):
         actions = super(BaseModelAdmin, self).get_actions(request)
@@ -177,39 +183,49 @@ class BaseModelAdmin(NestedModelAdmin):
     def has_module_permission(self, request):
         return self._do_check(request, 'list')
 
-    def _get_hidden_fields(self, request):
+    def _get_hidden_fields(self, request, model):
         if request.user.is_superuser:
+            if settings.DEBUG:
+                return self.PERM_CONFIGS.get('Internal Staff', {}).get('hidden_fields', {}).get(id(model), [])
             return []
         # TODO handle clashes with multiple groups
         user_perms = request.user.groups.filter(name__in=self.PERM_CONFIGS.keys()).values_list('name', flat=True)
         for perm in user_perms:
-            return self.PERM_CONFIGS.get(perm, {}).get('hidden_fields', [])
+            return self.PERM_CONFIGS.get(perm, {}).get('hidden_fields', {}).get(id(model), [])
         return []
 
-    def _scrub_fields(self, formset, hidden_fields):
+    def _scrub_fields(self, request, formset):
+        model = None
+        try:
+            model = formset.model
+        except:
+            try:
+                model = formset.model_admin.model
+            except:
+                pass
+        if not model:
+            return formset
+        hidden_fields = self._get_hidden_fields(request, model)
         for h in hidden_fields:
             if h in formset.form.base_fields:
                 formset.form.base_fields[h].widget = HiddenInput()
         return formset
 
     def get_formsets_with_inlines(self, request, obj=None):
-        hidden_fields = self._get_hidden_fields(request)
         formsets = list(super(BaseModelAdmin, self).get_formsets_with_inlines(request, obj=obj))
         for formset, inline in formsets:
-            self._scrub_fields(formset, hidden_fields)
+            self._scrub_fields(request, formset)
             yield formset, inline
 
     def get_changelist_formset(self, request, **kwargs):
-        hidden_fields = self._get_hidden_fields(request)
         r = super(BaseModelAdmin, self).get_changelist_formset(request, **kwargs)
-        return self._scrub_fields(r, hidden_fields)
+        return self._scrub_fields(request, r)
 
     def get_inline_formsets(self, request, formsets, inline_instances,
                             obj=None, allow_nested=False):
-        hidden_fields = self._get_hidden_fields(request)
         r = super(BaseModelAdmin, self).get_inline_formsets(request, formsets, inline_instances, obj=obj,
                                                             allow_nested=allow_nested)
-        return [self._scrub_fields(i, hidden_fields) for i in r]
+        return [self._scrub_fields(request, i) for i in r]
 
 
 class BaseInline(NestedStackedInline):
