@@ -31,10 +31,10 @@ def make_state_ticker(model, from_state, to_state):
         reverse_path = None
     elif model is WorkOrder:
         path = 'job__state'
-        reverse_path = 'workorder'
+        reverse_path = 'work_order'
     elif model is Invoice:
         path = 'workorder__job__state'
-        reverse_path = 'workorder__invoice'
+        reverse_path = 'work_order__invoice'
     else:
         raise ValueError("Can't make a state ticker for a model other than Job, WorkOrder, or Invoice")
 
