@@ -121,7 +121,7 @@ def address_form_factory(model_cls, exclude_list, address_field):
 
 # model admins
 class BaseModelAdmin(NestedModelAdmin):
-    APPROVED_PERMS = ['Internal Staff']
+    PERM_CONFIGS = {'Internal Staff': {'perms': ['add', 'change', 'list']}}
 
     def get_actions(self, request):
         actions = super(BaseModelAdmin, self).get_actions(request)
@@ -138,19 +138,20 @@ class BaseModelAdmin(NestedModelAdmin):
             pass
         return False
 
-    def _do_check(self, request):
-        if request.user.is_superuser or request.user.groups.filter(name__in=self.APPROVED_PERMS).count() > 0:
+    def _do_check(self, request, perm_name):
+        if request.user.is_superuser or (request.user.groups.filter(
+                name__in=self.PERM_CONFIGS.keys()).count() > 0 and perm_name in self.PERM_CONFIGS):
             return True
         return False
 
     def has_add_permission(self, request):
-        return self._do_check(request)
+        return self._do_check(request, 'add')
 
     def has_change_permission(self, request, obj=None):
-        return self._do_check(request)
+        return self._do_check(request, 'change')
 
     def has_module_permission(self, request):
-        return self._do_check(request)
+        return self._do_check(request, 'list')
 
 
 class BaseInline(NestedStackedInline):
