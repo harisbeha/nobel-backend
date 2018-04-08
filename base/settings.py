@@ -83,7 +83,10 @@ _sqlite = os.path.join(BASE_DIR, 'db.sqlite3')
 _db_conf = dj_database_url.config(default='sqlite:///%s' % _sqlite)
 if 'postgres' in _db_conf['ENGINE'].lower():
     import psycopg2.extensions
-    _db_conf['OPTIONS'].update({'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_REPEATABLE_READ})
+
+    _options_conf = _db_conf.get('OPTIONS', {})
+    _options_conf.update({'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_REPEATABLE_READ})
+    _db_conf['OPTIONS'] = _options_conf
 DATABASES = {
     'default': _db_conf
 }
