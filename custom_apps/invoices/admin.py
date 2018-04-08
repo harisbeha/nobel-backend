@@ -139,9 +139,13 @@ class BaseModelAdmin(NestedModelAdmin):
         return False
 
     def _do_check(self, request, perm_name):
-        if request.user.is_superuser or (request.user.groups.filter(
-                name__in=self.PERM_CONFIGS.keys()).count() > 0 and perm_name in self.PERM_CONFIGS):
+        if request.user.is_superuser:
             return True
+        user_perms = request.user.groups.filter(name__in=self.PERM_CONFIGS.keys()).values_list('name', flat=True)
+        for perm in user_perms:
+            conf = self.PERM_CONFIGS.get(perm, {}).get('perms', [])
+            if perm_name in conf:
+                return True
         return False
 
     def has_add_permission(self, request):
