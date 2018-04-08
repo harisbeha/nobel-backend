@@ -20,6 +20,6 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
-    from custom_apps.utils import debugger
-    debugger.setup()
+    from custom_apps.utils import onload
+    onload.setup()
     execute_from_command_line(sys.argv)

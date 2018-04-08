@@ -13,6 +13,7 @@ def setup():
         pass
 
     from audit_trail.models import AuditTrailManager
+
     def generate_for_instance(self, instance, action):
         from django.contrib.contenttypes.models import ContentType
         from django.utils.encoding import force_text

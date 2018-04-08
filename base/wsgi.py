@@ -12,8 +12,8 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
-from custom_apps.utils import debugger
+from custom_apps.utils import onload
 
-debugger.setup()
+onload.setup()
 
 application = get_wsgi_application()
