@@ -205,7 +205,7 @@ class BaseModelAdmin(NestedModelAdmin):
         hidden_fields = self._get_hidden_fields(request)
         r = super(BaseModelAdmin, self).get_inline_formsets(request, formsets, inline_instances, obj=obj,
                                                             allow_nested=allow_nested)
-        return self._scrub_fields(r, hidden_fields)
+        return [self._scrub_fields(i, hidden_fields) for i in r]
 
 
 class BaseInline(NestedStackedInline):
