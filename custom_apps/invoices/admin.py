@@ -29,10 +29,10 @@ def make_state_ticker(path_to_state, from_state, to_state):
     """
 
     def ticker(queryset, success_callback, failure_callback):
-        if list(queryset.objects.values_list(path_to_state, flat=True).distinct()) \
+        if list(queryset.values_list(path_to_state, flat=True).distinct()) \
                 == [from_state.value]:
             # potential for races here - TODO handle failures in the same transaction as the update?
-            queryset.objects.filter(**{path_to_state: from_state.value}) \
+            queryset.filter(**{path_to_state: from_state.value}) \
                 .update(**{path_to_state: to_state.value})
             success_callback()
         else:
@@ -165,9 +165,9 @@ class VendorAdmin(BaseModelAdmin):
 
 class JobAdmin(BaseModelAdmin):
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
-    actions = [make_state_ticker_action('Approve safety report', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED, "These jobs are not all in the \"ready to review\" state.")]
+    actions = [make_state_ticker_action('Approve safety report for selected', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED, "These jobs are not all in the \"ready to review\" state.")]
 
-    list_display = ['work_order', 'response_time_start', 'response_time_end', 'provided_deicing', 'provided_plowing', 'state', get_visit_subtotal]
+    list_display = ['work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing', 'provided_plowing', 'state', get_visit_subtotal]
 
 
 class WorkOrderAdmin(BaseModelAdmin):
