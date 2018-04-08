@@ -149,6 +149,8 @@ class InvoiceAdmin(NestedModelAdmin):
 class VendorAdmin(admin.ModelAdmin):
     form = address_form_factory(Vendor, ['id'], 'address')
 
+    list_display = ['name', 'address']
+
 
 class JobAdmin(admin.ModelAdmin):
     actions = [make_state_ticker_action('Approve safety report', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED, "These jobs are not all in the \"ready to review\" state.")]
