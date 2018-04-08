@@ -12,3 +12,4 @@ django-debug-toolbar
 django-nested-admin
 python-google-places
 django-sendgrid-v5
+enum34
