@@ -280,9 +280,24 @@ class JobAdmin(BaseModelAdmin):
 class WorkOrderForm(forms.ModelForm):
     class Meta:
         model = WorkOrder
+        exclude = ['id']
 
     vendor = forms.ModelChoiceField(queryset=Vendor.objects.all())
-    invoice = forms.HiddenInput()
+
+    def __init__(self, *args, **kwargs):
+        super(WorkOrderForm, self).__init__(*args, **kwargs)
+        if 'instance' in kwargs:
+            self.base_fields['vendor'].initial = kwargs['instance'].invoice.vendor
+
+    def clean(self):
+        r = super(WorkOrderForm, self).clean()
+        if r.get('vendor', None):
+            r['invoice'] = Invoice.objects.filter(vendor=r['vendor']).order_by('-created').first()
+            # del r['vendor']
+            # do we want this? if we delete the property the user might have to reinput it if validation fails
+            # if we don't delete it it might mess up the db operation?
+            # ?????????
+        return r
 
 
 class WorkOrderAdmin(BaseModelAdmin):
@@ -290,6 +305,11 @@ class WorkOrderAdmin(BaseModelAdmin):
 
     form = WorkOrderForm
     list_display = [get_state, 'order_number', 'invoice', 'storm_name', 'building_address']
+
+    def get_form(self, request, obj=None, **kwargs):
+        r = super(WorkOrderAdmin, self).get_form(request, obj=obj, **kwargs)
+        r.base_fields['invoice'].widget = forms.HiddenInput()
+        return r
 
 
 admin.site.register(Vendor, VendorAdmin)
