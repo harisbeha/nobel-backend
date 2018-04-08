@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.db import models
+
+from custom_apps.utils import maps
 from ..utils.models import BaseModel
+
 
 # An invoice (e.g. https://drive.google.com/file/d/1XWeqbQ-VRXV4C4zy6mOwv2Sasnwpv2WO/view) has multiple work orders
 # and a work order has multiple jobs
@@ -32,7 +36,7 @@ class Invoice(BaseModel):
     # The above two fields are the "primary key"
     class Meta(BaseModel.Meta):
         unique_together = (('vendor', 'invoice_number'),)
-        abstract = False    # we inherit an abstract class and mark it final in this incarnation
+        abstract = False  # we inherit an abstract class and mark it final in this incarnation
 
     remission_address = models.TextField('full mailing addresses to send remission')
     first_event = models.DateTimeField('date of the first storm event in this invoice')
@@ -54,7 +58,7 @@ class WorkOrder(BaseModel):
     # The above two fields are the "primary key"
     class Meta(BaseModel.Meta):
         unique_together = (('invoice', 'order_number'),)
-        abstract = False    # we inherit an abstract class and mark it final in this incarnation
+        abstract = False  # we inherit an abstract class and mark it final in this incarnation
 
     storm_name = models.TextField('name of the storm', max_length=100)
     building = models.ForeignKey('invoices.Building')
@@ -69,7 +73,7 @@ class WorkOrder(BaseModel):
     plow_tax = models.DecimalField(
         'tax in dollars per plow service, includes plowing and shoveling only', max_digits=8, decimal_places=2)
 
-    objects = WorkOrderManager()    # makes extra _cost fields summing tax + rate appear on each query
+    objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
 
 
 # manager for the below relation
@@ -78,12 +82,12 @@ class JobManager(models.Manager):
         return super(JobManager, self).get_queryset().annotate(
             deice_fee=models.Case(
                 models.When(provided_deicing=True, then=
-                            models.F('work_order__deice_rate') + models.F('work_order__deice_tax')),
+                models.F('work_order__deice_rate') + models.F('work_order__deice_tax')),
                 default=models.Value(0),
                 output_field=models.DecimalField(max_digits=8, decimal_places=2)),
             plow_fee=models.Case(
                 models.When(provided_plowing=True, then=
-                            models.F('work_order__plow_rate') + models.F('work_order__plow_tax')),
+                models.F('work_order__plow_rate') + models.F('work_order__plow_tax')),
                 default=models.Value(0),
                 output_field=models.DecimalField(max_digits=8, decimal_places=2)),
         ).annotate(
@@ -100,3 +104,18 @@ class Job(BaseModel):
     provided_plowing = models.BooleanField('whether plowing services were provided')
 
     objects = JobManager()
+
+
+for i in [{'model': WorkOrder, 'field': 'building_address'},
+          {'model': Vendor},
+          {'model': Invoice, 'field': 'remission_address'}]:
+    def handler(sender, instance):
+        field_name = i.get('field', 'address')
+        formal_address = maps.formalize_address(getattr(instance, field_name))
+        if not formal_address:
+            raise ValidationError('Address not found on Google')
+        setattr(instance, field_name,
+                formal_address)
+
+
+    pre_save.connect(handler, i['model'])
