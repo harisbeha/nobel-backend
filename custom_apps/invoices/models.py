@@ -26,13 +26,13 @@ class Vendor(BaseModel):
 
 
 class Invoice(BaseModel):
-    vendor = models.ForeignKey('invoices.Vendor')
-    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50, null=True)
-
-    # The above two fields are the "primary key"
     class Meta(BaseModel.Meta):
         unique_together = (('vendor', 'invoice_number'),)
         abstract = False  # we inherit an abstract class and mark it final in this incarnation
+
+    # These two fields form the "primary key"
+    vendor = models.ForeignKey('invoices.Vendor')
+    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50, null=True)
 
     remission_address = AddressField('full mailing addresses to send remission', null=True)
 
@@ -53,13 +53,14 @@ class WorkOrderManager(models.Manager):
 
 
 class WorkOrder(BaseModel):
-    order_number = models.CharField('textual work order number, e.g. TDU12345678', max_length=50)
-    invoice = models.ForeignKey('invoices.Invoice')
-
-    # The above two fields are the "primary key"
     class Meta(BaseModel.Meta):
         unique_together = (('invoice', 'order_number'),)
         abstract = False  # we inherit an abstract class and mark it final in this incarnation
+
+    # These two fields form the "primary key"
+    order_number = models.CharField('textual work order number, e.g. TDU12345678', max_length=50)
+    invoice = models.ForeignKey('invoices.Invoice')
+
 
     storm_name = models.CharField('name of the storm work to which work is being done in response', max_length=100)
     building_id = models.CharField('identifier for the building on which work was done', max_length=50)
