@@ -89,6 +89,16 @@ def close_safety_review(modeladmin, request, queryset):
             request,
             "The invoice(s) you've selected don't have their invoice numbers or remission addresses set.",
             level=messages.ERROR)
+    elif queryset.filter(Q(workorder__isnull=False)).count() == 0:
+        modeladmin.message_user(
+            request,
+            "There are no work orders attached to this invoice!",
+            level=messages.ERROR)
+    elif queryset.filter(Q(workorder__job__isnull=True)).count() > 0:
+        modeladmin.message_user(
+            request,
+            "Some of the work orders attached to this invoice have no work done!!!! :(",
+            level=messages.ERROR)
     else:
         ticker(queryset, success, failure)
 
@@ -196,7 +206,7 @@ class JobAdmin(BaseModelAdmin):
                                         ReportState.SAFETY_REVIEWED,
                                         "These jobs are not all in the \"ready to review\" state.")]
 
-    list_display = [get_state, 'work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing',
+    list_display = [get_state, 'work_order', 'response_time_start', 'response_time_end', 'provided_deicing',
                     'provided_plowing', get_visit_subtotal]
 
 
