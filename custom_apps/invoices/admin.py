@@ -123,6 +123,13 @@ def address_form_factory(model_cls, exclude_list, address_field):
 class BaseModelAdmin(NestedModelAdmin):
     APPROVED_PERMS = ['Internal Staff']
 
+    def get_actions(self, request):
+        actions = super(BaseModelAdmin, self).get_actions(request)
+        if not self._do_check(request):
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
+
     def has_delete_permission(self, request, obj=None):
         try:
             if request.user.is_superuser:
