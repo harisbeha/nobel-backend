@@ -40,7 +40,11 @@ def make_state_ticker(model, from_state, to_state):
 
     def ticker(queryset, success_callback, failure_callback):
         if list(queryset.values_list(path, flat=True).distinct()) == [from_state.value]:
-            Job.objects.filter(**{reverse_path + '__in': queryset}).update(state=to_state.value)
+            if reverse_path is None:
+                jobs_queryset = queryset
+            else:
+                jobs_queryset = Job.objects.filter(**{reverse_path + '__in': queryset})
+            jobs_queryset.update(state=to_state.value)
             success_callback()
         else:
             failure_callback()
@@ -83,7 +87,7 @@ def close_safety_review(modeladmin, request, queryset):
     def failure():
         modeladmin.message_user(
             request,
-            "Some of the jobs in the selected invoices have not had their safety reviews approved.",
+            "Some of the jobs in the selected invoices have not had their safety reviews approved or are already closed.",
             level=messages.ERROR)
 
     def success():
