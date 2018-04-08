@@ -136,7 +136,7 @@ class Job(BaseModel):
     haul_stack_status = models.IntegerField('any need for snow hauling or stacking?', choices=SnowStatus.choices())
     haul_stack_estimate = models.DecimalField('cost estimate for future snow hauling or stacking', max_digits=8, decimal_places=2)
 
-    state = models.IntegerField(choices=ReportState.choices(), default=ReportState.CREATED)
+    state = models.IntegerField(choices=ReportState.choices(), default=ReportState.CREATED.value)
     tracker = FieldTracker()
 
     objects = JobManager()

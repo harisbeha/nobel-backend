@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='job',
             name='state',
-            field=models.IntegerField(choices=[(-1, b'REJECTED'), (1, b'CREATED'), (2, b'INITIALIZED'), (3, b'SAFETY_REVIEWED'), (4, b'SAFETY_REVIEW_CLOSED'), (5, b'PRELIM_GENERATED'), (6, b'PRE_FORECAST_REVIEWED'), (7, b'FORECASTED'), (8, b'SENT_TO_PROVIDER'), (9, b'VALIDATED'), (10, b'FINALIZED')], default=custom_apps.invoices.enums.ReportState(1)),
+            field=models.IntegerField(choices=[(-1, b'REJECTED'), (1, b'CREATED'), (2, b'INITIALIZED'), (3, b'SAFETY_REVIEWED'), (4, b'SAFETY_REVIEW_CLOSED'), (5, b'PRELIM_GENERATED'), (6, b'PRE_FORECAST_REVIEWED'), (7, b'FORECASTED'), (8, b'SENT_TO_PROVIDER'), (9, b'VALIDATED'), (10, b'FINALIZED')], default=1),
         ),
     ]
