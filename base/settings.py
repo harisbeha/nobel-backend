@@ -80,9 +80,14 @@ WSGI_APPLICATION = 'base.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 _sqlite = os.path.join(BASE_DIR, 'db.sqlite3')
+_db_conf = dj_database_url.config(default='sqlite:///%s' % _sqlite)
+if 'postgres' in _db_conf['ENGINE'].lower():
+    import psycopg2.extensions
+    _db_conf['OPTIONS'].update({'isolation_level': psycopg2.extensions.ISOLATION_LEVEL_REPEATABLE_READ})
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///%s' % _sqlite)
+    'default': _db_conf
 }
+ATOMIC_REQUESTS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
