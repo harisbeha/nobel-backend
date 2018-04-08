@@ -31,7 +31,7 @@ class WorkOrderInline(BaseInline):
 class InvoiceAdmin(NestedModelAdmin):
     get_vendor_name = generate_field_getter('vendor.name', 'Vendor Name')
     get_vendor_address = generate_field_getter('vendor.address', 'Vendor Address')
-    list_display = [get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address', 'first_event']
+    list_display = [get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address']
 
     search_fields = ['vendor__name', 'invoice_number']
     list_filter = ['vendor__name']
