@@ -277,10 +277,18 @@ class JobAdmin(BaseModelAdmin):
     exclude = ['state']
 
 
+class WorkOrderForm(forms.ModelForm):
+    class Meta:
+        model = WorkOrder
+
+    vendor = forms.ModelChoiceField(queryset=Vendor.objects.all())
+    invoice = forms.HiddenInput()
+
+
 class WorkOrderAdmin(BaseModelAdmin):
     get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
 
-    form = address_form_factory(WorkOrder, ['id'], 'building_address')
+    form = WorkOrderForm
     list_display = [get_state, 'order_number', 'invoice', 'storm_name', 'building_address']
 
 

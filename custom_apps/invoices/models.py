@@ -82,7 +82,6 @@ class WorkOrder(BaseModel):
     building_address = AddressField('full address of the building on which work was done')
     building_type = models.IntegerField('type of the property to service', choices=BuildingType.choices())
 
-
     deice_rate = models.DecimalField(
         'cost in dollars without tax per de-icing service', max_digits=8, decimal_places=2)
     deice_tax = models.DecimalField(
@@ -134,7 +133,8 @@ class Job(BaseModel):
     safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000)
     snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000)
     haul_stack_status = models.IntegerField('any need for snow hauling or stacking?', choices=SnowStatus.choices())
-    haul_stack_estimate = models.DecimalField('cost estimate for future snow hauling or stacking', max_digits=8, decimal_places=2)
+    haul_stack_estimate = models.DecimalField('cost estimate for future snow hauling or stacking', max_digits=8,
+                                              decimal_places=2)
 
     state = models.IntegerField(choices=ReportState.choices(), default=ReportState.CREATED.value)
     tracker = FieldTracker()
