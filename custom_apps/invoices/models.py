@@ -79,7 +79,7 @@ class WorkOrder(BaseModel):
     objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
 
     def __str__(self):
-        return self.order_number
+        return '%s for %s' % (self.order_number, self.invoice.vendor.name)
 
 
 # manager for the below relation
