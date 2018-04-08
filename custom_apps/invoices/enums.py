@@ -1,7 +1,13 @@
 from enum import Enum
 
 
-class ReportState(Enum):
+class ChoiceEnum(Enum):
+    @classmethod
+    def choices(cls):
+        return tuple((x.name, x.value) for x in cls)
+
+
+class ReportState(ChoiceEnum):
     CREATED = 1
     INITIALIZED = 2
     SAFETY_REVIEWED = 3
