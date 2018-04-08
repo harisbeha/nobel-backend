@@ -17,3 +17,4 @@ celery<5
 #google-python-cloud-debugger
 django-model-utils
 django-audit-trail
+django-auto-one-to-one
