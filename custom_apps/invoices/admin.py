@@ -170,7 +170,7 @@ class WorkOrderInline(BaseInline):
 class InvoiceAdmin(BaseModelAdmin):
     get_vendor_name = generate_field_getter('vendor.name', 'Vendor Name')
     get_vendor_address = generate_field_getter('vendor.address', 'Vendor Address')
-    get_state = generate_field_getter('state', 'Report State')
+    get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
 
     list_display = [get_state, get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address']
 
@@ -189,17 +189,19 @@ class VendorAdmin(BaseModelAdmin):
 
 
 class JobAdmin(BaseModelAdmin):
+    get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
+
     actions = [make_state_ticker_action('Approve safety report for selected', 'state', ReportState.INITIALIZED,
                                         ReportState.SAFETY_REVIEWED,
                                         "These jobs are not all in the \"ready to review\" state.")]
 
-    list_display = ['state', 'work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing',
+    list_display = [get_state, 'work_order', 'response_time_start', 'response_time_end', 'state', 'provided_deicing',
                     'provided_plowing', get_visit_subtotal]
 
 
 class WorkOrderAdmin(BaseModelAdmin):
-    get_state = generate_field_getter('state', 'Report State')
+    get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
 
     form = address_form_factory(WorkOrder, ['id'], 'building_address')
     list_display = [get_state, 'order_number', 'invoice', 'storm_name', 'building_address']

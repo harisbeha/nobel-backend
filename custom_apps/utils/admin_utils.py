@@ -1,8 +1,8 @@
-def run_safe(fn, *args, **kwargs):
+def run_safe(fn, default, *args, **kwargs):
     try:
         return fn(*args, **kwargs)
     except:
-        pass
+        return default
 
 
 def generate_field_getter(selector, name, admin_order_field=None, preprocessor=None):
@@ -16,7 +16,7 @@ def generate_field_getter(selector, name, admin_order_field=None, preprocessor=N
                 break
         value = parent
         if preprocessor:
-            value = run_safe(preprocessor, value) or value
+            value = run_safe(preprocessor, value, value)
         return value
 
     getter.short_description = name
