@@ -5,6 +5,7 @@ from django import forms
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
 from django.db.models.query_utils import Q
+from django.forms import HiddenInput
 from nested_admin.nested import NestedModelAdmin, NestedStackedInline
 
 from custom_apps.utils import maps
@@ -181,14 +182,30 @@ class BaseModelAdmin(NestedModelAdmin):
             return self.PERM_CONFIGS.get(perm, {}).get('hidden_fields', [])
         return []
 
+    def _scrub_fields(self, formset, hidden_fields):
+        for h in hidden_fields:
+            if h in formset.form.base_fields:
+                formset.form.base_fields[h].widget = HiddenInput()
+        return formset
+
     def get_formsets_with_inlines(self, request, obj=None):
         hidden_fields = self._get_hidden_fields(request)
-        formsets = super(BaseModelAdmin, self).get_formsets_with_inlines(request, obj=obj)
+        formsets = list(super(BaseModelAdmin, self).get_formsets_with_inlines(request, obj=obj))
         for formset, inline in formsets:
-            for h in hidden_fields:
-                if h in formset.form.base_fields:
-                    del formset.form.base_fields[h]
+            self._scrub_fields(formset, hidden_fields)
             yield formset, inline
+
+    def get_changelist_formset(self, request, **kwargs):
+        hidden_fields = self._get_hidden_fields(request)
+        r = super(BaseModelAdmin, self).get_changelist_formset(request, **kwargs)
+        return self._scrub_fields(r, hidden_fields)
+
+    def get_inline_formsets(self, request, formsets, inline_instances,
+                            obj=None, allow_nested=False):
+        hidden_fields = self._get_hidden_fields(request)
+        r = super(BaseModelAdmin, self).get_inline_formsets(request, formsets, inline_instances, obj=obj,
+                                                            allow_nested=allow_nested)
+        return self._scrub_fields(r, hidden_fields)
 
 
 class BaseInline(NestedStackedInline):
