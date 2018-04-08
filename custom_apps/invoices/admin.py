@@ -125,18 +125,10 @@ class BaseModelAdmin(NestedModelAdmin):
 
     def get_actions(self, request):
         actions = super(BaseModelAdmin, self).get_actions(request)
-        if not request.user.is_superuser:
+        if not self._do_check(request, 'delete'):
             if 'delete_selected' in actions:
                 del actions['delete_selected']
         return actions
-
-    def has_delete_permission(self, request, obj=None):
-        try:
-            if request.user.is_superuser:
-                return True
-        except:
-            pass
-        return False
 
     def _do_check(self, request, perm_name):
         if request.user.is_superuser:
@@ -147,6 +139,9 @@ class BaseModelAdmin(NestedModelAdmin):
             if perm_name in conf:
                 return True
         return False
+
+    def has_delete_permission(self, request, obj=None):
+        return self._do_check(request, 'delete')
 
     def has_add_permission(self, request):
         return self._do_check(request, 'add')
