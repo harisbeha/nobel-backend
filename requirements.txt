@@ -14,3 +14,4 @@ python-google-places
 django-sendgrid-v5
 enum34
 celery<5
+django-model-utils

@@ -6,3 +6,12 @@ from django.apps import AppConfig
 
 class InvoicesConfig(AppConfig):
     name = 'custom_apps.invoices'
+
+    def ready(self):
+        r = super(InvoicesConfig, self).ready()
+
+        from . import signals   # late import bc models aren't ready yet
+        signals.connect_state_workflow()
+
+        return r
+

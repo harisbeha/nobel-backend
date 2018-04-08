@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import pre_save
+from model_utils import FieldTracker
 
-from custom_apps.utils import maps
+from custom_apps.invoices.enums import ReportState
 from ..utils.models import BaseModel
 
 
@@ -14,8 +13,8 @@ from ..utils.models import BaseModel
 # that document has rows of jobs joined with their work orders
 
 
-def AddressField(fullname):
-    return models.TextField(fullname, max_length=500)
+def AddressField(fullname, **kwargs):
+    return models.TextField(fullname, max_length=500, **kwargs)
 
 
 class Vendor(BaseModel):
@@ -28,14 +27,20 @@ class Vendor(BaseModel):
 
 class Invoice(BaseModel):
     vendor = models.ForeignKey('invoices.Vendor')
-    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50)
+    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50, null=True)
 
     # The above two fields are the "primary key"
     class Meta(BaseModel.Meta):
         unique_together = (('vendor', 'invoice_number'),)
         abstract = False  # we inherit an abstract class and mark it final in this incarnation
 
-    remission_address = AddressField('full mailing addresses to send remission')
+    remission_address = AddressField('full mailing addresses to send remission', null=True)
+
+    def __str__(self):
+        if self.invoice_number is None:
+            return 'Unnamed invoice for %s' % self.vendor.name
+        else:
+            return '%s for %s' % (self.invoice_number, self.vendor.name)
 
 
 # manager for the below relation
@@ -72,6 +77,9 @@ class WorkOrder(BaseModel):
 
     objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
 
+    def __str__(self):
+        return self.order_number
+
 
 # manager for the below relation
 class JobManager(models.Manager):
@@ -100,22 +108,10 @@ class Job(BaseModel):
     provided_deicing = models.BooleanField('were de-icing services provided?')
     provided_plowing = models.BooleanField('were plowing services provided (includes plowing and shoveling ONLY)?')
 
+    state = models.IntegerField(choices=ReportState.choices())
+    tracker = FieldTracker()
+
     objects = JobManager()
 
-
-validatable_models = {id(WorkOrder): 'building_address',
-                      id(Vendor): 'address',
-                      id(Invoice): 'remission_address'}
-def validation_handler(sender, instance, **kwargs):
-    model = type(instance)
-    field_name = validatable_models[id(model)]
-    address = getattr(instance, field_name)
-    formal_address = maps.formalize_address(address)
-
-    if not formal_address:
-        raise ValidationError('Address not found on Google')
-    setattr(instance, field_name, formal_address)
-
-pre_save.connect(validation_handler, WorkOrder)
-pre_save.connect(validation_handler, Vendor)
-pre_save.connect(validation_handler, Invoice)
+    def __str__(self):
+        return 'Work for %s on %s' % (self.work_order.order_number, self.response_time_start.strftime('%b %e, %l:%M %p'))
