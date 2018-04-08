@@ -277,11 +277,7 @@ class JobAdmin(BaseModelAdmin):
     exclude = ['state']
 
 
-class WorkOrderForm(forms.ModelForm):
-    class Meta:
-        model = WorkOrder
-        exclude = ['id']
-
+class WorkOrderForm(address_form_factory(WorkOrder, ['id'], 'building_address')):
     vendor = forms.ModelChoiceField(queryset=Vendor.objects.all())
 
     def __init__(self, *args, **kwargs):
