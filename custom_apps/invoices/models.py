@@ -106,7 +106,7 @@ class Job(BaseModel):
 for i in [{'model': WorkOrder, 'field': 'building_address'},
           {'model': Vendor},
           {'model': Invoice, 'field': 'remission_address'}]:
-    def handler(sender, instance):
+    def handler(sender, instance, **kwargs):
         field_name = i.get('field', 'address')
         formal_address = maps.formalize_address(getattr(instance, field_name))
         if not formal_address:
