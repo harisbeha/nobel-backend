@@ -4,10 +4,10 @@ from .models import *
 
 
 def job_creation_tracker(sender, instance, *args, **kwargs):
-    if instance.state == ReportState.CREATED:
+    if instance.state == ReportState.CREATED.value:
         # test all the fields to make sure they're ready for safety review
         # ...none right now
-        instance.state = ReportState.INITIALIZED
+        instance.state = ReportState.INITIALIZED.value
 
 
 def vendor_tracker(sender, instance, created, **kwargs):
