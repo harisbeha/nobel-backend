@@ -5,7 +5,7 @@ from audit_trail import AuditTrailWatcher
 from django.db import models
 from model_utils import FieldTracker
 
-from custom_apps.invoices.enums import ReportState
+from custom_apps.invoices.enums import *
 from ..utils.models import BaseModel
 
 
@@ -77,8 +77,11 @@ class WorkOrder(BaseModel):
     invoice = models.ForeignKey('invoices.Invoice')
 
     storm_name = models.CharField('name of the storm work to which work is being done in response', max_length=100)
+
     building_id = models.CharField('identifier for the building on which work was done', max_length=50)
     building_address = AddressField('full address of the building on which work was done')
+    building_type = models.IntegerField('type of the property to service', choices=BuildingType.choices())
+
 
     deice_rate = models.DecimalField(
         'cost in dollars without tax per de-icing service', max_digits=8, decimal_places=2)
@@ -124,6 +127,14 @@ class Job(BaseModel):
 
     provided_deicing = models.BooleanField('were de-icing services provided?')
     provided_plowing = models.BooleanField('were plowing services provided (includes plowing and shoveling ONLY)?')
+
+    event_time = models.DateField('date of the event that caused the snowfall')
+    last_service_time = models.DateTimeField('time of last service at this location')
+
+    safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000)
+    snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000)
+    haul_stack_status = models.IntegerField('any need for snow hauling or stacking?', choices=SnowStatus.choices())
+    haul_stack_estimate = models.DecimalField('cost estimate for future snow hauling or stacking', max_digits=8, decimal_places=2)
 
     state = models.IntegerField(choices=ReportState.choices())
     tracker = FieldTracker()
