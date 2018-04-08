@@ -9,20 +9,13 @@ from ..utils.models import BaseModel
 # that document has rows of jobs joined with their work orders
 
 
-class Building(BaseModel):
-    identifier = models.TextField('identifier for the building, e.g. TDE1234', max_length=50)
-    address = models.TextField('street address', max_length=200)
-    city = models.TextField('city name', max_length=50)
-    state = models.TextField('state abbreviation', max_length=2)
-    zip = models.TextField('zip code', max_length=15)
-
-    def __str__(self):
-        return '%s, %s, %s, %s' % (self.address, self.city, self.state, self.zip)
+def AddressField(fullname):
+    return models.TextField(fullname, max_length=500)
 
 
 class Vendor(BaseModel):
-    name = models.TextField('company name of the vendor')
-    address = models.TextField('full mailing address', max_length=200)
+    name = models.CharField('company name of the vendor', max_length=100)
+    address = AddressField('full mailing address')
 
 
 class Invoice(BaseModel):
@@ -34,7 +27,7 @@ class Invoice(BaseModel):
         unique_together = (('vendor', 'invoice_number'),)
         abstract = False    # we inherit an abstract class and mark it final in this incarnation
 
-    remission_address = models.TextField('full mailing addresses to send remission')
+    remission_address = AddressField('full mailing addresses to send remission')
     first_event = models.DateTimeField('date of the first storm event in this invoice')
 
 
@@ -48,7 +41,7 @@ class WorkOrderManager(models.Manager):
 
 
 class WorkOrder(BaseModel):
-    order_number = models.TextField('textual work order number, e.g. TDU12345678', max_length=50)
+    order_number = models.CharField('textual work order number, e.g. TDU12345678', max_length=50)
     invoice = models.ForeignKey('invoices.Invoice')
 
     # The above two fields are the "primary key"
@@ -56,8 +49,9 @@ class WorkOrder(BaseModel):
         unique_together = (('invoice', 'order_number'),)
         abstract = False    # we inherit an abstract class and mark it final in this incarnation
 
-    storm_name = models.TextField('name of the storm', max_length=100)
-    building = models.ForeignKey('invoices.Building')
+    storm_name = models.CharField('name of the storm', max_length=100)
+    building_id = models.CharField('identifier for the building', max_length=50)
+    building_address = AddressField('full address of the building that was worked on')
 
     deice_rate = models.DecimalField(
         'cost in dollars without tax per de-icing service', max_digits=8, decimal_places=2)
