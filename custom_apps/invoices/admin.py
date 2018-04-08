@@ -159,6 +159,7 @@ class JobAdmin(admin.ModelAdmin):
 
 
 class WorkOrderAdmin(admin.ModelAdmin):
+    form = address_form_factory(WorkOrder, ['id'], 'building_address')
     list_display = ['order_number', 'invoice', 'storm_name', 'building_address']
 
 
