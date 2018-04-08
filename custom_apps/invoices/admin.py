@@ -84,7 +84,7 @@ def close_safety_review(modeladmin, request, queryset):
         for invoice in queryset.all():
             Invoice.objects.create(vendor=invoice.vendor, invoice_number=None, remission_address=None)
 
-    if queryset.objects.filter(Q(invoice_number__isnull=True) | Q(remission_address__isnull=True)).count() > 0:
+    if queryset.filter(Q(invoice_number__isnull=True) | Q(remission_address__isnull=True)).count() > 0:
         modeladmin.message_user(
             request,
             "The invoice(s) you've selected don't have their invoice numbers or remission addresses set.",
