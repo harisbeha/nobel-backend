@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from audit_trail import AuditTrailWatcher
 from django.db import models
-from django.db.models import functions
 from model_utils import FieldTracker
 
 from custom_apps.invoices.enums import ReportState
@@ -24,6 +24,8 @@ class Vendor(BaseModel):
 
     def __str__(self):
         return self.name
+
+    audit = AuditTrailWatcher()
 
 
 class InvoiceManger(models.Manager):
@@ -52,6 +54,8 @@ class Invoice(BaseModel):
         else:
             return '%s for %s' % (self.invoice_number, self.vendor.name)
 
+    audit = AuditTrailWatcher()
+
 
 # manager for the below relation
 class WorkOrderManager(models.Manager):
@@ -72,7 +76,6 @@ class WorkOrder(BaseModel):
     order_number = models.CharField('textual work order number, e.g. TDU12345678', max_length=50)
     invoice = models.ForeignKey('invoices.Invoice')
 
-
     storm_name = models.CharField('name of the storm work to which work is being done in response', max_length=100)
     building_id = models.CharField('identifier for the building on which work was done', max_length=50)
     building_address = AddressField('full address of the building on which work was done')
@@ -91,6 +94,8 @@ class WorkOrder(BaseModel):
 
     def __str__(self):
         return '%s for %s' % (self.order_number, self.invoice.vendor.name)
+
+    audit = AuditTrailWatcher()
 
 
 # manager for the below relation
@@ -126,4 +131,7 @@ class Job(BaseModel):
     objects = JobManager()
 
     def __str__(self):
-        return 'Work for %s on %s' % (self.work_order.order_number, self.response_time_start.strftime('%b %e, %l:%M %p'))
+        return 'Work for %s on %s' % (
+            self.work_order.order_number, self.response_time_start.strftime('%b %e, %l:%M %p'))
+
+    audit = AuditTrailWatcher()

@@ -14,5 +14,6 @@ python-google-places
 django-sendgrid-v5
 enum34
 celery<5
-google-python-cloud-debugger
+#google-python-cloud-debugger
 django-model-utils
+django-audit-trail
