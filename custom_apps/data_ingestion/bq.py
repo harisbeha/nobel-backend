@@ -11,9 +11,11 @@ def _get_client():
     return _client
 
 
-ACCUMULATION_QUERY = '''SELECT SUM(total_accumulation) AS total
-FROM (
-  SELECT total_accumulation
+ACCUMULATION_QUERY = '''
+SELECT
+  logical_or(precip_type LIKE '%Sleet%') AS has_ice,
+  max(timestamp_diff(`end`, `start`, HOUR)) AS duration,
+  sum(total_accumulation) as snowfall
   FROM
     dev.cst_snowfall_data
   WHERE
@@ -22,7 +24,8 @@ FROM (
     AND `end` <= @enddate
     AND `start` >= @startdate
   LIMIT
-  1000)'''
+   1000 
+'''
 
 
 def query_for_accumulation_zip(zipcode, start, end):
@@ -36,6 +39,4 @@ def query_for_accumulation_zip(zipcode, start, end):
     job_config.query_parameters = query_params
     query = bq.query(ACCUMULATION_QUERY, job_config=job_config)
     result = query.result()
-    return list(result)[0].values()[0]
-
-# print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))
+    return dict(list(result)[0].items())
