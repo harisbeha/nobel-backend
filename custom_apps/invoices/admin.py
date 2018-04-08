@@ -125,7 +125,7 @@ class BaseModelAdmin(NestedModelAdmin):
 
     def get_actions(self, request):
         actions = super(BaseModelAdmin, self).get_actions(request)
-        if not self._do_check(request):
+        if not request.user.is_superuser:
             if 'delete_selected' in actions:
                 del actions['delete_selected']
         return actions
