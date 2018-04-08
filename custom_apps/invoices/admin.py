@@ -142,6 +142,10 @@ def address_form_factory(model_cls, exclude_list, address_field):
 
 # model admins
 class BaseModelAdmin(NestedModelAdmin):
+    """
+    This terrible class allows control of module and field visibility based on user groups.
+    PERM_CONFIGS allows configuration of the behaviors.
+    """
     PERM_CONFIGS = {'Internal Staff': {'perms': ['add', 'change', 'list'], 'hidden_fields': ['plow_tax']}}
 
     def get_actions(self, request):
