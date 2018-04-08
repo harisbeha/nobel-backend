@@ -3,14 +3,14 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.contrib import admin, messages
-from django.db.models.query_utils import Q
 from django.core.exceptions import ValidationError
+from django.db.models.query_utils import Q
 from nested_admin.nested import NestedModelAdmin, NestedStackedInline
-from custom_apps.utils import maps
 
+from custom_apps.utils import maps
 from custom_apps.utils.admin_utils import generate_field_getter
-from .models import Invoice, WorkOrder, Job, Vendor
 from .enums import ReportState
+from .models import Invoice, WorkOrder, Job, Vendor
 
 
 # actions
@@ -27,6 +27,7 @@ def make_state_ticker(path_to_state, from_state, to_state):
     :return:                    A function to tick a queryset forward:
                                 ticker(queryset, success_callback, failure_callback). The callbacks take no args.
     """
+
     def ticker(queryset, success_callback, failure_callback):
         if list(queryset.objects.values_list(path_to_state, flat=True).distinct()) \
                 == [from_state.value]:
@@ -36,6 +37,7 @@ def make_state_ticker(path_to_state, from_state, to_state):
             success_callback()
         else:
             failure_callback()
+
     return ticker
 
 
@@ -59,7 +61,9 @@ def make_state_ticker_action(short_description, path_to_state, from_state, to_st
     def admin_action(modeladmin, request, queryset):
         def failure():
             modeladmin.message_user(request, failure_message, level=messages.ERROR)
+
         ticker(queryset, lambda: None, failure)
+
     admin_action.short_description = short_description
     return admin_action
 
@@ -87,6 +91,8 @@ def close_safety_review(modeladmin, request, queryset):
             level=messages.ERROR)
     else:
         ticker(queryset, success, failure)
+
+
 close_safety_review.short_description = 'Close safety reviews'
 
 
@@ -96,6 +102,7 @@ def address_form_factory(model_cls, exclude_list, address_field):
     """
     :(
     """
+
     class AddressForm(forms.ModelForm):
         class Meta:
             model = model_cls
@@ -112,11 +119,15 @@ def address_form_factory(model_cls, exclude_list, address_field):
     return AddressForm
 
 
-class CustomModelAdmin(admin.ModelAdmin):
-
-    def __init__(self, model, admin_site):
-        self.list_display = [field.name for field in model._meta.fields if field.name != "id"]
-        super(CustomModelAdmin, self).__init__(model, admin_site)
+# model admins
+class BaseModelAdmin(NestedModelAdmin):
+    def has_delete_permission(self, request, obj=None):
+        try:
+            if request.user.is_superuser:
+                return True
+        except:
+            pass
+        return False
 
 
 class BaseInline(NestedStackedInline):
@@ -133,7 +144,7 @@ class WorkOrderInline(BaseInline):
     form = address_form_factory(WorkOrder, ['id'], 'building_address')
 
 
-class InvoiceAdmin(NestedModelAdmin):
+class InvoiceAdmin(BaseModelAdmin):
     get_vendor_name = generate_field_getter('vendor.name', 'Vendor Name')
     get_vendor_address = generate_field_getter('vendor.address', 'Vendor Address')
     list_display = [get_vendor_name, get_vendor_address, 'invoice_number', 'remission_address']
@@ -146,19 +157,22 @@ class InvoiceAdmin(NestedModelAdmin):
     actions = [close_safety_review]
 
 
-class VendorAdmin(admin.ModelAdmin):
+class VendorAdmin(BaseModelAdmin):
     form = address_form_factory(Vendor, ['id'], 'address')
 
     list_display = ['name', 'address']
 
 
-class JobAdmin(admin.ModelAdmin):
-    actions = [make_state_ticker_action('Approve safety report', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED, "These jobs are not all in the \"ready to review\" state.")]
+class JobAdmin(BaseModelAdmin):
+    actions = [
+        make_state_ticker_action('Approve safety report', 'state', ReportState.INITIALIZED, ReportState.SAFETY_REVIEWED,
+                                 "These jobs are not all in the \"ready to review\" state.")]
 
-    list_display = ['work_order', 'response_time_start', 'response_time_end', 'provided_deicing', 'provided_plowing', 'state', 'visit_subtotal']
+    list_display = ['work_order', 'response_time_start', 'response_time_end', 'provided_deicing', 'provided_plowing',
+                    'state', 'visit_subtotal']
 
 
-class WorkOrderAdmin(admin.ModelAdmin):
+class WorkOrderAdmin(BaseModelAdmin):
     list_display = ['order_number', 'invoice', 'storm_name', 'building_address']
 
 
