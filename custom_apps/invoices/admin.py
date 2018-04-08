@@ -92,12 +92,12 @@ def close_safety_review(modeladmin, request, queryset):
     elif queryset.filter(Q(workorder__isnull=False)).count() == 0:
         modeladmin.message_user(
             request,
-            "There are no work orders attached to this invoice!",
+            "There are no work orders attached to some of these invoices!",
             level=messages.ERROR)
     elif queryset.filter(Q(workorder__job__isnull=True)).count() > 0:
         modeladmin.message_user(
             request,
-            "Some of the work orders attached to this invoice have no work done!!!! :(",
+            "Some of the work orders attached to these invoices have no work done!!!! :(",
             level=messages.ERROR)
     else:
         ticker(queryset, success, failure)
