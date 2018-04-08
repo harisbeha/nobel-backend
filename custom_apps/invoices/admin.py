@@ -5,7 +5,7 @@ from django.contrib import admin
 from nested_admin.nested import NestedModelAdmin, NestedStackedInline
 
 from custom_apps.utils.admin_utils import generate_field_getter
-from .models import Invoice, WorkOrder, Job
+from .models import Invoice, WorkOrder, Job, Vendor
 
 
 class CustomModelAdmin(admin.ModelAdmin):
@@ -36,16 +36,11 @@ class InvoiceAdmin(NestedModelAdmin):
     search_fields = ['vendor__name', 'invoice_number']
     list_filter = ['vendor__name']
     inlines = [WorkOrderInline]
-    # list_display = ['storm_name',
-    #                'building',
-    #                'vendor__name',
-    #                'deice_rate',
-    #                'deice_tax'
-    #                'deice_cost',
-    #                'plow_rate',
-    #                'plow_tax',
-    #                'plow_cost',
-    #                'order_number',
 
 
+class VendorAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Vendor, VendorAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
