@@ -202,3 +202,6 @@ else:
     CELERY_TASK_ALWAYS_EAGER = True
 
 CELERY_WORKER_HIJACK_ROOT_LOGGER = False
+
+# gcloud
+GOOGLE_CLOUD_JSON = os.path.join(BASE_DIR, 'google-cloud.json')

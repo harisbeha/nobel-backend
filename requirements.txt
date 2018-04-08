@@ -15,6 +15,8 @@ django-sendgrid-v5
 enum34
 celery<5
 google-python-cloud-debugger
+google-cloud-bigquery
 django-model-utils
 django-audit-trail
 django-auto-one-to-one
+python-dateutil
