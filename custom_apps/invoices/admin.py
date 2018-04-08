@@ -15,25 +15,32 @@ from .models import Invoice, WorkOrder, Job, Vendor
 
 # actions
 
-def make_state_ticker(path_to_state, from_state, to_state):
+def make_state_ticker(model, from_state, to_state):
     """
     This silly little guy is a factory function which generates an ordinary function to tick the state enum of several
     jobs forward in sync given a queryset of a particular type.
 
-    :param path_to_state:       The path through the model to the state field that needs to be updated, separtaed by
-                                "__", e.g. "workorder__job__state"
+    :param model:               The model class for which the queryset will be over
     :param from_state:          The ResponseState member that all the states must be at in order to validate this tick
     :param to_state:            The ResponseState member to change all the states to
     :return:                    A function to tick a queryset forward:
                                 ticker(queryset, success_callback, failure_callback). The callbacks take no args.
     """
+    if model is Job:
+        path = 'state'
+        reverse_path = None
+    elif model is WorkOrder:
+        path = 'job__state'
+        reverse_path = 'workorder'
+    elif model is Invoice:
+        path = 'workorder__job__state'
+        reverse_path = 'workorder__invoice'
+    else:
+        raise ValueError("Can't make a state ticker for a model other than Job, WorkOrder, or Invoice")
 
     def ticker(queryset, success_callback, failure_callback):
-        if list(queryset.values_list(path_to_state, flat=True).distinct()) \
-                == [from_state.value]:
-            # potential for races here - TODO handle failures in the same transaction as the update?
-            queryset.filter(**{path_to_state: from_state.value}) \
-                .update(**{path_to_state: to_state.value})
+        if list(queryset.values_list(path, flat=True).distinct()) == [from_state.value]:
+            Job.objects.filter(**{reverse_path + '__in': queryset}).update(state=to_state.value)
             success_callback()
         else:
             failure_callback()
@@ -41,22 +48,21 @@ def make_state_ticker(path_to_state, from_state, to_state):
     return ticker
 
 
-def make_state_ticker_action(short_description, path_to_state, from_state, to_state, failure_message):
+def make_state_ticker_action(short_description, model, from_state, to_state, failure_message):
     """
     This silly little guy is a factory function which generates an admin action that can be used to tick the state enum
     of several jobs forward in sync. Since it's an admin action, it will be implicitly associated with a particular
     model.
 
     :param short_description:   The textual description that should be seen in the actions dropdown
-    :param path_to_state:       The path through the model to the state field that needs to be updated, separtaed by
-                                "__", e.g. "workorder__job__state"
+    :param model:               The model that the action should be tailored for handling
     :param from_state:          The ResponseState member that all the states must be at in order to validate this tick
     :param to_state:            The ResponseState member to change all the states to
     :param failure_message:     A message to show to the user if the operation fails because not all the jobs are in the
                                 right state
     :return:                    A function to tick a queryset forward and call a callback if it fails
     """
-    ticker = make_state_ticker(path_to_state, from_state, to_state)
+    ticker = make_state_ticker(model, from_state, to_state)
 
     def admin_action(modeladmin, request, queryset):
         def failure():
@@ -70,7 +76,7 @@ def make_state_ticker_action(short_description, path_to_state, from_state, to_st
 
 def close_safety_review(modeladmin, request, queryset):
     ticker = make_state_ticker(
-        'workorder__job__state',
+        Invoice,
         ReportState.SAFETY_REVIEWED,
         ReportState.SAFETY_REVIEW_CLOSED)
 
@@ -202,7 +208,7 @@ class JobAdmin(BaseModelAdmin):
     get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
 
-    actions = [make_state_ticker_action('Approve safety report for selected', 'state', ReportState.INITIALIZED,
+    actions = [make_state_ticker_action('Approve safety report for selected', Job, ReportState.INITIALIZED,
                                         ReportState.SAFETY_REVIEWED,
                                         "These jobs are not all in the \"ready to review\" state.")]
 
