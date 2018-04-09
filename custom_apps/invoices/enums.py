@@ -1,4 +1,3 @@
-from django.contrib import humanize
 from enum import Enum
 
 
@@ -45,3 +44,33 @@ class SnowStatus(ChoiceEnum):
     NONE = 0
     NEEDS_STACKING = 1
     NEEDS_HAULING = 2
+
+
+class Group(ChoiceEnum):
+    PROVIDER = 'Provider'
+    CLIENT_INVOICE_ADMIN = 'Client Invoice Administrator'
+    REGIONAL_MANAGER = 'Regional Manager'
+    SERVICE_PROVIDER = 'Service Provider'
+    INTERNAL_STAFF = 'Internal Staff'
+
+
+WORKFLOW_SPEC = \
+    {'initial_state': ReportState.CREATED,
+     'spec': {
+         ReportState.CREATED:
+             {'allowed': {Group.PROVIDER: ['create']}},
+         ReportState.INITIALIZED:
+             {'allowed': {Group.PROVIDER: ['edit']}},
+         ReportState.SAFETY_REVIEWED:
+             {'allowed': {Group.REGIONAL_MANAGER: ['close']}},
+         ReportState.SAFETY_REVIEW_CLOSED:
+             {'allowed': {}},
+         ReportState.FORECASTED:
+             {'allowed': {Group.INTERNAL_STAFF: ['send']}},
+         ReportState.SENT_TO_PROVIDER:
+             {'allowed': {Group.INTERNAL_STAFF: ['close']}},
+         ReportState.VALIDATED:
+             {'allowed': {Group.INTERNAL_STAFF: ['close']}},
+         ReportState.FINALIZED:
+             {'allowed': {}},
+     }}
