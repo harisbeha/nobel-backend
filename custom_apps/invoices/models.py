@@ -27,6 +27,9 @@ class AddressMetadataStorageMixin(models.Model):
 
 
 class VendorSettings(BaseModel):
+    class Meta:
+        verbose_name_plural = 'vendor settings'
+
     const_a = models.IntegerField()
     const_b = models.IntegerField()
     vendor = models.OneToOneField('invoices.Vendor', related_name='settings')
