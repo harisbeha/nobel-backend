@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from audit_trail import AuditTrailWatcher
 from django.db import models
+from jsonfield import JSONField
 from model_utils import FieldTracker
 
 from custom_apps.invoices.enums import *
@@ -18,12 +19,19 @@ def AddressField(fullname, **kwargs):
     return models.TextField(fullname, max_length=500, **kwargs)
 
 
+class AddressMetadataStorageMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    address_info_storage = JSONField(blank=True, null=True)
+
+
 class VendorSettings(BaseModel):
     const_a = models.IntegerField()
     const_b = models.IntegerField()
 
 
-class Vendor(BaseModel):
+class Vendor(AddressMetadataStorageMixin, BaseModel):
     name = models.CharField('company name of the vendor', max_length=100)
     address = AddressField('full mailing address')
     settings = models.OneToOneField('invoices.VendorSettings')
@@ -41,7 +49,7 @@ class InvoiceManger(models.Manager):
         )
 
 
-class Invoice(BaseModel):
+class Invoice(AddressMetadataStorageMixin, BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = (('vendor', 'invoice_number'),)
         abstract = False  # we inherit an abstract class and mark it final in this incarnation
@@ -76,7 +84,7 @@ class WorkOrderManager(models.Manager):
         )
 
 
-class WorkOrder(BaseModel):
+class WorkOrder(AddressMetadataStorageMixin, BaseModel):
     class Meta(BaseModel.Meta):
         unique_together = (('invoice', 'order_number'),)
         abstract = False  # we inherit an abstract class and mark it final in this incarnation

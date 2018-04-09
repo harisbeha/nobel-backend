@@ -10,4 +10,8 @@ def formalize_address(addr):
             place.get_details()
             fmt_addr = place.formatted_address
             if fmt_addr:
-                return fmt_addr
+                deconstructed = {i['types'][0]: i.get('long_name', i.get('short_name', None))
+                                 for i in
+                                 place.details['address_components']}
+                return fmt_addr, deconstructed
+    return None, None
