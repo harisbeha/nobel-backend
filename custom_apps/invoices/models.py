@@ -32,12 +32,12 @@ class VendorSettings(BaseModel):
 
     const_a = models.IntegerField()
     const_b = models.IntegerField()
+    vendor = models.OneToOneField('invoices.Vendor', related_name='settings')
 
 
 class Vendor(AddressMetadataStorageMixin, BaseModel):
     name = models.CharField('company name of the vendor', max_length=100)
     address = AddressField('full mailing address')
-    settings = models.OneToOneField('invoices.VendorSettings')
 
     def __str__(self):
         return self.name
