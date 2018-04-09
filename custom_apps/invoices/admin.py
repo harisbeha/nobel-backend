@@ -142,6 +142,7 @@ def address_form_factory(model_cls, exclude_list, address_field):
                     raise ValidationError('Address not found on Google')
                 self.cleaned_data[address_field] = formal_address
                 self.cleaned_data['address_info_storage'] = details
+            return super(AddressForm, self).clean()
 
     return AddressForm
 
@@ -302,19 +303,18 @@ class WorkOrderForm(address_form_factory(WorkOrder, ['id'], 'building_address'))
     vendor = forms.ModelChoiceField(queryset=Vendor.objects.all())
 
     def __init__(self, *args, **kwargs):
-        super(WorkOrderForm, self).__init__(*args, **kwargs)
-        if 'instance' in kwargs:
+        if kwargs.get('instance', None):
             self.base_fields['vendor'].initial = kwargs['instance'].invoice.vendor
+        super(WorkOrderForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        r = super(WorkOrderForm, self).clean()
-        if r.get('vendor', None):
-            r['invoice'] = Invoice.objects.filter(vendor=r['vendor']).order_by('-created').first()
+        if self.cleaned_data.get('vendor', None):
+            self.cleaned_data['invoice'] = Invoice.objects.filter(vendor=self.cleaned_data['vendor']).order_by('-created').first()
             # del r['vendor']
             # do we want this? if we delete the property the user might have to reinput it if validation fails
             # if we don't delete it it might mess up the db operation?
             # ?????????
-        return r
+        return super(WorkOrderForm, self).clean()
 
 
 class WorkOrderAdmin(BaseModelAdmin):

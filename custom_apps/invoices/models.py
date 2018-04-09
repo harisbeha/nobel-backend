@@ -59,9 +59,9 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 
     # These two fields form the "primary key"
     vendor = models.ForeignKey('invoices.Vendor')
-    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50, null=True)
+    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50, null=True, blank=True)
 
-    remission_address = AddressField('full mailing addresses to send remission', null=True)
+    remission_address = AddressField('full mailing addresses to send remission', null=True, blank=True)
 
     objects = InvoiceManger()
 
@@ -94,7 +94,7 @@ class WorkOrder(AddressMetadataStorageMixin, BaseModel):
 
     # These two fields form the "primary key"
     order_number = models.CharField('textual work order number, e.g. TDU12345678', max_length=50)
-    invoice = models.ForeignKey('invoices.Invoice')
+    invoice = models.ForeignKey('invoices.Invoice', blank=True)
 
     storm_name = models.CharField('name of the storm work to which work is being done in response', max_length=100)
 
@@ -150,11 +150,11 @@ class Job(BaseModel):
     event_time = models.DateField('date of the event that caused the snowfall')
     last_service_time = models.DateTimeField('time of last service at this location')
 
-    safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000)
-    snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000)
+    safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000, blank=True)
+    snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000, blank=True)
     haul_stack_status = models.IntegerField('any need for snow hauling or stacking?', choices=SnowStatus.choices())
     haul_stack_estimate = models.DecimalField('cost estimate for future snow hauling or stacking', max_digits=8,
-                                              decimal_places=2)
+                                              decimal_places=2, default=0)
 
     state = models.IntegerField(choices=ReportState.choices(), default=ReportState.CREATED.value)
     tracker = FieldTracker()
