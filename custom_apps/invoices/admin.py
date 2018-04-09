@@ -142,6 +142,7 @@ def address_form_factory(model_cls, exclude_list, address_field):
                     raise ValidationError('Address not found on Google')
                 self.cleaned_data[address_field] = formal_address
                 self.cleaned_data['address_info_storage'] = details
+            return self.cleaned_data
 
     return AddressForm
 
