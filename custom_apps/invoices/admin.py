@@ -287,7 +287,7 @@ class VendorSettingsInline(NestedStackedInline):
 class VendorAdmin(BaseModelAdmin):
     form = address_form_factory(Vendor, ['id'], 'address')
 
-    list_display = ['name', 'address']
+    list_display = ['name', 'address', 'system_user']
 
     inlines = [VendorSettingsInline]
 
