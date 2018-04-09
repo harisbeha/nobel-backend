@@ -18,9 +18,15 @@ def AddressField(fullname, **kwargs):
     return models.TextField(fullname, max_length=500, **kwargs)
 
 
+class VendorSettings(BaseModel):
+    const_a = models.IntegerField()
+    const_b = models.IntegerField()
+
+
 class Vendor(BaseModel):
     name = models.CharField('company name of the vendor', max_length=100)
     address = AddressField('full mailing address')
+    settings = models.OneToOneField('invoices.VendorSettings')
 
     def __str__(self):
         return self.name
@@ -64,6 +70,9 @@ class WorkOrderManager(models.Manager):
             deice_cost=models.F("deice_rate") + models.F("deice_tax"),
             plow_cost=models.F("plow_rate") + models.F("plow_tax"),
             state=models.Min('job__state', output_field=models.IntegerField(choices=ReportState.choices())),
+            last_service_time=models.Min('job__last_service_time'),
+            work_start=models.Min('job__response_time_start'),
+            work_end=models.Max('job__response_time_end'),
         )
 
 
@@ -146,3 +155,11 @@ class Job(BaseModel):
             self.work_order.order_number, self.response_time_start.strftime('%b %e, %l:%M %p'))
 
     audit = AuditTrailWatcher()
+
+
+# Proxies
+
+class WorkOrderProxyWeatherReview(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'forecasted work order'
