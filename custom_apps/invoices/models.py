@@ -38,6 +38,7 @@ class VendorSettings(BaseModel):
 class Vendor(AddressMetadataStorageMixin, BaseModel):
     name = models.CharField('company name of the vendor', max_length=100)
     address = AddressField('full mailing address')
+    system_user = models.ForeignKey('auth.User')
 
     def __str__(self):
         return self.name
