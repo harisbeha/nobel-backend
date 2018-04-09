@@ -132,11 +132,12 @@ def address_form_factory(model_cls, exclude_list, address_field):
 
         def clean(self):
             address = self.cleaned_data[address_field]
-            formal_address = maps.formalize_address(address)
+            formal_address, details = maps.formalize_address(address)
 
             if not formal_address:
                 raise ValidationError('Address not found on Google')
             self.cleaned_data[address_field] = formal_address
+            self.cleaned_data['address_info_storage'] = details
 
     return AddressForm
 
@@ -226,6 +227,11 @@ class BaseModelAdmin(NestedModelAdmin):
         r = super(BaseModelAdmin, self).get_inline_formsets(request, formsets, inline_instances, obj=obj,
                                                             allow_nested=allow_nested)
         return [self._scrub_fields(request, i) for i in r]
+
+    def get_fields(self, request, obj=None):
+        r = super(BaseModelAdmin, self).get_fields(request, obj=obj)
+        r = list(set(r) - {'address_info_storage'})
+        return r
 
 
 class BaseInline(NestedStackedInline):
