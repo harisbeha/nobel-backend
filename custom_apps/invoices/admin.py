@@ -303,9 +303,10 @@ def get_available_job_options(state, group):
 
 
 class JobAdmin(BaseModelAdmin):
+    FOR_WORKFLOW_STATE = ReportState.CREATED
     def get_perm_configs(self, request):
         group = request.user.groups.first()
-        return get_available_job_options(group, self.state)
+        return get_available_job_options(group, self.FOR_WORKFLOW_STATE)
     get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
 
