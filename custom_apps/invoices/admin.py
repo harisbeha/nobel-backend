@@ -292,7 +292,7 @@ class WorkOrderForm(address_form_factory(WorkOrder, ['id'], 'building_address'))
 
     def __init__(self, *args, **kwargs):
         super(WorkOrderForm, self).__init__(*args, **kwargs)
-        if 'instance' in kwargs:
+        if kwargs.get('instance', None):
             self.base_fields['vendor'].initial = kwargs['instance'].invoice.vendor
 
     def clean(self):
