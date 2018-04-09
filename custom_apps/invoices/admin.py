@@ -5,8 +5,8 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
-from django.db.models.query_utils import Q
 from django.db.models import Sum
+from django.db.models.query_utils import Q
 from django.forms import HiddenInput
 from nested_admin.nested import NestedModelAdmin, NestedStackedInline
 
@@ -267,10 +267,21 @@ class InvoiceAdmin(BaseModelAdmin):
     actions = [close_safety_review]
 
 
+class VendorSettingsInline(NestedStackedInline):
+    model = VendorSettings
+    min_num = 1
+    max_num = 1
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 class VendorAdmin(BaseModelAdmin):
     form = address_form_factory(Vendor, ['id'], 'address')
 
     list_display = ['name', 'address']
+
+    inlines = [VendorSettingsInline]
 
 
 class JobAdmin(BaseModelAdmin):
@@ -321,46 +332,72 @@ class WorkOrderAdmin(BaseModelAdmin):
 class VendorSettingsAdmin(BaseModelAdmin):
     list_display = ['const_a', 'const_b']
 
+
 def extract_goodies_from_workorder(obj):
     return (11111, obj.last_service_time, obj.work_end)
+
+
 def get_bq_data(obj):
     return query_for_accumulation_zip(*extract_goodies_from_workorder(obj))
+
+
 def get_magic_data(obj):
     bq_data = get_bq_data(obj)
     return forecast(obj.invoice.vendor.settings, bq_data['snowfall'], bq_data['duration'], bq_data['has_ice'])
 
+
 def get_snowfall(obj):
     return get_bq_data(obj)['snowfall']
+
+
 get_snowfall.short_description = 'inches of snowfall'
 get_snowfall.admin_order_field = ''
 
+
 def get_ice(obj):
     return get_bq_data(obj)['has_ice']
+
+
 get_ice.short_description = 'ice?'
 get_ice.admin_order_field = ''
 
+
 def get_storm_length(obj):
     return get_bq_data(obj)['snowfall']
+
+
 get_storm_length.short_description = 'days of storm'
 get_storm_length.admin_order_field = ''
 
+
 def get_num_plows(obj):
     return get_magic_data(obj)['plows']
+
+
 get_num_plows.short_description = 'projected no. plows'
 get_num_plows.admin_order_field = ''
 
+
 def get_num_salts(obj):
     return get_magic_data(obj)['salts']
+
+
 get_num_salts.short_description = 'projected no. salts'
 get_num_salts.admin_order_field = ''
 
+
 def get_num_jobs(obj):
     return Job.objects.filter(work_order=obj).count()
+
+
 get_num_jobs.short_description = 'no. visits'
 get_num_jobs.admin_order_field = ''
 
+
 def get_workorder_cost(obj):
     return Job.objects.filter(work_order=obj).aggregate(Sum('visit_subtotal'))
+
+
 get_workorder_cost.description = 'work order subtotal'
 get_workorder_cost.admin_order_field = ''
 
