@@ -11,6 +11,7 @@ from django.forms import HiddenInput
 from nested_admin.nested import NestedModelAdmin, NestedStackedInline
 
 from custom_apps.data_ingestion.bq import query_for_accumulation_zip
+from custom_apps.invoices.enums import WORKFLOW_SPEC
 from custom_apps.utils import maps
 from custom_apps.utils.admin_utils import generate_field_getter
 from custom_apps.utils.forecast import forecast
@@ -157,8 +158,12 @@ class BaseModelAdmin(NestedModelAdmin):
         {
             'perms': ['add', 'change', 'list'],
             'hidden_fields': {id(WorkOrder): ['plow_tax']},
+            'actions': [],
         }
     }
+
+    def get_perm_configs(self, request):
+        return self.PERM_CONFIGS
 
     def get_actions(self, request):
         actions = super(BaseModelAdmin, self).get_actions(request)
@@ -170,9 +175,10 @@ class BaseModelAdmin(NestedModelAdmin):
     def _do_check(self, request, perm_name):
         if request.user.is_superuser:
             return True
-        user_perms = request.user.groups.filter(name__in=self.PERM_CONFIGS.keys()).values_list('name', flat=True)
+        perm_configs = self.get_perm_configs(request)
+        user_perms = request.user.groups.filter(name__in=perm_configs.keys()).values_list('name', flat=True)
         for perm in user_perms:
-            conf = self.PERM_CONFIGS.get(perm, {}).get('perms', [])
+            conf = perm_configs.get(perm, {}).get('perms', [])
             if perm_name in conf:
                 return True
         return False
@@ -190,14 +196,15 @@ class BaseModelAdmin(NestedModelAdmin):
         return self._do_check(request, 'list')
 
     def _get_hidden_fields(self, request, model):
+        perm_configs = self.get_perm_configs(request)
         if request.user.is_superuser:
             if settings.DEBUG:
-                return self.PERM_CONFIGS.get('Internal Staff', {}).get('hidden_fields', {}).get(id(model), [])
+                return perm_configs.get('Internal Staff', {}).get('hidden_fields', {}).get(id(model), [])
             return []
         # TODO handle clashes with multiple groups
-        user_perms = request.user.groups.filter(name__in=self.PERM_CONFIGS.keys()).values_list('name', flat=True)
+        user_perms = request.user.groups.filter(name__in=perm_configs.keys()).values_list('name', flat=True)
         for perm in user_perms:
-            return self.PERM_CONFIGS.get(perm, {}).get('hidden_fields', {}).get(id(model), [])
+            return perm_configs.get(perm, {}).get('hidden_fields', {}).get(id(model), [])
         return []
 
     def _scrub_fields(self, request, formset):
@@ -285,7 +292,20 @@ class VendorAdmin(BaseModelAdmin):
     inlines = [VendorSettingsInline]
 
 
+def get_available_job_options(state, group):
+    state_specific_opts = WORKFLOW_SPEC['spec'][state]
+    all_perms = ['create', 'edit']
+    all_actions = ['send', 'close']
+    allowed_items = state_specific_opts['allowed'][group]
+    available_actions = [i for i in allowed_items.get('actions', []) if i in all_actions]
+    available_perms = ['list'] + [i for i in allowed_items.get('perms', []) if i in all_perms]
+    return {group: {'perms': available_perms, 'hidden_fields': [], 'actions': available_actions}}
+
+
 class JobAdmin(BaseModelAdmin):
+    def get_perm_configs(self, request):
+        group = request.user.groups.first()
+        return get_available_job_options(group, self.state)
     get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
 
@@ -309,7 +329,8 @@ class WorkOrderForm(address_form_factory(WorkOrder, ['id'], 'building_address'))
 
     def clean(self):
         if self.cleaned_data.get('vendor', None):
-            self.cleaned_data['invoice'] = Invoice.objects.filter(vendor=self.cleaned_data['vendor']).order_by('-created').first()
+            self.cleaned_data['invoice'] = Invoice.objects.filter(vendor=self.cleaned_data['vendor']).order_by(
+                '-created').first()
             # del r['vendor']
             # do we want this? if we delete the property the user might have to reinput it if validation fails
             # if we don't delete it it might mess up the db operation?
