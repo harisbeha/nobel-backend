@@ -224,6 +224,8 @@ class BaseModelAdmin(NestedModelAdmin):
                 formset.form.base_fields[h].widget = HiddenInput()
         return formset
 
+    # EXPORTS START HERE
+
     def get_formsets_with_inlines(self, request, obj=None):
         formsets = list(super(BaseModelAdmin, self).get_formsets_with_inlines(request, obj=obj))
         for formset, inline in formsets:
@@ -242,7 +244,10 @@ class BaseModelAdmin(NestedModelAdmin):
 
     def get_fields(self, request, obj=None):
         r = super(BaseModelAdmin, self).get_fields(request, obj=obj)
-        r = list(set(r) - {'address_info_storage'})
+        try:
+            r.remove('address_info_storage')
+        except ValueError:
+            pass
         return r
 
 
