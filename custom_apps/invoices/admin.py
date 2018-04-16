@@ -165,14 +165,11 @@ class BaseModelAdmin(NestedModelAdmin):
     def get_perm_configs(self, request):
         return self.PERM_CONFIGS
 
-    def get_actions(self, request):
-        actions = super(BaseModelAdmin, self).get_actions(request)
-        if not self._do_check(request, 'delete'):
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-        return actions
-
     def _do_check(self, request, perm_name):
+        """
+        Uses the current user's groups and get_perm_configs to determine if the user has the given named permission on
+        this ModelAdmin
+        """
         if request.user.is_superuser:
             return True
         perm_configs = self.get_perm_configs(request)
@@ -183,19 +180,10 @@ class BaseModelAdmin(NestedModelAdmin):
                 return True
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return self._do_check(request, 'delete')
-
-    def has_add_permission(self, request):
-        return self._do_check(request, 'add')
-
-    def has_change_permission(self, request, obj=None):
-        return self._do_check(request, 'change')
-
-    def has_module_permission(self, request):
-        return self._do_check(request, 'list')
-
     def _get_hidden_fields(self, request, model):
+        """
+        Use get_perm_configs to get a list of hidden fields for the model
+        """
         perm_configs = self.get_perm_configs(request)
         if request.user.is_superuser:
             if settings.DEBUG:
@@ -208,6 +196,9 @@ class BaseModelAdmin(NestedModelAdmin):
         return []
 
     def _scrub_fields(self, request, formset):
+        """
+        Uses _get_hidden_fields to replace widgets in the formset with HiddenInput
+        """
         model = None
         try:
             model = formset.model
@@ -226,23 +217,69 @@ class BaseModelAdmin(NestedModelAdmin):
 
     # EXPORTS START HERE
 
+    def has_delete_permission(self, request, obj=None):
+        """
+        Uses _do_check to determine if the user should be allowed to delete elements in the list
+        """
+        return self._do_check(request, 'delete')
+
+    def has_add_permission(self, request):
+        """
+        Uses _do_check to determine if the user should be allowed to create elements in the list
+        """
+        return self._do_check(request, 'add')
+
+    def has_change_permission(self, request, obj=None):
+        """
+        Uses _do_check to determine if the user should be allowed to edit elements in the list
+        """
+        return self._do_check(request, 'change')
+
+    def has_module_permission(self, request):
+        """
+        Uses _do_check to determine if the user should be allowed to view the list
+        """
+        return self._do_check(request, 'list')
+
+    def get_actions(self, request):
+        """
+        Uses _do_check to filter the actions the user should see (currently just the delete action)
+        """
+        actions = super(BaseModelAdmin, self).get_actions(request)
+        if not self._do_check(request, 'delete'):
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
+
     def get_formsets_with_inlines(self, request, obj=None):
+        """
+        Uses _scrub_fields to filter hidden fields in the formset
+        """
         formsets = list(super(BaseModelAdmin, self).get_formsets_with_inlines(request, obj=obj))
         for formset, inline in formsets:
             self._scrub_fields(request, formset)
             yield formset, inline
 
     def get_changelist_formset(self, request, **kwargs):
+        """
+        Uses _scrub_fields to filter hidden fields in the formset
+        """
         r = super(BaseModelAdmin, self).get_changelist_formset(request, **kwargs)
         return self._scrub_fields(request, r)
 
     def get_inline_formsets(self, request, formsets, inline_instances,
                             obj=None, allow_nested=False):
+        """
+        Uses _scrub_fields to filter hidden fields in the formset
+        """
         r = super(BaseModelAdmin, self).get_inline_formsets(request, formsets, inline_instances, obj=obj,
                                                             allow_nested=allow_nested)
         return [self._scrub_fields(request, i) for i in r]
 
     def get_fields(self, request, obj=None):
+        """
+        Clears the address_info_storage field from the list of fields
+        """
         r = super(BaseModelAdmin, self).get_fields(request, obj=obj)
         try:
             r.remove('address_info_storage')
