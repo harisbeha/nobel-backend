@@ -1,0 +1,64 @@
+There should be three classes of users:
+- nwa (central admin)
+- cbre (regional admin)
+- vendor (service provider)
+every user should be part of only one of these groups.
+cbre and vendor users should be additionally associated with a specific regional admin or provider.
+every user is assumed to act on behalf of the entire organization they are part of.
+
+nwa should be able to create, view, and edit the list of regional admins.
+cbre should be able to create, view and edit the list of vendors.
+any vendor a cbre creates should be associated with that regional admin.
+TODO: how are users created?
+
+work orders should have a visible set of yes/no (possibly including an unknown or not-yet-available status) properties
+indicating which pieces of information are available and their position in the clerical pipeline:
+- Safe - has the property been marked safe to open? (yes/no)
+- VisitsDocumented - Has all information about work visits been entered? (yes/no)
+- WeatherReady - Has the system produced the spending forecast for the work order? (yes/no)
+- Failure - Has cbre marked the service as a failure? (yes/no/unknown)
+- HasDiscrepancies - Has nwa marked a discrepancy in the forecasted/actual spending for the work order? (yes/no/unk)
+- HasDiscrepanciesFailure - Has the vendor failed to provide a satisfactory response to the discrepancies? (yes/no)
+- Completed - Has the work order been sent to the vendor on a finalized invoice? (yes/no)
+
+a vendor should be able to create and modify work orders:
+- a vendor should only be able to see work orders they created.
+- a vendor should not be able to edit the fields they provided while creating the work order.
+- a vendor should be able to add safety reports to any work order not marked Safe.
+- if a safety report says that the facility is safe to open, the work order is marked as Safe.
+- a vendor should be able to add visit reports to any work order not marked VisitsDocumented.
+- a vendor should be able to mark VisitsDocumented on a work order not already marked as such.
+
+as soon as a work order is created, the system should begin computing forecast data for it. when the data is ready,
+the system should mark WeatherReady = yes.
+
+cbre should be able to view a list of their work orders.
+cbre should be able to mark Failure = yes or Failure = no on any of these.
+
+nwa should be able to view a list of work orders with all of the following:
+- WeatherReady = yes
+- VisitsDocumented = yes
+- Failure = no or unk
+- Completed = no
+nwa should be able to move one of these work orders through the pipeline:
+- nwa should be able to mark a work order as HasDiscrepancies = no
+- nwa should be able to mark a work order as HasDiscrepanciesFailure = yes
+nwa should be able to add a discrepancy report to any of these work orders:
+- this will set HasDiscrepancies = yes
+- this will send an email to the vendor
+
+the vendor should be able to view a list of work orders for which HasDiscrepancies = yes and their discrepancy reports
+they should be able to add a discrepancy report to any of these work orders:
+- this will set HasDiscrepancies = unk
+- this will send an email to nwa
+
+there should be some mechanism, either manual on the part of the vendor or automated on a cycle, for creating a new
+invoice from a vendor for some or all of the work orders for a vendor without an invoice already attached.
+
+if the system detects that an invoice's jobs all meet all of the following criteria, it will finalize the invoice,
+marking each of the work orders as completed, and send it to the vendor and the relevant cbre:
+- VisitsDocumented = yes
+- Failed != unknown
+- one of the following:
+  - HasDiscrepancies = no
+  - HasDiscrepanciesFailure = yes
