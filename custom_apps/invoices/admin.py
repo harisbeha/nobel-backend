@@ -16,7 +16,7 @@ from custom_apps.utils import maps
 from custom_apps.utils.admin_utils import generate_field_getter
 from custom_apps.utils.forecast import forecast
 from .enums import ReportState
-from .models import Invoice, WorkOrder, Job, Vendor, VendorSettings, WorkOrderProxyWeatherReview
+from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings, WorkOrderProxyWeatherReview
 
 
 # actions
@@ -481,9 +481,11 @@ class WorkOrderWeatherReviewAdmin(BaseModelAdmin):
                     get_num_salts]
 
 
-admin.site.register(Vendor, VendorAdmin)
-admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(WorkOrder, WorkOrderAdmin)
-admin.site.register(Job, JobAdmin)
-admin.site.register(VendorSettings, VendorSettingsAdmin)
-admin.site.register(WorkOrderProxyWeatherReview, WorkOrderWeatherReviewAdmin)
+#admin.site.register(Vendor, VendorAdmin)
+#admin.site.register(Invoice, InvoiceAdmin)
+#admin.site.register(WorkOrder, WorkOrderAdmin)
+#admin.site.register(Job, JobAdmin)
+#admin.site.register(VendorSettings, VendorSettingsAdmin)
+#admin.site.register(WorkOrderProxyWeatherReview, WorkOrderWeatherReviewAdmin)
+
+from .admin_views import superuser_views, nwa_views, cbre_views, vendor_views

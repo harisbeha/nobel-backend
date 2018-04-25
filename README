@@ -1,0 +1,25 @@
+To the programmer coming after me:
+
+This project is a bunch of models with a skeleton of views right now.
+
+The definitive user stories are in user-stories.txt. Everything except for the
+automated parts is implemented in custom_apps/invoices/admin_views.
+
+The automated parts have bits and pieces scattered around but aren't all that
+hooked together.
+
+The model-admins that are in invoices/admin.py were a previous attempt at writing
+this that didn't do very well, but contain a few nuggets about how to interface
+with the automated processes and a few tricks to force django to render stuff right.
+In this old setting there was a single model `Job` to handle both WorkVisit and
+SafetyReport.
+
+Everything that needs to be done is marked as a to-do in the code, with the following
+exceptions:
+
+- TODO the building model-admin
+- TODO bulk import/export
+- TODO the automated processes
+- TODO creation of invoices
+
+godspeed. I haven't run any of this code yet so there may be some issues.

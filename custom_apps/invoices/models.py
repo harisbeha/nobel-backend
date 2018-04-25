@@ -19,6 +19,10 @@ def AddressField(fullname, **kwargs):
     return models.TextField(fullname, max_length=500, **kwargs)
 
 
+def DollarsField(fullname, **kwargs):
+    return models.DecimalField(fullname, max_digits=8, decimal_places=2, **kwargs)
+
+
 class AddressMetadataStorageMixin(models.Model):
     class Meta:
         abstract = True
@@ -39,11 +43,22 @@ class Vendor(AddressMetadataStorageMixin, BaseModel):
     name = models.CharField('company name of the vendor', max_length=100)
     address = AddressField('full mailing address')
     system_user = models.ForeignKey('auth.User')
+    region = models.ForeignKey('invoices.RegionalAdmin')
+
+    audit = AuditTrailWatcher()
 
     def __str__(self):
         return self.name
 
+
+class RegionalAdmin(BaseModel):
+    name = models.CharField('company name of the regional manager', max_length=100)
+    system_user = models.ForeignKey('auth.User')
+
     audit = AuditTrailWatcher()
+
+    def __str__(self):
+        return self.name
 
 
 class InvoiceManger(models.Manager):
@@ -54,24 +69,36 @@ class InvoiceManger(models.Manager):
 
 
 class Invoice(AddressMetadataStorageMixin, BaseModel):
-    class Meta(BaseModel.Meta):
-        unique_together = (('vendor', 'invoice_number'),)
-        abstract = False  # we inherit an abstract class and mark it final in this incarnation
-
-    # These two fields form the "primary key"
     vendor = models.ForeignKey('invoices.Vendor')
-    invoice_number = models.CharField('numerical identifier for the invoice', max_length=50, null=True, blank=True)
-
     remission_address = AddressField('full mailing addresses to send remission', null=True, blank=True)
 
     objects = InvoiceManger()
 
     def __str__(self):
-        if self.invoice_number is None:
-            return 'Unnamed invoice for %s' % self.vendor.name
-        else:
-            return '%s for %s' % (self.invoice_number, self.vendor.name)
+        return 'Invoice %s for %s' % (self.id, self.vendor.name)
 
+    audit = AuditTrailWatcher()
+
+
+# manager for the below relation
+class BuildingManager(models.Manager):
+    def get_queryset(self):
+        return super(BuildingManager, self).get_queryset().annotate(
+            deice_cost=models.F("deice_rate") + models.F("deice_tax"),
+            plow_cost=models.F("plow_rate") + models.F("plow_tax"),
+        )
+
+
+class Building(AddressMetadataStorageMixin, BaseModel):
+    address = AddressField('full address of the building')
+    type = models.IntegerField('type of the property to service', choices=BuildingType.choices())
+
+    deice_rate = DollarsField('cost in dollars without tax per de-icing service')
+    deice_tax = DollarsField('tax in dollars per de-icing service')
+    plow_rate = DollarsField('cost in dollars without tax per plow service')
+    plow_tax = DollarsField('tax in dollars per plow service')
+
+    objects = BuildingManager()
     audit = AuditTrailWatcher()
 
 
@@ -79,68 +106,56 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 class WorkOrderManager(models.Manager):
     def get_queryset(self):
         return super(WorkOrderManager, self).get_queryset().annotate(
-            deice_cost=models.F("deice_rate") + models.F("deice_tax"),
-            plow_cost=models.F("plow_rate") + models.F("plow_tax"),
-            state=models.Min('job__state', output_field=models.IntegerField(choices=ReportState.choices())),
-            last_service_time=models.Min('job__last_service_time'),
-            work_start=models.Min('job__response_time_start'),
-            work_end=models.Max('job__response_time_end'),
+            work_start=models.Min('workvisit__response_time_start'),
+            work_end=models.Max('workvisit__response_time_end'),
         )
 
 
-class WorkOrder(AddressMetadataStorageMixin, BaseModel):
-    class Meta(BaseModel.Meta):
-        unique_together = (('invoice', 'order_number'),)
-        abstract = False  # we inherit an abstract class and mark it final in this incarnation
+class WorkOrder(BaseModel):
+    vendor = models.ForeignKey('invoices.Vendor', blank=True)
+    invoice = models.ForeignKey('invoices.Invoice', blank=True, null=True)
+    building = models.ForeignKey('invoices.Building')
 
-    # These two fields form the "primary key"
-    order_number = models.CharField('textual work order number, e.g. TDU12345678', max_length=50)
-    invoice = models.ForeignKey('invoices.Invoice', blank=True)
+    storm_name = models.CharField('name of the event for which work is being done in response', max_length=100)
+    storm_date = models.DateField('date of the last storm event')
+    last_service_date = models.DateField('date of last service at this location')
 
-    storm_name = models.CharField('name of the storm work to which work is being done in response', max_length=100)
-
-    building_id = models.CharField('identifier for the building on which work was done', max_length=50)
-    building_address = AddressField('full address of the building on which work was done')
-    building_type = models.IntegerField('type of the property to service', choices=BuildingType.choices())
-
-    deice_rate = models.DecimalField(
-        'cost in dollars without tax per de-icing service', max_digits=8, decimal_places=2)
-    deice_tax = models.DecimalField(
-        'tax in dollars per de-icing service', max_digits=8, decimal_places=2)
-    plow_rate = models.DecimalField(
-        'cost in dollars without tax per plow service',
-        max_digits=8, decimal_places=2)
-    plow_tax = models.DecimalField(
-        'tax in dollars per plow service', max_digits=8, decimal_places=2)
+    flag_safe = models.BooleanField('has the property been marked safe to open?', null=False, default=False)
+    flag_visitsdocumented = models.BooleanField('has all information about work visits been entered?', null=False, default=False)
+    flag_weatherready = models.BooleanField('has the system produced the spending forecast for the work order?', null=False, default=False)
+    flag_failure = models.BooleanField('has cbre marked the service as a failure?', null=True, default=None)
+    flag_hasdiscrepancies = models.BooleanField('has nwa marked a discrepancy in the forecasted/actual spending for the work order?', null=True, default=None)
+    flag_hasdiscrepanciesfailure = models.BooleanField('Has the vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
+    flag_completed = models.BooleanField('has the work order been sent to the vendor on a finalized invoice?', null=False, default=False)
 
     objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
+    tracker = FieldTracker()
+    audit = AuditTrailWatcher()
 
     def __str__(self):
-        return '%s for %s' % (self.order_number, self.invoice.vendor.name)
-
-    audit = AuditTrailWatcher()
+        return 'WO#%s for %s' % (self.id, self.vendor.name)
 
 
 # manager for the below relation
-class JobManager(models.Manager):
+class WorkVisitManager(models.Manager):
     def get_queryset(self):
-        return super(JobManager, self).get_queryset().annotate(
+        return super(WorkVisitManager, self).get_queryset().annotate(
             deice_fee=models.Case(
                 models.When(provided_deicing=True, then=
-                models.F('work_order__deice_rate') + models.F('work_order__deice_tax')),
+                models.F('work_order__building__deice_rate') + models.F('work_order__building__deice_tax')),
                 default=models.Value(0),
-                output_field=models.DecimalField(max_digits=8, decimal_places=2)),
+                output_field=DollarsField('money billed for deicing')),
             plow_fee=models.Case(
                 models.When(provided_plowing=True, then=
-                models.F('work_order__plow_rate') + models.F('work_order__plow_tax')),
+                models.F('work_order__building__plow_rate') + models.F('work_order__building__plow_tax')),
                 default=models.Value(0),
-                output_field=models.DecimalField(max_digits=8, decimal_places=2)),
+                output_field=DollarsField('money billed for plowing')),
         ).annotate(
             visit_subtotal=models.F('deice_fee') + models.F('plow_fee'),
         )
 
 
-class Job(BaseModel):
+class WorkVisit(BaseModel):
     work_order = models.ForeignKey('invoices.WorkOrder')
     response_time_start = models.DateTimeField('time clocked in')
     response_time_end = models.DateTimeField('time clocked out')
@@ -148,30 +163,59 @@ class Job(BaseModel):
     provided_deicing = models.BooleanField('were de-icing services provided?')
     provided_plowing = models.BooleanField('were plowing services provided (includes plowing and shoveling ONLY)?')
 
-    event_time = models.DateField('date of the event that caused the snowfall')
-    last_service_time = models.DateTimeField('time of last service at this location')
-
-    safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000, blank=True)
-    snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000, blank=True)
-    haul_stack_status = models.IntegerField('any need for snow hauling or stacking?', choices=SnowStatus.choices())
-    haul_stack_estimate = models.DecimalField('cost estimate for future snow hauling or stacking', max_digits=8,
-                                              decimal_places=2, default=0)
-
-    state = models.IntegerField(choices=ReportState.choices(), default=ReportState.CREATED.value)
-    tracker = FieldTracker()
-
-    objects = JobManager()
+    audit = AuditTrailWatcher()
+    objects = WorkVisitManager()
 
     def __str__(self):
         return 'Work for %s on %s' % (
-            self.work_order.order_number, self.response_time_start.strftime('%b %e, %l:%M %p'))
+            self.work_order.id, self.response_time_start.strftime('%b %e, %l:%M %p'))
+
+
+class SafetyReport(BaseModel):
+    safe_to_open = models.BooleanField('is the site safe to open?')
+    safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000, blank=True)
+    snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000, blank=True)
+    haul_stack_status = models.IntegerField('any need for snow hauling or stacking?', choices=SnowStatus.choices())
+    haul_stack_estimate = DollarsField('cost estimate for future snow hauling or stacking', default=0)
+
+    audit = AuditTrailWatcher()
+
+
+class DiscrepancyReport(BaseModel):
+    work_order = models.ForeignKey('invoices.WorkOrder')
+    author = models.CharField('author', max_length=100)
+    message = models.TextField('discrepancy communication')
 
     audit = AuditTrailWatcher()
 
 
 # Proxies
 
-class WorkOrderProxyWeatherReview(WorkOrder):
+class RegionalAdminProxyNWA(RegionalAdmin):
+    class Meta(RegionalAdmin.Meta):
+        proxy = True
+        verbose_name = 'create CBRE admins'
+
+
+class WorkOrderProxyNWA(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'forecasted work order'
+        verbose_name = 'check work orders for discrepancies'
+
+
+class VendorProxyCBRE(Vendor):
+    class Meta(Vendor.Meta):
+        proxy = True
+        verbose_name = 'create new vendors'
+
+
+class WorkOrderProxyCBRE(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'check work orders for failure'
+
+
+class WorkOrderProxyVendor(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'create and manage work orders'

@@ -47,11 +47,9 @@ class SnowStatus(ChoiceEnum):
 
 
 class Group(ChoiceEnum):
-    PROVIDER = 'Provider'
-    CLIENT_INVOICE_ADMIN = 'Client Invoice Administrator'
-    REGIONAL_MANAGER = 'Regional Manager'
-    SERVICE_PROVIDER = 'Service Provider'
-    INTERNAL_STAFF = 'Internal Staff'
+    VENDOR = 'Vendor'
+    CBRE = 'Regional Administrator'
+    NWA = 'Nobel Internal Staff'
 
 
 WORKFLOW_SPEC = \
