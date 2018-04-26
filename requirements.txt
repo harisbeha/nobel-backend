@@ -8,7 +8,7 @@ waitress
 django-extensions
 djangorestframework
 ipython<6
-django-debug-toolbar
+django-debug-toolbar==1.8
 django-nested-admin
 python-google-places
 django-sendgrid-v5
