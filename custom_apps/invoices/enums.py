@@ -56,19 +56,19 @@ WORKFLOW_SPEC = \
     {'initial_state': ReportState.CREATED,
      'spec': {
          ReportState.CREATED:
-             {'allowed': {Group.PROVIDER: {'perms': ['create']}}},
+             {'allowed': {Group.VENDOR: {'perms': ['create']}}},
          ReportState.INITIALIZED:
-             {'allowed': {Group.PROVIDER: {'perms': ['edit']}}},
+             {'allowed': {Group.VENDOR: {'perms': ['edit']}}},
          ReportState.SAFETY_REVIEWED:
-             {'allowed': {Group.REGIONAL_MANAGER: {'perms': ['close']}}},
+             {'allowed': {Group.CBRE: {'perms': ['close']}}},
          ReportState.SAFETY_REVIEW_CLOSED:
              {'allowed': {}},
          ReportState.FORECASTED:
-             {'allowed': {Group.INTERNAL_STAFF: {'actions': ['send']}}},
+             {'allowed': {Group.NWA: {'actions': ['send']}}},
          ReportState.SENT_TO_PROVIDER:
-             {'allowed': {Group.INTERNAL_STAFF: {'actions': ['close']}}},
+             {'allowed': {Group.NWA: {'actions': ['close']}}},
          ReportState.VALIDATED:
-             {'allowed': {Group.INTERNAL_STAFF: {'actions': ['close']}}},
+             {'allowed': {Group.NWA: {'actions': ['close']}}},
          ReportState.FINALIZED:
              {'allowed': {}},
      }}
