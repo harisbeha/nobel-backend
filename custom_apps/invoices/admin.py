@@ -16,7 +16,7 @@ from custom_apps.utils import maps
 from custom_apps.utils.admin_utils import generate_field_getter
 from custom_apps.utils.forecast import forecast
 from .enums import ReportState
-from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings, WorkOrderProxyWeatherReview
+from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings
 
 
 # actions
@@ -32,15 +32,18 @@ def make_state_ticker(model, from_state, to_state):
     :return:                    A function to tick a queryset forward:
                                 ticker(queryset, success_callback, failure_callback). The callbacks take no args.
     """
-    if model is Job:
+    if model is SafetyReport:
         path = 'state'
         reverse_path = None
+    elif model is WorkVisit:
+        path = 'safety_report__state'
+        reverse_path = "work_visit"
     elif model is WorkOrder:
-        path = 'job__state'
-        reverse_path = 'work_order'
+        path = 'work_visit__safety_report__state'
+        reverse_path = 'work_visit__work_order'
     elif model is Invoice:
-        path = 'workorder__job__state'
-        reverse_path = 'work_order__invoice'
+        path = 'work_order__work_visit__safety_report__state'
+        reverse_path = 'work_visit__work_order__invoice'
     else:
         raise ValueError("Can't make a state ticker for a model other than Job, WorkOrder, or Invoice")
 
@@ -49,7 +52,7 @@ def make_state_ticker(model, from_state, to_state):
             if reverse_path is None:
                 jobs_queryset = queryset
             else:
-                jobs_queryset = Job.objects.filter(**{reverse_path + '__in': queryset})
+                jobs_queryset = SafetyReport.objects.filter(**{reverse_path + '__in': queryset})
             jobs_queryset.update(state=to_state.value)
             success_callback()
         else:
@@ -292,13 +295,13 @@ class BaseInline(NestedStackedInline):
     extra = 0
 
 
-class JobInline(BaseInline):
-    model = Job
+class SafetyReportInline(BaseInline):
+    model = SafetyReport
 
 
 class WorkOrderInline(BaseInline):
     model = WorkOrder
-    inlines = [JobInline]
+    inlines = [SafetyReportInline]
     form = address_form_factory(WorkOrder, ['id'], 'building_address')
 
 
@@ -352,7 +355,7 @@ class JobAdmin(BaseModelAdmin):
     get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
 
-    actions = [make_state_ticker_action('Approve safety report for selected', Job, ReportState.INITIALIZED,
+    actions = [make_state_ticker_action('Approve safety report for selected', SafetyReport, ReportState.INITIALIZED,
                                         ReportState.SAFETY_REVIEWED,
                                         "These jobs are not all in the \"ready to review\" state.")]
 
@@ -451,7 +454,7 @@ get_num_salts.admin_order_field = ''
 
 
 def get_num_jobs(obj):
-    return Job.objects.filter(work_order=obj).count()
+    return SafetyReport.objects.filter(work_order=obj).count()
 
 
 get_num_jobs.short_description = 'no. visits'
@@ -459,7 +462,7 @@ get_num_jobs.admin_order_field = ''
 
 
 def get_workorder_cost(obj):
-    return Job.objects.filter(work_order=obj).aggregate(Sum('visit_subtotal'))
+    return SafetyReport.objects.filter(work_order=obj).aggregate(Sum('visit_subtotal'))
 
 
 get_workorder_cost.description = 'work order subtotal'
