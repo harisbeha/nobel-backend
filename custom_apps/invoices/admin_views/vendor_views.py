@@ -73,6 +73,6 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
         return True
 
     def has_delete_permission(self, request, obj=None):
-        if obj.flag_completed:
+        if obj is not None and obj.flag_completed:
             return False
         return True  # TODO: is this the right thing to do?

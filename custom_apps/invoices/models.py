@@ -123,8 +123,8 @@ class WorkOrder(BaseModel):
     flag_safe = models.BooleanField('has the property been marked safe to open?', null=False, default=False)
     flag_visitsdocumented = models.BooleanField('has all information about work visits been entered?', null=False, default=False)
     flag_weatherready = models.BooleanField('has the system produced the spending forecast for the work order?', null=False, default=False)
-    flag_failure = models.BooleanField('has cbre marked the service as a failure?', null=True, default=None)
-    flag_hasdiscrepancies = models.BooleanField('has nwa marked a discrepancy in the forecasted/actual spending for the work order?', null=True, default=None)
+    flag_failure = models.NullBooleanField('has cbre marked the service as a failure?', null=True, default=None)
+    flag_hasdiscrepancies = models.NullBooleanField('has nwa marked a discrepancy in the forecasted/actual spending for the work order?', null=True, default=None)
     flag_hasdiscrepanciesfailure = models.BooleanField('Has the vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
     flag_completed = models.BooleanField('has the work order been sent to the vendor on a finalized invoice?', null=False, default=False)
 
@@ -172,6 +172,7 @@ class WorkVisit(BaseModel):
 
 
 class SafetyReport(BaseModel):
+    work_order = models.ForeignKey('invoices.WorkOrder')
     safe_to_open = models.BooleanField('is the site safe to open?')
     safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000, blank=True)
     snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000, blank=True)

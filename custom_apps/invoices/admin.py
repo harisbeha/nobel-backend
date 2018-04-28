@@ -266,7 +266,7 @@ class VendorSettingsInline(NestedStackedInline):
 class VendorAdmin(BaseModelAdmin):
     form = address_form_factory(Vendor, ['id'], 'address')
 
-    list_display = ['name', 'address', 'system_user']
+    list_display = ['name', 'address', 'system_user', 'region']
 
     inlines = [VendorSettingsInline]
 
@@ -316,6 +316,11 @@ class WorkOrderForm(address_form_factory(WorkOrder, ['id'], 'building_address'))
             # if we don't delete it it might mess up the db operation?
             # ?????????
         return super(WorkOrderForm, self).clean()
+
+class SafetyReportAdmin(BaseModelAdmin):
+    # form = address_form_factory(Vendor, ['id'], 'address')
+
+    list_display = ['safe_to_open', 'safety_concerns', 'snow_instructions', 'haul_stack_status', 'haul_stack_estimate']
 
 
 class WorkOrderAdmin(BaseModelAdmin):
