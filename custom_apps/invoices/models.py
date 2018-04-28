@@ -61,18 +61,18 @@ class RegionalAdmin(BaseModel):
         return self.name
 
 
-class InvoiceManger(models.Manager):
-    def get_queryset(self):
-        return super(InvoiceManger, self).get_queryset().annotate(
-            state=models.Min('workorder__job__state', output_field=models.IntegerField(choices=ReportState.choices()))
-        )
+# class InvoiceManger(models.Manager):
+#     def get_queryset(self):
+#         return super(InvoiceManger, self).get_queryset().annotate(
+#             state=models.Min('workorder__job__state', output_field=models.IntegerField(choices=ReportState.choices()))
+#         )
 
 
 class Invoice(AddressMetadataStorageMixin, BaseModel):
     vendor = models.ForeignKey('invoices.Vendor')
     remission_address = AddressField('full mailing addresses to send remission', null=True, blank=True)
 
-    objects = InvoiceManger()
+    # objects = InvoiceManger()
 
     def __str__(self):
         return 'Invoice %s for %s' % (self.id, self.vendor.name)
