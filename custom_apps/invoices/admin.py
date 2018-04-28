@@ -21,108 +21,42 @@ from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorS
 
 # actions
 
-def make_state_ticker(model, from_state, to_state):
-    """
-    This silly little guy is a factory function which generates an ordinary function to tick the state enum of several
-    jobs forward in sync given a queryset of a particular type.
-
-    :param model:               The model class for which the queryset will be over
-    :param from_state:          The ResponseState member that all the states must be at in order to validate this tick
-    :param to_state:            The ResponseState member to change all the states to
-    :return:                    A function to tick a queryset forward:
-                                ticker(queryset, success_callback, failure_callback). The callbacks take no args.
-    """
-    if model is SafetyReport:
-        path = 'state'
-        reverse_path = None
-    elif model is WorkVisit:
-        path = 'safety_report__state'
-        reverse_path = "work_visit"
-    elif model is WorkOrder:
-        path = 'work_visit__safety_report__state'
-        reverse_path = 'work_visit__work_order'
-    elif model is Invoice:
-        path = 'work_order__work_visit__safety_report__state'
-        reverse_path = 'work_visit__work_order__invoice'
-    else:
-        raise ValueError("Can't make a state ticker for a model other than Job, WorkOrder, or Invoice")
-
-    def ticker(queryset, success_callback, failure_callback):
-        if list(queryset.values_list(path, flat=True).distinct()) == [from_state.value]:
-            if reverse_path is None:
-                jobs_queryset = queryset
-            else:
-                jobs_queryset = SafetyReport.objects.filter(**{reverse_path + '__in': queryset})
-            jobs_queryset.update(state=to_state.value)
-            success_callback()
-        else:
-            failure_callback()
-
-    return ticker
-
-
-def make_state_ticker_action(short_description, model, from_state, to_state, failure_message):
-    """
-    This silly little guy is a factory function which generates an admin action that can be used to tick the state enum
-    of several jobs forward in sync. Since it's an admin action, it will be implicitly associated with a particular
-    model.
-
-    :param short_description:   The textual description that should be seen in the actions dropdown
-    :param model:               The model that the action should be tailored for handling
-    :param from_state:          The ResponseState member that all the states must be at in order to validate this tick
-    :param to_state:            The ResponseState member to change all the states to
-    :param failure_message:     A message to show to the user if the operation fails because not all the jobs are in the
-                                right state
-    :return:                    A function to tick a queryset forward and call a callback if it fails
-    """
-    ticker = make_state_ticker(model, from_state, to_state)
-
-    def admin_action(modeladmin, request, queryset):
-        def failure():
-            modeladmin.message_user(request, failure_message, level=messages.ERROR)
-
-        ticker(queryset, lambda: None, failure)
-
-    admin_action.short_description = short_description
-    return admin_action
-
-
-def close_safety_review(modeladmin, request, queryset):
-    ticker = make_state_ticker(
-        Invoice,
-        ReportState.SAFETY_REVIEWED,
-        ReportState.SAFETY_REVIEW_CLOSED)
-
-    def failure():
-        modeladmin.message_user(
-            request,
-            "Some of the jobs in the selected invoices have not had their safety reviews approved or are already closed.",
-            level=messages.ERROR)
-
-    def success():
-        for invoice in queryset.all():
-            Invoice.objects.create(vendor=invoice.vendor, invoice_number=None, remission_address=None)
-
-    if queryset.filter(Q(invoice_number__isnull=True) | Q(remission_address__isnull=True)).count() > 0:
-        modeladmin.message_user(
-            request,
-            "The invoice(s) you've selected don't have their invoice numbers or remission addresses set.",
-            level=messages.ERROR)
-    elif queryset.filter(Q(workorder__isnull=False)).count() == 0:
-        modeladmin.message_user(
-            request,
-            "There are no work orders attached to some of these invoices!",
-            level=messages.ERROR)
-    elif queryset.filter(Q(workorder__job__isnull=True)).count() > 0:
-        modeladmin.message_user(
-            request,
-            "Some of the work orders attached to these invoices have no work done!!!! :(",
-            level=messages.ERROR)
-    else:
-        ticker(queryset, success, failure)
-
-
-close_safety_review.short_description = 'Close safety reviews'
+# def close_safety_review(modeladmin, request, queryset):
+#     ticker = make_state_ticker(
+#         Invoice,
+#         ReportState.SAFETY_REVIEWED,
+#         ReportState.SAFETY_REVIEW_CLOSED)
+#
+#     def failure():
+#         modeladmin.message_user(
+#             request,
+#             "Some of the jobs in the selected invoices have not had their safety reviews approved or are already closed.",
+#             level=messages.ERROR)
+#
+#     def success():
+#         for invoice in queryset.all():
+#             Invoice.objects.create(vendor=invoice.vendor, invoice_number=None, remission_address=None)
+#
+#     if queryset.filter(Q(invoice_number__isnull=True) | Q(remission_address__isnull=True)).count() > 0:
+#         modeladmin.message_user(
+#             request,
+#             "The invoice(s) you've selected don't have their invoice numbers or remission addresses set.",
+#             level=messages.ERROR)
+#     elif queryset.filter(Q(workorder__isnull=False)).count() == 0:
+#         modeladmin.message_user(
+#             request,
+#             "There are no work orders attached to some of these invoices!",
+#             level=messages.ERROR)
+#     elif queryset.filter(Q(workorder__work__isnull=True)).count() > 0:
+#         modeladmin.message_user(
+#             request,
+#             "Some of the work orders attached to these invoices have no work done!!!! :(",
+#             level=messages.ERROR)
+#     else:
+#         ticker(queryset, success, failure)
+#
+#
+# close_safety_review.short_description = 'Close safety reviews'
 
 
 # forms
@@ -317,7 +251,7 @@ class InvoiceAdmin(BaseModelAdmin):
     inlines = [WorkOrderInline]
     form = address_form_factory(Invoice, ['id'], 'remission_address')
 
-    actions = [close_safety_review]
+    # actions = [close_safety_review]
 
 
 class VendorSettingsInline(NestedStackedInline):
@@ -347,22 +281,22 @@ def get_available_job_options(state, group):
     return {group: {'perms': available_perms, 'hidden_fields': [], 'actions': available_actions}}
 
 
-class JobAdmin(BaseModelAdmin):
-    FOR_WORKFLOW_STATE = ReportState.CREATED
-    def get_perm_configs(self, request):
-        group = request.user.groups.first()
-        return get_available_job_options(group, self.FOR_WORKFLOW_STATE)
-    get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
-    get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
-
-    actions = [make_state_ticker_action('Approve safety report for selected', SafetyReport, ReportState.INITIALIZED,
-                                        ReportState.SAFETY_REVIEWED,
-                                        "These jobs are not all in the \"ready to review\" state.")]
-
-    list_display = [get_state, 'work_order', 'response_time_start', 'response_time_end', 'provided_deicing',
-                    'provided_plowing', get_visit_subtotal]
-
-    exclude = ['state']
+# class JobAdmin(BaseModelAdmin):
+#     FOR_WORKFLOW_STATE = ReportState.CREATED
+#     def get_perm_configs(self, request):
+#         group = request.user.groups.first()
+#         return get_available_job_options(group, self.FOR_WORKFLOW_STATE)
+#     get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
+#     get_visit_subtotal = generate_field_getter('visit_subtotal', 'Visit Subtotal')
+#
+#     actions = [make_state_ticker_action('Approve safety report for selected', SafetyReport, ReportState.INITIALIZED,
+#                                         ReportState.SAFETY_REVIEWED,
+#                                         "These jobs are not all in the \"ready to review\" state.")]
+#
+#     list_display = [get_state, 'work_order', 'response_time_start', 'response_time_end', 'provided_deicing',
+#                     'provided_plowing', get_visit_subtotal]
+#
+#     exclude = ['state']
 
 
 class WorkOrderForm(address_form_factory(WorkOrder, ['id'], 'building_address')):

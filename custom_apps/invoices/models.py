@@ -172,13 +172,11 @@ class WorkVisit(BaseModel):
 
 
 class SafetyReport(BaseModel):
-    work_visit = models.ForeignKey('invoices.WorkVisit')
     safe_to_open = models.BooleanField('is the site safe to open?')
     safety_concerns = models.TextField('any concerns? let us know of all site conditions', max_length=1000, blank=True)
     snow_instructions = models.TextField('extra instructions for handling remaining snow', max_length=1000, blank=True)
     haul_stack_status = models.IntegerField('any need for snow hauling or stacking?', choices=SnowStatus.choices())
     haul_stack_estimate = DollarsField('cost estimate for future snow hauling or stacking', default=0)
-    state = models.IntegerField(choices=ReportState.choices(), default=ReportState.CREATED.value)
 
     audit = AuditTrailWatcher()
 
