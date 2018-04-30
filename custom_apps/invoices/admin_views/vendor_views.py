@@ -41,19 +41,6 @@ class DiscrepancyReportForm(forms.ModelForm):
         model = DiscrepancyReport
         fields = ['message']
 
-    def save_model(self, request, obj, form, change):
-        print('saving discrepancy report')
-        user = request.user
-        instance = form.save(commit=False)
-
-        if not change:  # new object
-            instance.work_order.flag_hasdiscrepancies = None
-
-        instance.author = user
-
-        instance.save()
-        form.save_m2m()
-        return instance
 
 
 # this is the inline for adding discrepancy reports to a workorder
@@ -62,7 +49,6 @@ class DiscrepancyReportInline(StackedInline, AppendOnlyMixin):
     model = DiscrepancyReport
     form = DiscrepancyReportForm
 
-    # TODO: set authorship automatically
     # TODO: set parent's flag_hasdiscrepancies = None and send email on creation
 
     def get_readonly_fields(self, request, obj=None):
@@ -80,7 +66,6 @@ class DiscrepancyReportInline(StackedInline, AppendOnlyMixin):
 # this is the admin for creating and editing workorders
 @register(WorkOrderProxyVendor)
 class VendorCreatesWorkOrders(VendorModelAdmin):
-    # TODO: disallow specifying an invoice during object creation
     # TODO: widget for searching for buildings during object creation
     # TODO: add to weather processing queue on creation
     # TODO: action to mark flag_visitsdocumented = True
@@ -131,32 +116,16 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
         return instance
 
     def save_formset(self, request, form, formset, change):
-        print('saving formset')
-        instance = form.save(commit=False)
+        instances = formset.save(commit=False)
 
-        print('formclass1')
-        print(form.__class__)
+        for instance in instances:
+            if type(instance) == DiscrepancyReport:
+                instance.author = request.user
+            instance.save()
 
-        if formset is not None:
-            for form in formset:
-                print('formnclass2')
-                print(form.__class__)
-
-        instance.save()
-        return instance
+        formset.save_m2m()
 
     def get_formsets_with_inlines(self, request, obj=None): # bam
         for formset in super(VendorCreatesWorkOrders, self).get_formsets_with_inlines(request, obj=obj):
-            # add user to form in formsets
-
-            # print(formset.__class__)
-            # print(formset)
-            # for form in formset:
-            #     if form.__class__ == DiscrepancyReportInline:
-            #         print('setting form user')
-            #         form.author = request.user
-            #
-            #     print('formclass')
-            #     print(form.__class__)
 
             yield formset

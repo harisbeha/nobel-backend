@@ -1,6 +1,6 @@
 from django.contrib.admin import register, ModelAdmin, StackedInline
 
-from ..models import VendorProxyCBRE, WorkOrderProxyCBRE, WorkVisit, SafetyReport
+from ..models import VendorProxyCBRE, WorkOrderProxyCBRE, WorkVisit, SafetyReport, RegionalAdmin
 from ..enums import Group
 from .common import ReadOnlyMixin
 
@@ -16,10 +16,24 @@ class CBREModelAdmin(ModelAdmin):
 # this is the admin to create vendors
 @register(VendorProxyCBRE)
 class CBRECreatesVendors(CBREModelAdmin):
-    # TODO: any vendor created automatically has the cbre attached
-
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def get_readonly_fields(self, request, obj=None):
+        # TODO: figure out a way to get this list dynamically
+        return {'region'}
+
+    def save_model(self, request, obj, form, change):
+        user = request.user
+        instance = form.save(commit=False)
+        if not change:    # new object
+            instance.region = RegionalAdmin.objects.filter(system_user__exact=request.user).first()
+        #else:             # updated old object
+            #   modify object
+
+        instance.save()
+        form.save_m2m()
+        return instance
 
 
 # this is the inline to view workvisits within a workorder
@@ -67,7 +81,7 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
         user = request.user
         instance = form.save(commit=False)
         # if not change:    # new object
-        #     instance.
+        #     instance.region = RegionalAdmin.objects.filter(system_user__exact=request.user).first()
         #else:             # updated old object
             #   modify object
 
