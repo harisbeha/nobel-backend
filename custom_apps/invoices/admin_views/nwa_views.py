@@ -1,5 +1,7 @@
 from django.contrib.admin import register, ModelAdmin, StackedInline
 
+from django.db.models import Q
+
 from ..models import RegionalAdminProxyNWA, WorkOrderProxyNWA, WorkVisit, SafetyReport, DiscrepancyReport
 from ..enums import Group
 from .common import ReadOnlyMixin, AppendOnlyMixin
@@ -68,5 +70,4 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
         return qs.filter(
             flag_weatherready=True,
             flag_visitsdocumented=True,
-            flag_failure__ne=True,
-            flag_completed=False)
+            flag_completed=False).filter(Q(flag_failure__isnull=True) | Q(flag_failure=False))
