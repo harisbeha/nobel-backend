@@ -22,16 +22,19 @@ class NWACreatesCBRE(NWAModelAdmin):
 
 # this is the inline to view workvisits within a workorder
 class WorkVisitInline(StackedInline, ReadOnlyMixin):
+    extra = 0
     model = WorkVisit
 
 
 # this is the inline to view safety reports within a workorder
 class SafetyReportInline(StackedInline, ReadOnlyMixin):
+    extra = 0
     model = SafetyReport
 
 
 # this is the inline for viewing and creating discrepancy reports in a workorder
 class DiscrepancyReportInline(StackedInline, AppendOnlyMixin):
+    extra = 0
     model = DiscrepancyReport
 
 
@@ -46,7 +49,10 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
     inlines = [WorkVisitInline, SafetyReportInline, DiscrepancyReportInline]
 
     def get_readonly_fields(self, request, obj=None):
-        return self.model._meta.fields
+        # TODO: figure out a way to get this list dynamically
+        return {'vendor', 'invoice', 'building', 'storm_name', 'storm_date', 'last_service_date',
+                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
+                'flag_hasdiscrepanciesfailure', 'flag_completed'}
 
     def has_delete_permission(self, request, obj=None):
         return False

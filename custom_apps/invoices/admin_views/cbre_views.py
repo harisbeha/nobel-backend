@@ -24,11 +24,13 @@ class CBRECreatesVendors(CBREModelAdmin):
 
 # this is the inline to view workvisits within a workorder
 class WorkVisitInline(StackedInline, ReadOnlyMixin):
+    extra = 0
     model = SafetyReport
 
 
 # this is the inline to view safety reports within aworkorder
 class SafetyReportInline(StackedInline, ReadOnlyMixin):
+    extra = 0
     model = SafetyReport
 
 
@@ -43,12 +45,14 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
     inlines = [WorkVisitInline, SafetyReportInline]
 
     def get_queryset(self, request):
-        qs = super(CBREModeratesWorkOrders, self).get_queryset(request)
-        # TODO: filter by vendors under the current user's cbre
+        qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__system_user=request.user)
         return qs.filter(flag_failure=None)
 
     def get_readonly_fields(self, request, obj=None):
-        return self.model._meta.fields
+        # TODO: figure out a way to get this list dynamically
+        return {'vendor', 'invoice', 'building', 'storm_name', 'storm_date', 'last_service_date',
+                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
+                'flag_hasdiscrepanciesfailure', 'flag_completed'}
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -58,3 +62,15 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return True
+
+    def save_model(self, request, obj, form, change):
+        user = request.user
+        instance = form.save(commit=False)
+        # if not change:    # new object
+        #     instance.
+        #else:             # updated old object
+            #   modify object
+
+        instance.save()
+        form.save_m2m()
+        return instance

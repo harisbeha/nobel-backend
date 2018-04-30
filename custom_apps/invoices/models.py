@@ -101,6 +101,9 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     objects = BuildingManager()
     audit = AuditTrailWatcher()
 
+    def __str__(self):
+        return 'Building#%s at %s' % (self.id, self.address)
+
 
 # manager for the below relation
 class WorkOrderManager(models.Manager):
@@ -181,6 +184,9 @@ class SafetyReport(BaseModel):
 
     audit = AuditTrailWatcher()
 
+    def __str__(self):
+        return 'Safety Report #%s for %s' % (self.id, self.work_order)
+
 
 class DiscrepancyReport(BaseModel):
     work_order = models.ForeignKey('invoices.WorkOrder')
@@ -189,34 +195,49 @@ class DiscrepancyReport(BaseModel):
 
     audit = AuditTrailWatcher()
 
+    def __str__(self):
+        return 'Discrepancy Report #%s for %s' % (self.id, self.work_order)
 
 # Proxies
 
 class RegionalAdminProxyNWA(RegionalAdmin):
     class Meta(RegionalAdmin.Meta):
         proxy = True
-        verbose_name = 'create CBRE admins'
+        verbose_name = 'create CBRE admin'
 
+    def __str__(self):
+        return 'CBRE admin %s' % (self.name)
 
 class WorkOrderProxyNWA(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
         verbose_name = 'check work orders for discrepancies'
 
+    def __str__(self):
+        return 'WO#%s for %s' % (self.id, self.vendor.name)
+
 
 class VendorProxyCBRE(Vendor):
     class Meta(Vendor.Meta):
         proxy = True
-        verbose_name = 'create new vendors'
+        verbose_name = 'create new vendor'
 
+    def __str__(self):
+        return 'Vendor %s' % (self.name)
 
 class WorkOrderProxyCBRE(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
         verbose_name = 'check work orders for failure'
 
+    def __str__(self):
+        return 'WO#%s for %s' % (self.id, self.vendor.name)
+
 
 class WorkOrderProxyVendor(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'create and manage work orders'
+        verbose_name = 'create and manage work order'
+
+    def __str__(self):
+        return 'WO#%s for %s' % (self.id, self.vendor.name)

@@ -70,5 +70,5 @@ WORKFLOW_SPEC = \
          ReportState.VALIDATED:
              {'allowed': {Group.NWA: {'actions': ['close']}}},
          ReportState.FINALIZED:
-             {'allowed': {}},
+             {'allowed': {}}
      }}

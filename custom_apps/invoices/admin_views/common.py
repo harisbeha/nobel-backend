@@ -1,6 +1,7 @@
 class ReadOnlyMixin(object):
-    def get_readonly_fields(self, request, obj=None):
-        return self.model._meta.fields
+    def __init__(self, *args, **kwargs):
+        super(ReadOnlyMixin, self).__init__(*args, **kwargs)
+        self.readonly_fields = self.model._meta.get_all_field_names()
 
     def has_add_permission(self, request):
         return False

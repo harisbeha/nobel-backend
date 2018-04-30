@@ -324,10 +324,10 @@ class SafetyReportAdmin(BaseModelAdmin):
 
 
 class WorkOrderAdmin(BaseModelAdmin):
-    get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
+    # get_state = generate_field_getter('state', 'Report State', preprocessor=ReportState.human_name)
 
     form = WorkOrderForm
-    list_display = [get_state, 'order_number', 'invoice', 'storm_name', 'building_address']
+    list_display = ['order_number', 'invoice', 'storm_name', 'building_address']
 
     def get_form(self, request, obj=None, **kwargs):
         r = super(WorkOrderAdmin, self).get_form(request, obj=obj, **kwargs)
@@ -412,8 +412,8 @@ class WorkOrderWeatherReviewAdmin(BaseModelAdmin):
     list_display = ['order_number',
                     generate_field_getter('invoice.vendor.name', 'Vendor'),
                     'storm_name',
-                    'building_id',
-                    'building_address',
+                    'building__id',
+                    'building__address',
                     get_num_jobs,
                     get_workorder_cost,
                     get_storm_length,
