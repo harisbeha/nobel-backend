@@ -192,6 +192,7 @@ EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY',
                                   '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')
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+DEFAULT_FROM_EMAIL = 'noreply@nobelw.co'
 
 # celery
 if 'BROKER_URL' in os.environ:
