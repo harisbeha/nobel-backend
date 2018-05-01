@@ -211,7 +211,7 @@ class RegionalAdminProxyNWA(RegionalAdmin):
 class WorkOrderProxyNWA(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'check work orders for discrepancies'
+        verbose_name = 'check for discrepancies in work order'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)

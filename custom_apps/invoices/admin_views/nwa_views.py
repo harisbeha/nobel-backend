@@ -40,14 +40,29 @@ class DiscrepancyReportInline(StackedInline, AppendOnlyMixin):
     model = DiscrepancyReport
 
 
+def mark_has_discrepancies(modeladmin, request, queryset):
+    for workorder in queryset:
+        workorder.flag_hasdiscrepancies = False
+        workorder.save()
+
+mark_has_discrepancies.short_description = 'Mark as having no discrepancies'
+
+def mark_has_discrepancies_failure(modeladmin, request, queryset):
+    for workorder in queryset:
+        workorder.flag_hasdiscrepanciesfailure = True
+        workorder.save()
+
+mark_has_discrepancies_failure.short_description = 'Mark as failure with discrepancies'
+
+
 # this is the inline for nwa to moderate work orders
 @register(WorkOrderProxyNWA)
 class NWAModeratesWorkOrders(NWAModelAdmin):
     # TODO: set flag_hasdiscrepancies = True and send email on discrepancy report - signal?
     # TODO: set authorship for discrepancy orders automatically
-    # TODO: actions to mark flag_hasdiscrpancies = False or flag_hasdiscrepanciesfailure = True
     # TODO: evaluate has_change_permission vs get_readonly_fields for inlines
 
+    actions = [mark_has_discrepancies, mark_has_discrepancies_failure]
     inlines = [WorkVisitInline, SafetyReportInline, DiscrepancyReportInline]
 
     def get_readonly_fields(self, request, obj=None):
