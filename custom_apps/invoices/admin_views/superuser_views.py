@@ -1,10 +1,11 @@
 from django.contrib.admin import register, ModelAdmin
+from import_export.admin import ImportExportActionModelAdmin
 
 from ..models import *
 
 
 # all the views in this file should be visible only to the superuser
-class SuperuserModelAdmin(ModelAdmin):
+class SuperuserModelAdmin(ImportExportActionModelAdmin):
     def has_module_permission(self, request):
         if request.user.is_superuser:
             return True

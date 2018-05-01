@@ -1,4 +1,5 @@
 from django.contrib.admin import register, ModelAdmin, StackedInline
+from import_export.admin import ImportExportActionModelAdmin
 
 from django import forms
 from custom_apps.invoices.admin_views.common import AppendOnlyMixin
@@ -8,7 +9,7 @@ from ..enums import Group
 
 
 # all the views in this file should be visible only to vendor
-class VendorModelAdmin(ModelAdmin):
+class VendorModelAdmin(ImportExportActionModelAdmin):
     def has_module_permission(self, request):
         if request.user.groups.filter(name='Vendor').count() > 0:
             return True
