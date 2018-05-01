@@ -26,7 +26,6 @@ admin.site.index_title = SITE_NAME
 
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),
-    url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     url(r'^static/(?P<path>.*)', serve, kwargs={'document_root': settings.STATIC_ROOT}),
     url(r'^admin/', admin.site.urls),
     url(r'^admin/', include("massadmin.urls")),
