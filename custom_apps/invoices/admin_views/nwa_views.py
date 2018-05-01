@@ -20,6 +20,8 @@ class NWAModelAdmin(ModelAdmin):
 # this is the admin for creating CBREs
 @register(RegionalAdminProxyNWA)
 class NWACreatesCBRE(NWAModelAdmin):
+    list_display = ['name', 'system_user']
+
     def has_delete_permission(self, request, obj=None):
         return False
 
@@ -77,6 +79,8 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
 
     actions = [mark_has_no_discrepancies, mark_has_discrepancies_failure]
     inlines = [WorkVisitInline, SafetyReportInline, DiscrepancyReportInline]
+    list_display = ['vendor', 'invoice', 'building', 'storm_name']
+    raw_id_fields = ('building',)
 
     def get_readonly_fields(self, request, obj=None):
         # TODO: figure out a way to get this list dynamically

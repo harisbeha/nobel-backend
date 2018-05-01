@@ -17,6 +17,8 @@ class CBREModelAdmin(ModelAdmin):
 # this is the admin to create vendors
 @register(VendorProxyCBRE)
 class CBRECreatesVendors(CBREModelAdmin):
+    list_display = ['name', 'address', 'system_user']
+
     def has_delete_permission(self, request, obj=None):
         return False
 
@@ -73,6 +75,8 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
 
     actions = [mark_passed, mark_failure]
     inlines = [WorkVisitInline, SafetyReportInline]
+    list_display = ['vendor', 'invoice', 'building', 'storm_name']
+    raw_id_fields = ('building',)
 
     def get_queryset(self, request):
         qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__region__system_user=request.user)

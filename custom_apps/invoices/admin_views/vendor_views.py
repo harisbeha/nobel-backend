@@ -86,6 +86,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     actions = [mark_visitsdocumented,]
     inlines = [SafetyReportInline, WorkVisitInline, DiscrepancyReportInline]
     list_filter = ('flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure')
+    list_display = ['vendor', 'invoice', 'building', 'storm_name']
     raw_id_fields = ('building',)
 
     def get_changeform_initial_data(self, request):
