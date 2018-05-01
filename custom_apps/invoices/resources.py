@@ -73,7 +73,7 @@ class WorkOrderResource(resources.ModelResource):
 
     class Meta:
         model = WorkOrder
-        fields = '__all__'
+        fields = (flag_safe, flag_visitsdocumented, )
 
     def dehydrate_flag_safe(self, obj):
         return '%s' % ('true' if not obj.flag_safe else 'false')
