@@ -2,6 +2,10 @@ from django.contrib.admin import register, ModelAdmin, StackedInline
 from import_export.admin import ImportExportActionModelAdmin
 
 from django import forms
+from django.core.mail import EmailMultiAlternatives
+from django.template import loader
+
+from base import settings
 from custom_apps.invoices.admin_views.common import AppendOnlyMixin
 from custom_apps.invoices.models import SafetyReport, WorkVisit, DiscrepancyReport
 from ..models import WorkOrderProxyVendor, Vendor
@@ -110,6 +114,15 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
         instance = form.save(commit=False)
         if not change:  # new object
             instance.vendor = Vendor.objects.filter(system_user__exact=request.user).first()
+            text_template = loader.get_template('mail_template.txt')
+            context = {
+                'work_order': instance,
+            }
+            mail = EmailMultiAlternatives(
+                subject="You have created a new work order " + instance,
+                body=text_template.render(context),
+                to=[request.user],
+            )
         # else:             # updated old object
         #   modify object
 

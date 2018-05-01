@@ -50,7 +50,7 @@ class SafetyReportInline(StackedInline, ReadOnlyMixin):
 
 def mark_failure(modeladmin, request, queryset):
     for workorder in queryset:
-        workorder.flag_failure=True
+        workorder.flag_failure = True
         workorder.save()
 
 mark_failure.short_description = 'Mark as failure'
@@ -73,10 +73,6 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
 
     actions = [mark_passed, mark_failure]
     inlines = [WorkVisitInline, SafetyReportInline]
-
-    class Media:
-        css = {'all': ('/static/disable_save_and_continue_editing_button.css',
-                       '/static/disable_save_button.css')}
 
     def get_queryset(self, request):
         qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__region__system_user=request.user)

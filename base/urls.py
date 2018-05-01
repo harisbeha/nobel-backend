@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^admin/', include("massadmin.urls")),
     url(r'^nested_admin/', include('nested_admin.urls')),
+    url(r'^', include('favicon.urls')),
 ]
 
 if settings.DEBUG:

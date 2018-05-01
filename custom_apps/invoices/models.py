@@ -3,31 +3,16 @@ from __future__ import unicode_literals
 
 from audit_trail import AuditTrailWatcher
 from django.db import models
-from jsonfield import JSONField
 from model_utils import FieldTracker
 
 from custom_apps.invoices.enums import *
+from custom_apps.utils.fields import AddressField, DollarsField, AddressMetadataStorageMixin
 from ..utils.models import BaseModel
 
 
 # An invoice (e.g. https://drive.google.com/file/d/1XWeqbQ-VRXV4C4zy6mOwv2Sasnwpv2WO/view) has multiple work orders
 # and a work order has multiple jobs
 # that document has rows of jobs joined with their work orders
-
-
-def AddressField(fullname, **kwargs):
-    return models.TextField(fullname, max_length=500, **kwargs)
-
-
-def DollarsField(fullname, **kwargs):
-    return models.DecimalField(fullname, max_digits=8, decimal_places=2, **kwargs)
-
-
-class AddressMetadataStorageMixin(models.Model):
-    class Meta:
-        abstract = True
-
-    address_info_storage = JSONField(blank=True, null=True)
 
 
 class VendorSettings(BaseModel):
@@ -124,12 +109,17 @@ class WorkOrder(BaseModel):
     last_service_date = models.DateField('date of last service at this location')
 
     flag_safe = models.BooleanField('has the property been marked safe to open?', null=False, default=False)
-    flag_visitsdocumented = models.BooleanField('has all information about work visits been entered?', null=False, default=False)
-    flag_weatherready = models.BooleanField('has the system produced the spending forecast for the work order?', null=False, default=False)
+    flag_visitsdocumented = models.BooleanField('has all information about work visits been entered?', null=False,
+                                                default=False)
+    flag_weatherready = models.BooleanField('has the system produced the spending forecast for the work order?',
+                                            null=False, default=False)
     flag_failure = models.NullBooleanField('has cbre marked the service as a failure?', null=True, default=None)
-    flag_hasdiscrepancies = models.NullBooleanField('has nwa marked a discrepancy in the forecasted/actual spending for the work order?', null=True, default=None)
-    flag_hasdiscrepanciesfailure = models.BooleanField('Has the vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
-    flag_completed = models.BooleanField('has the work order been sent to the vendor on a finalized invoice?', null=False, default=False)
+    flag_hasdiscrepancies = models.NullBooleanField(
+        'has nwa marked a discrepancy in the forecasted/actual spending for the work order?', null=True, default=None)
+    flag_hasdiscrepanciesfailure = models.BooleanField(
+        'Has the vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
+    flag_completed = models.BooleanField('has the work order been sent to the vendor on a finalized invoice?',
+                                         null=False, default=False)
 
     objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
     tracker = FieldTracker()
@@ -198,6 +188,7 @@ class DiscrepancyReport(BaseModel):
     def __str__(self):
         return 'Discrepancy Report #%s for %s' % (self.id, self.work_order)
 
+
 # Proxies
 
 class RegionalAdminProxyNWA(RegionalAdmin):
@@ -208,10 +199,11 @@ class RegionalAdminProxyNWA(RegionalAdmin):
     def __str__(self):
         return 'CBRE admin %s' % (self.name)
 
+
 class WorkOrderProxyNWA(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'check work orders for discrepancies'
+        verbose_name = 'check for discrepancies in work order'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
@@ -224,6 +216,7 @@ class VendorProxyCBRE(Vendor):
 
     def __str__(self):
         return 'Vendor %s' % (self.name)
+
 
 class WorkOrderProxyCBRE(WorkOrder):
     class Meta(WorkOrder.Meta):
