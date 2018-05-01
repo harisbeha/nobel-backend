@@ -1,3 +1,4 @@
+
 from django.contrib.admin import register, ModelAdmin, StackedInline
 
 from ..models import VendorProxyCBRE, WorkOrderProxyCBRE, WorkVisit, SafetyReport, RegionalAdmin
@@ -47,6 +48,20 @@ class SafetyReportInline(StackedInline, ReadOnlyMixin):
     extra = 0
     model = SafetyReport
 
+def mark_failure(modeladmin, request, queryset):
+    for workorder in queryset:
+        workorder.flag_failure=True
+        workorder.save()
+
+mark_failure.short_description = 'Mark as failure'
+
+def mark_passed(modeladmin, request, queryset):
+    for workorder in queryset:
+        workorder.flag_failure = False
+        workorder.save()
+
+mark_passed.short_description = 'Mark as passed'
+
 
 @register(WorkOrderProxyCBRE)
 class CBREModeratesWorkOrders(CBREModelAdmin):
@@ -56,6 +71,7 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
     # TODO: evaluate setting has_change_permission to false? that would let us use readonlymixin
     # TODO: port the stuff to inline the vendorsettings creation
 
+    actions = [mark_passed, mark_failure]
     inlines = [WorkVisitInline, SafetyReportInline]
 
     class Media:
@@ -92,3 +108,4 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
         instance.save()
         form.save_m2m()
         return instance
+
