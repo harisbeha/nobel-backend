@@ -67,6 +67,13 @@ class DiscrepancyReportInline(StackedInline, AppendOnlyMixin):
         else:
             return False;
 
+def mark_visitsdocumented(modeladmin, request, queryset):
+    for workorder in queryset:
+        workorder.flag_visitsdocumented = True
+        workorder.save()
+
+mark_visitsdocumented.short_description = 'Mark as visits documented'
+
 
 # this is the admin for creating and editing workorders
 @register(WorkOrderProxyVendor)
@@ -75,6 +82,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     # TODO: add to weather processing queue on creation
     # TODO: action to mark flag_visitsdocumented = True
 
+    actions = [mark_visitsdocumented,]
     inlines = [SafetyReportInline, WorkVisitInline, DiscrepancyReportInline]
     list_filter = ('flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure')
 
