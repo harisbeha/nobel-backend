@@ -207,3 +207,7 @@ CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 
 # gcloud
 GOOGLE_CLOUD_JSON = os.path.join(BASE_DIR, 'google-cloud.json')
+
+# jet
+JET_SIDE_MENU_COMPACT = True
+JET_DEFAULT_THEME = 'light-blue'
