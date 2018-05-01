@@ -95,6 +95,7 @@ class BaseModelAdmin(NestedModelAdmin):
         {
             'perms': ['add', 'change', 'list'],
             'hidden_fields': {id(WorkOrder): ['plow_tax']},
+            'readonly_fields': {id(WorkOrder): ['flag_weatherready']},
             'actions': [],
         }
     }
@@ -132,6 +133,21 @@ class BaseModelAdmin(NestedModelAdmin):
             return perm_configs.get(perm, {}).get('hidden_fields', {}).get(id(model), [])
         return []
 
+    def _get_readonly_fields(self, request, model):
+        """
+        Use get_perm_configs to get a list of readonly fields for the model
+        """
+        perm_configs = self.get_perm_configs(request)
+        if request.user.is_superuser:
+            if settings.DEBUG:
+                return perm_configs.get('Internal Staff', {}).get('readonly_fields', {}).get(id(model), [])
+            return []
+        # TODO handle clashes with multiple groups
+        user_perms = request.user.groups.filter(name__in=perm_configs.keys()).values_list('name', flat=True)
+        for perm in user_perms:
+            return perm_configs.get(perm, {}).get('readonly_fields', {}).get(id(model), [])
+        return []
+
     def _scrub_fields(self, request, formset):
         """
         Uses _get_hidden_fields to replace widgets in the formset with HiddenInput
@@ -150,6 +166,12 @@ class BaseModelAdmin(NestedModelAdmin):
         for h in hidden_fields:
             if h in formset.form.base_fields:
                 formset.form.base_fields[h].widget = HiddenInput()
+
+        readonly_fields = self._get_readonly_fields(request, model)
+        for h in readonly_fields:
+            if h in formset.form.base_fields:
+                formset.form.base_fields[h].disabled = True
+
         return formset
 
     # EXPORTS START HERE
