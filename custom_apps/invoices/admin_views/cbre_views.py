@@ -67,9 +67,6 @@ mark_passed.short_description = 'Mark as passed'
 
 @register(WorkOrderProxyCBRE)
 class CBREModeratesWorkOrders(CBREModelAdmin):
-    # TODO: actions to mark flag_failure = True, False
-    # TODO: the save button shouldn't exist. ideally the edit button should say view instead of edit
-    # TODO: ideally the edit button should say view instead of edit
     # TODO: evaluate setting has_change_permission to false? that would let us use readonlymixin
     # TODO: port the stuff to inline the vendorsettings creation
 
