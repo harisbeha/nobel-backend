@@ -41,12 +41,6 @@ class InvoiceResource(resources.ModelResource):
         fields = '__all__'
 
 
-class BuildingManagerResource(resources.ModelResource):
-    class Meta:
-        model = BuildingManager
-    fields = '__all__'
-
-
 class BuildingResource(resources.ModelResource):
     class Meta:
         model = Building
