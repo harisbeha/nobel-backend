@@ -58,6 +58,10 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
 
     inlines = [WorkVisitInline, SafetyReportInline]
 
+    class Media:
+        css = {'all': ('/static/disable_save_and_continue_editing_button.css',
+                       '/static/disable_save_button.css')}
+
     def get_queryset(self, request):
         qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__region__system_user=request.user)
         return qs.filter(flag_failure=None)
