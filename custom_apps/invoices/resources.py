@@ -10,21 +10,6 @@ print dataset.csv
 result
 """
 
-WO
-    flag_safe = Field()
-    flag_visitsdocumented = Field()
-    flag_weatherready = Field()
-    flag_failure = Field()
-    flag_hasdiscrepancies = Field()
-    flag_hasdiscrepanciesfailure = Field()
-    flag_completed = Field()
-
-
-WorkVisit    provided_deicing = Field()
-
-    provided_deicing
-    provided_plowing
-
 
 class AddressMetadataStorageMixinResource(resources.ModelResource):
     class Meta:
