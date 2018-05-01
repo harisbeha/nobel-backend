@@ -1,6 +1,7 @@
 from django.contrib.admin import register, ModelAdmin, StackedInline
 
 from django import forms
+from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 
@@ -79,7 +80,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
 
     def get_changeform_initial_data(self, request):
         initial = super(VendorCreatesWorkOrders, self).get_changeform_initial_data(request)
-        vendors = Vendor.objects.filter(system_user__groups__name='Vendor').order_by('name')
+        vendors = Vendor.objects.filter(system_user__groups__name=Group.VENDOR.value).order_by('name')
         uservendor = Vendor.objects.filter(system_user=request.user)
         print(vendors.values_list('name'))
         print(uservendor.values_list('name'))
@@ -112,14 +113,14 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
         instance = form.save(commit=False)
         if not change:  # new object
             instance.vendor = Vendor.objects.filter(system_user__exact=request.user).first()
-            text_template = loader.get_template('mail_template.txt')
+            text_template = loader.get_template('mail_template_new_work_order.txt')
             context = {
                 'work_order': instance,
             }
             mail = EmailMultiAlternatives(
                 subject="You have created a new work order " + instance,
                 body=text_template.render(context),
-                to=[request.user],
+                to=[request.user.email],
             )
         # else:             # updated old object
         #   modify object
@@ -134,6 +135,19 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
         for instance in instances:
             if type(instance) == DiscrepancyReport:
                 instance.author = request.user
+                instance.work_order.flag_hasdiscrepancies = None
+                nwa_users = User.objects.filter(groups__name=Group.NWA.value).values_list('user__email')
+                text_template = loader.get_template('mail_template_new_discrepancy_report.txt')
+                context = {
+                    'user': request.user,
+                    'work_order': instance,
+                }
+                mail = EmailMultiAlternatives(
+                    subject="New discrepancy report for work order " + instance,
+                    body=text_template.render(context),
+                    to=[nwa_users],
+                )
+
             instance.save()
 
         formset.save_m2m()

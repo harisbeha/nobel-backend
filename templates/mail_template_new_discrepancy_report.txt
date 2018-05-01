@@ -1,0 +1,13 @@
+{% if work_order %}
+    {{ user }} has added a discrepancy report to work order {{ work_order }}.
+
+    Work order: {{ work_order }}
+
+    Building: {{ work_order.building }}
+    Storm name: {{ work_order.storm_name }}
+    Storm date: {{ work_order.storm_date }}
+    Last service date: {{ work_order.last_service_date }}
+
+{% else %}
+    Error reading work order.
+{% endif %}
