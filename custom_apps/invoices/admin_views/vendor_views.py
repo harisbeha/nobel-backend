@@ -117,7 +117,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
                 'work_order': instance,
             }
             mail = EmailMultiAlternatives(
-                subject="You have new matches!",
+                subject="You have created a new work order " + instance,
                 body=text_template.render(context),
                 to=[request.user],
             )
