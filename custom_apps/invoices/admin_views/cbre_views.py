@@ -59,7 +59,7 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
     inlines = [WorkVisitInline, SafetyReportInline]
 
     def get_queryset(self, request):
-        qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__system_user=request.user)
+        qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__region__system_user=request.user)
         return qs.filter(flag_failure=None)
 
     def get_readonly_fields(self, request, obj=None):
