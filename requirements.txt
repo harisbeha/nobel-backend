@@ -9,6 +9,8 @@ django-extensions
 djangorestframework
 ipython<6
 django-debug-toolbar==1.8
+django-mass-edit
+django-import-export
 django-nested-admin
 python-google-places
 django-sendgrid-v5

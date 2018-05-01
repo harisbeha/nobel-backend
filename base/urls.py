@@ -27,6 +27,7 @@ admin.site.index_title = SITE_NAME
 urlpatterns = [
     url(r'^static/(?P<path>.*)', serve, kwargs={'document_root': settings.STATIC_ROOT}),
     url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include("massadmin.urls")),
     url(r'^nested_admin/', include('nested_admin.urls')),
 ]
 
