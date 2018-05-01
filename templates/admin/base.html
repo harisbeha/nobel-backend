@@ -111,9 +111,21 @@
     </div>
     <!-- END Content -->
 
-    {% block footer %}<div id="footer">
-        HELLO WORLD
-    </div>{% endblock %}
+    {% block footer %}
+        <div id="footer" style="
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+    background-color: #1b75b1;
+    right: 0;
+    left: 0;
+    font-size: .5em;
+    text-align: right;
+    color: #7BBCE5;
+    font-weight: bold;
+    cursor: default;
+">POWERED BY NOBEL WEATHER ASSOCIATES</div>
+    {% endblock %}
 
     {% jet_delete_confirmation_context as delete_confirmation_context %}
     {{ delete_confirmation_context }}
