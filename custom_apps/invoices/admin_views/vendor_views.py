@@ -1,4 +1,5 @@
 from django.contrib.admin import register, ModelAdmin, StackedInline
+from import_export.admin import ImportExportActionModelAdmin
 
 from django import forms
 from django.contrib.auth.models import User
@@ -13,7 +14,7 @@ from ..enums import Group
 
 
 # all the views in this file should be visible only to vendor
-class VendorModelAdmin(ModelAdmin):
+class VendorModelAdmin(ImportExportActionModelAdmin):
     def has_module_permission(self, request):
         if request.user.groups.filter(name='Vendor').count() > 0:
             return True
@@ -85,6 +86,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     actions = [mark_visitsdocumented,]
     inlines = [SafetyReportInline, WorkVisitInline, DiscrepancyReportInline]
     list_filter = ('flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure')
+    raw_id_fields = ('building',)
 
     def get_changeform_initial_data(self, request):
         initial = super(VendorCreatesWorkOrders, self).get_changeform_initial_data(request)

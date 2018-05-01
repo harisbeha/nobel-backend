@@ -18,10 +18,17 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.static import serve
 
+SITE_NAME = 'Nobel Weather Associates'
+admin.site.site_url = None
+admin.site.site_header = SITE_NAME
+admin.site.site_title = SITE_NAME
+admin.site.index_title = SITE_NAME
+
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),
     url(r'^static/(?P<path>.*)', serve, kwargs={'document_root': settings.STATIC_ROOT}),
     url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include("massadmin.urls")),
     url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^', include('favicon.urls')),
 ]
