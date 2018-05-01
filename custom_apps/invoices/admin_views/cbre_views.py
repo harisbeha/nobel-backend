@@ -1,3 +1,4 @@
+
 from django.contrib.admin import register, ModelAdmin, StackedInline
 
 from ..models import VendorProxyCBRE, WorkOrderProxyCBRE, WorkVisit, SafetyReport, RegionalAdmin
@@ -47,6 +48,20 @@ class SafetyReportInline(StackedInline, ReadOnlyMixin):
     extra = 0
     model = SafetyReport
 
+def mark_failure(modeladmin, request, queryset):
+    for workorder in queryset:
+        workorder.flag_failure=True
+        workorder.save()
+
+mark_failure.short_description = 'Mark as failure'
+
+def mark_passed(modeladmin, request, queryset):
+    for workorder in queryset:
+        workorder.flag_failure = False
+        workorder.save()
+
+mark_passed.short_description = 'Mark as passed'
+
 
 @register(WorkOrderProxyCBRE)
 class CBREModeratesWorkOrders(CBREModelAdmin):
@@ -56,10 +71,15 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
     # TODO: evaluate setting has_change_permission to false? that would let us use readonlymixin
     # TODO: port the stuff to inline the vendorsettings creation
 
+    actions = [mark_passed, mark_failure]
     inlines = [WorkVisitInline, SafetyReportInline]
 
+    class Media:
+        css = {'all': ('/static/disable_save_and_continue_editing_button.css',
+                       '/static/disable_save_button.css')}
+
     def get_queryset(self, request):
-        qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__system_user=request.user)
+        qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__region__system_user=request.user)
         return qs.filter(flag_failure=None)
 
     def get_readonly_fields(self, request, obj=None):
@@ -88,3 +108,4 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
         instance.save()
         form.save_m2m()
         return instance
+
