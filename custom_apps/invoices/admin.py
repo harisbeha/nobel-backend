@@ -12,8 +12,10 @@ from nested_admin.nested import NestedModelAdmin, NestedStackedInline
 
 from custom_apps.data_ingestion.bq import query_for_accumulation_zip
 from custom_apps.invoices.enums import WORKFLOW_SPEC
+from custom_apps.invoices.models import Building
 from custom_apps.utils import maps
 from custom_apps.utils.admin_utils import generate_field_getter
+from custom_apps.utils.fields import AddressMetadataStorageMixin
 from custom_apps.utils.forecast import forecast
 from .enums import ReportState
 from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings
@@ -91,13 +93,30 @@ class BaseModelAdmin(NestedModelAdmin):
     This terrible class allows control of module and field visibility based on user groups.
     PERM_CONFIGS allows configuration of the behaviors.
     """
-    PERM_CONFIGS = {'Internal Staff':
+    PERM_CONFIGS = {
+        'Vendor':
         {
-            'perms': ['add', 'change', 'list'],
-            'hidden_fields': {id(WorkOrder): ['plow_tax']},
+            'hidden_fields': {id(AddressMetadataStorageMixin): ['address_info_storage'],
+                              id(Building): ['address_info_storage']},
             'readonly_fields': {id(WorkOrder): ['flag_weatherready']},
             'actions': [],
-        }
+        },
+        'Regional Administrator':
+            {
+                'hidden_fields': {id(AddressMetadataStorageMixin): ['address_info_storage'],
+                                  id(Building): ['address_info_storage']},
+                'readonly_fields': {id(WorkOrder): ['flag_weatherready']},
+                'actions': [],
+            },
+        'Nobel Internal Staff':
+            {
+                'perms': ['add', 'change', 'list'],
+                'hidden_fields': {id(WorkOrder): ['plow_tax'],
+                                  id(AddressMetadataStorageMixin): ['address_info_storage'],
+                                  id(Building): ['address_info_storage']},
+                'readonly_fields': {id(WorkOrder): ['flag_weatherready']},
+                'actions': [],
+            }
     }
 
     def get_perm_configs(self, request):
@@ -125,7 +144,7 @@ class BaseModelAdmin(NestedModelAdmin):
         perm_configs = self.get_perm_configs(request)
         if request.user.is_superuser:
             if settings.DEBUG:
-                return perm_configs.get('Internal Staff', {}).get('hidden_fields', {}).get(id(model), [])
+                return perm_configs.get('Nobel Internal Staff', {}).get('hidden_fields', {}).get(id(model), [])
             return []
         # TODO handle clashes with multiple groups
         user_perms = request.user.groups.filter(name__in=perm_configs.keys()).values_list('name', flat=True)
@@ -140,11 +159,13 @@ class BaseModelAdmin(NestedModelAdmin):
         perm_configs = self.get_perm_configs(request)
         if request.user.is_superuser:
             if settings.DEBUG:
-                return perm_configs.get('Internal Staff', {}).get('readonly_fields', {}).get(id(model), [])
+                return perm_configs.get('Nobel Internal Staff', {}).get('readonly_fields', {}).get(id(model), [])
             return []
         # TODO handle clashes with multiple groups
         user_perms = request.user.groups.filter(name__in=perm_configs.keys()).values_list('name', flat=True)
+        print('user perms ' + user_perms)
         for perm in user_perms:
+            print('perm ' + perm)
             return perm_configs.get(perm, {}).get('readonly_fields', {}).get(id(model), [])
         return []
 
