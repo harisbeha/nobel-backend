@@ -33,7 +33,7 @@ class VendorAdmin(SuperuserModelAdmin):
 
 @register(WorkOrder)
 class WorkOrderAdmin(SuperuserModelAdmin):
-    pass
+    raw_id_fields = ("building",)
 
 
 @register(WorkVisit)
