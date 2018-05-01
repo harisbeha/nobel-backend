@@ -41,7 +41,7 @@ DJANGO_APPS = [
 ]
 
 SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail']
-CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils']
+CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'custom_apps.data_ingestion',]
 
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
 
