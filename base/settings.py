@@ -40,7 +40,8 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
+# SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
+SUPPORT_APPS = ['rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
 CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils']
 
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
