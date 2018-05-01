@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.views.static import serve
 
 SITE_NAME = 'Nobel Weather Associates'
+admin.site.site_url = None
 admin.site.site_header = SITE_NAME
 admin.site.site_title = SITE_NAME
 admin.site.index_title = SITE_NAME
