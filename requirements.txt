@@ -22,3 +22,4 @@ django-auto-one-to-one
 python-dateutil
 redis
 django-jet
+django-favicon

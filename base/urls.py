@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^static/(?P<path>.*)', serve, kwargs={'document_root': settings.STATIC_ROOT}),
     url(r'^admin/', admin.site.urls),
     url(r'^nested_admin/', include('nested_admin.urls')),
+    url(r'^', include('favicon.urls')),
 ]
 
 if settings.DEBUG:
