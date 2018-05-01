@@ -61,7 +61,7 @@ def query_for_accumulation_zip(zipcode, start, end):
     ingest_snowfall_data.delay(zipcode, start, end)
 
 
-def fetch_for_accumulation_zip(zipcode, start, end):
+def fetch_for_accumulation_zip(zipcode, start, end, work_order=None):
     cache_key = make_accumulation_key(zipcode, start, end)
     fetch_key = 'fetch-%s' % cache_key
     if redis_client.get_key(fetch_key) is not None:
@@ -69,5 +69,8 @@ def fetch_for_accumulation_zip(zipcode, start, end):
         r = _query_accumulation_data(zipcode, start, end)
         redis_client.set_key(cache_key, json.dumps(r))
         redis_client.del_key(fetch_key)
+    if work_order:
+        work_order.flag_weatherready = True
+        work_order.save()
 
 # print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))

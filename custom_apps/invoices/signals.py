@@ -19,4 +19,4 @@ def compute_forecast_data(sender, instance, created, **kwargs):
         zip_code = settings.DEMO_SNOWFALL_ZIP
         ingest_snowfall_data(zip_code,
                              settings.DEMO_SNOWFALL_DATA_START,
-                             settings.DEMO_SNOWFALL_DATA_END)
+                             settings.DEMO_SNOWFALL_DATA_END, instance)
