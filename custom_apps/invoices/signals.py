@@ -11,4 +11,4 @@ def connect_state_workflow():
 
 @receiver(pre_save, sender=User)
 def set_email_to_username(sender, instance, **kwargs):
-    user.email = instance.username
+    instance.email = instance.username
