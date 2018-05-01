@@ -57,6 +57,8 @@ def query_for_accumulation_zip(zipcode, start, end):
             return json.loads(cached_result)
         except ValueError:
             pass
+    from .tasks import ingest_snowfall_data
+    ingest_snowfall_data.delay(zipcode, start, end)
 
 
 def fetch_for_accumulation_zip(zipcode, start, end):
@@ -65,7 +67,7 @@ def fetch_for_accumulation_zip(zipcode, start, end):
     if redis_client.get_key(fetch_key) is not None:
         redis_client.set_key(fetch_key, '1', 3600)
         r = _query_accumulation_data(zipcode, start, end)
-        redis_client.set_key(cache_key, json.dumps(r), 60)
+        redis_client.set_key(cache_key, json.dumps(r))
         redis_client.del_key(fetch_key)
 
 # print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))
