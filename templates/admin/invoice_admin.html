@@ -1,0 +1,289 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+    <div class="js-inline-admin-formset inline-group" id="workorder_set-group" data-inline-type="tabular" data-inline-formset="{&quot;name&quot;: &quot;#workorder_set&quot;, &quot;options&quot;: {&quot;prefix&quot;: &quot;workorder_set&quot;, &quot;addText&quot;: &quot;Add another Work order&quot;, &quot;deleteText&quot;: &quot;Remove&quot;}}">
+  <div class="tabular inline-related last-related">
+<input type="hidden" name="workorder_set-TOTAL_FORMS" value="3" id="id_workorder_set-TOTAL_FORMS" autocomplete="off"><input type="hidden" name="workorder_set-INITIAL_FORMS" value="0" id="id_workorder_set-INITIAL_FORMS"><input type="hidden" name="workorder_set-MIN_NUM_FORMS" value="0" id="id_workorder_set-MIN_NUM_FORMS"><input type="hidden" name="workorder_set-MAX_NUM_FORMS" value="1000" id="id_workorder_set-MAX_NUM_FORMS" autocomplete="off">
+<fieldset class="module ">
+   <h2>Work orders</h2>
+
+   <table>
+     <thead><tr>
+       <th class="original"></th>
+
+
+         <th>Building
+
+         </th>
+
+
+
+         <th class="required"># Salts
+
+         </th>
+
+
+
+         <th class="required"># Plows
+
+         </th>
+
+
+     <th>Delete?</th>
+     </tr></thead>
+
+     <tbody>
+
+
+        <tr class="form-row row1  dynamic-workorder_set" id="workorder_set-0">
+        <td class="original">
+
+          <input type="hidden" name="workorder_set-0-id" id="id_workorder_set-0-id">
+          <input type="hidden" name="workorder_set-0-invoice" id="id_workorder_set-0-invoice">
+
+        </td>
+
+
+
+
+              <td class="field-building">
+
+
+                  <div class="related-widget-wrapper">
+    <select name="workorder_set-0-building" id="id_workorder_set-0-building">
+  <option value="" selected="">---------</option>
+
+  <option value="1">Building#1 at 123 W Main St, New York, NY, 13001</option>
+
+  <option value="2">Building#2 at 313 S A Street, New York, NY, 13312</option>
+
+</select>
+
+        <a class="related-widget-wrapper-link change-related" id="change_id_workorder_set-0-building" data-href-template="/admin/invoices/building/__fk__/change/?_to_field=id&amp;_popup=1" title="Change selected building" href="/admin/invoices/building/1/change/?_to_field=id&amp;_popup=1"><img src="/static/admin/img/icon-changelink.svg" alt="Change"></a><a class="related-widget-wrapper-link add-related" id="add_id_workorder_set-0-building" href="/admin/invoices/building/add/?_to_field=id&amp;_popup=1" title="Add another building"><img src="/static/admin/img/icon-addlink.svg" alt="Add"></a>
+
+</div>
+
+              </td>
+
+
+
+
+
+              <td class="field-num_salts">
+
+
+                  <input type="number" name="workorder_set-0-num_salts" class="vIntegerField" id="id_workorder_set-0-num_salts">
+
+              </td>
+
+
+
+
+
+              <td class="field-num_plows">
+
+
+                  <input type="number" name="workorder_set-0-num_plows" class="vIntegerField" id="id_workorder_set-0-num_plows">
+
+              </td>
+
+
+
+
+
+          <td class="delete"></td>
+
+        </tr>
+
+
+        <tr class="form-row row2  dynamic-workorder_set" id="workorder_set-1">
+        <td class="original">
+
+          <input type="hidden" name="workorder_set-1-id" id="id_workorder_set-1-id">
+          <input type="hidden" name="workorder_set-1-invoice" id="id_workorder_set-1-invoice">
+
+        </td>
+
+
+
+
+              <td class="field-building">
+
+
+                  <div class="related-widget-wrapper">
+    <select name="workorder_set-1-building" id="id_workorder_set-1-building">
+  <option value="" selected="">---------</option>
+
+  <option value="1">Building#1 at 123 W Main St, New York, NY, 13001</option>
+
+  <option value="2">Building#2 at 313 S A Street, New York, NY, 13312</option>
+
+</select>
+
+        <a class="related-widget-wrapper-link change-related" id="change_id_workorder_set-1-building" data-href-template="/admin/invoices/building/__fk__/change/?_to_field=id&amp;_popup=1" title="Change selected building" href="/admin/invoices/building/2/change/?_to_field=id&amp;_popup=1"><img src="/static/admin/img/icon-changelink.svg" alt="Change"></a><a class="related-widget-wrapper-link add-related" id="add_id_workorder_set-1-building" href="/admin/invoices/building/add/?_to_field=id&amp;_popup=1" title="Add another building"><img src="/static/admin/img/icon-addlink.svg" alt="Add"></a>
+
+</div>
+
+              </td>
+
+
+
+
+
+              <td class="field-num_salts">
+
+
+                  <input type="number" name="workorder_set-1-num_salts" class="vIntegerField" id="id_workorder_set-1-num_salts">
+
+              </td>
+
+
+
+
+
+              <td class="field-num_plows">
+
+
+                  <input type="number" name="workorder_set-1-num_plows" class="vIntegerField" id="id_workorder_set-1-num_plows">
+
+              </td>
+
+
+
+
+
+          <td class="delete"></td>
+
+        </tr>
+
+
+        <tr class="form-row row1  dynamic-workorder_set" id="workorder_set-2">
+        <td class="original">
+
+          <input type="hidden" name="workorder_set-2-id" id="id_workorder_set-2-id">
+          <input type="hidden" name="workorder_set-2-invoice" id="id_workorder_set-2-invoice">
+
+        </td>
+
+
+
+
+              <td class="field-building">
+
+
+                  <div class="related-widget-wrapper">
+    <select name="workorder_set-2-building" id="id_workorder_set-2-building">
+  <option value="">---------</option>
+
+  <option value="1" selected>Building#1 at 123 W Main St, New York, NY, 13001</option>
+
+  <option value="2">Building#2 at 313 S A Street, New York, NY, 13312</option>
+
+</select>
+
+        <a class="related-widget-wrapper-link change-related" id="change_id_workorder_set-2-building" data-href-template="/admin/invoices/building/__fk__/change/?_to_field=id&amp;_popup=1" title="Change selected building"><img src="/static/admin/img/icon-changelink.svg" alt="Change"></a><a class="related-widget-wrapper-link add-related" id="add_id_workorder_set-2-building" href="/admin/invoices/building/add/?_to_field=id&amp;_popup=1" title="Add another building"><img src="/static/admin/img/icon-addlink.svg" alt="Add"></a>
+
+</div>
+
+              </td>
+
+
+
+
+
+              <td class="field-num_salts">
+
+
+                  <input type="number" name="workorder_set-2-num_salts" class="vIntegerField" id="id_workorder_set-2-num_salts">
+
+              </td>
+
+
+
+
+
+              <td class="field-num_plows">
+
+
+                  <input type="number" name="workorder_set-2-num_plows" class="vIntegerField" id="id_workorder_set-2-num_plows">
+
+              </td>
+
+
+
+
+
+          <td class="delete"></td>
+
+        </tr>
+
+
+        <tr class="form-row row2  empty-form" id="workorder_set-empty">
+        <td class="original">
+
+          <input type="hidden" name="workorder_set-__prefix__-id" id="id_workorder_set-__prefix__-id">
+          <input type="hidden" name="workorder_set-__prefix__-invoice" id="id_workorder_set-__prefix__-invoice">
+
+        </td>
+
+
+
+
+              <td class="field-building">
+
+
+                  <div class="related-widget-wrapper">
+    <select name="workorder_set-__prefix__-building" id="id_workorder_set-__prefix__-building">
+  <option value="">---------</option>
+
+  <option value="1">Building#1 at 123 W Main St, New York, NY, 13001</option>
+
+  <option value="2" selected>Building#2 at 313 S A Street, New York, NY, 13312</option>
+
+</select>
+
+        <a class="related-widget-wrapper-link change-related" id="change_id_workorder_set-__prefix__-building" data-href-template="/admin/invoices/building/__fk__/change/?_to_field=id&amp;_popup=1" title="Change selected building"><img src="/static/admin/img/icon-changelink.svg" alt="Change"></a><a class="related-widget-wrapper-link add-related" id="add_id_workorder_set-__prefix__-building" href="/admin/invoices/building/add/?_to_field=id&amp;_popup=1" title="Add another building"><img src="/static/admin/img/icon-addlink.svg" alt="Add"></a>
+
+</div>
+
+              </td>
+
+
+
+
+
+              <td class="field-num_salts">
+
+
+                  <input type="number" name="workorder_set-__prefix__-num_salts" class="vIntegerField" id="id_workorder_set-__prefix__-num_salts">
+
+              </td>
+
+
+
+
+
+              <td class="field-num_plows">
+
+
+                  <input type="number" name="workorder_set-__prefix__-num_plows" class="vIntegerField" id="id_workorder_set-__prefix__-num_plows">
+
+              </td>
+
+
+
+
+
+          <td class="delete"></td>
+
+        </tr>
+
+     <tr class="add-row"><td colspan="5"><a href="#">Add another Work order</a></td></tr></tbody>
+   </table>
+</fieldset>
+  </div>
+</div>
+
+{% endblock %}
+

@@ -6,6 +6,7 @@ from django.apps import AppConfig
 
 class InvoicesConfig(AppConfig):
     name = 'custom_apps.invoices'
+    verbose_name = 'Manage'
 
     def ready(self):
         r = super(InvoicesConfig, self).ready()

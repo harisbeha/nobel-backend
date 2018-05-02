@@ -56,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'custom_apps.utils.middleware.PermissionsErrorMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'base.urls'
@@ -215,3 +218,14 @@ JET_DEFAULT_THEME = 'light-blue'
 
 DEMO_SNOWFALL_DATA_START = '2017-01-01'
 DEMO_SNOWFALL_DATA_END = '2019-01-01'
+
+DEBUG = True
+
+from django.utils import timezone
+
+
+TIME_ZONE = 'US/Eastern'
+
+from memcacheify import memcacheify
+
+CACHES = memcacheify()
