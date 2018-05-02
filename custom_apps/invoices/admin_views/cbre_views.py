@@ -1,9 +1,11 @@
 
 from django.contrib.admin import register, ModelAdmin, StackedInline
 
-from ..models import VendorProxyCBRE, WorkOrderProxyCBRE, WorkVisit, SafetyReport, RegionalAdmin
+from ..models import VendorProxyCBRE, WorkOrderProxyCBRE, WorkVisit, SafetyReport, RegionalAdmin, WorkOrder
 from ..enums import Group
 from .common import ReadOnlyMixin
+from django import forms
+
 
 
 # all the views in this file should be visible only to cbre
@@ -65,6 +67,14 @@ def mark_passed(modeladmin, request, queryset):
 mark_passed.short_description = 'Mark as passed'
 
 
+class CBREWorkOrderForm(forms.ModelForm):
+    class Meta:
+        model = WorkOrder
+        exclude = ['vendor', 'invoice', 'building', 'storm_name', 'storm_date', 'last_service_date',
+                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
+                'flag_hasdiscrepanciesfailure', 'flag_completed']
+
+
 @register(WorkOrderProxyCBRE)
 class CBREModeratesWorkOrders(CBREModelAdmin):
     # TODO: evaluate setting has_change_permission to false? that would let us use readonlymixin
@@ -74,6 +84,7 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
     inlines = [WorkVisitInline, SafetyReportInline]
     list_display = ['vendor', 'invoice', 'building', 'storm_name']
     raw_id_fields = ('building',)
+    form = CBREWorkOrderForm
 
     def get_queryset(self, request):
         qs = super(CBREModeratesWorkOrders, self).get_queryset(request).filter(vendor__region__system_user=request.user)
