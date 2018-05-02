@@ -81,7 +81,9 @@ class VendorWorkOrderForm(forms.ModelForm):
         model = WorkOrder
         fields = ['building']
 
+
 # this is the admin for creating and editing workorders
+@register(WorkOrderProxyVendor)
 class VendorCreatesWorkOrders(VendorModelAdmin):
     # TODO: widget for searching for buildings during object creation
     # TODO: add to weather processing queue on creation
@@ -94,14 +96,8 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     raw_id_fields = ('building',)
     exclude = ('vendor', 'invoice', 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure', 'flag_completed',)
     form = VendorWorkOrderForm
-    fieldsets = [
-        ['Visible class', {
-            'classes' : ['NO',],
-            'description' : 'NO',
-            'fields' : [['building',],
-                        ['vendor',]
-            ]
-        }]]
+    fieldsets = ( ('Installation Info', {'fields': ('building', 'vendor',), 'classes': ['wide']}),
+                )
 
 
     def get_exclude(self, request, obj=None):
@@ -187,6 +183,3 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
         for formset in super(VendorCreatesWorkOrders, self).get_formsets_with_inlines(request, obj=obj):
 
             yield formset
-
-from django.contrib import admin
-admin.site.register(WorkOrderProxyVendor, VendorCreatesWorkOrders)
