@@ -116,3 +116,39 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
             flag_weatherready=True,
             flag_visitsdocumented=True,
             flag_completed=False).filter(Q(flag_failure__isnull=True) | Q(flag_failure=False))
+
+@register(WorkOrderProxyNWA)
+class NWAForecastReports(NWAModelAdmin):
+    # TODO: set flag_hasdiscrepancies = True and send email on discrepancy report - signal?
+    # TODO: set authorship for discrepancy orders automatically
+    # TODO: evaluate has_change_permission vs get_readonly_fields for inlines
+
+    actions = [mark_has_no_discrepancies, mark_has_discrepancies_failure]
+    inlines = [WorkVisitInline, SafetyReportInline, DiscrepancyReportInline]
+    list_display = ['vendor', 'invoice', 'building', 'storm_name', 'has_ice', 'duration', 'snowfall']
+    list_filter = ['vendor', 'invoice', 'building', 'storm_name']
+    raw_id_fields = ('building',)
+    form = NWAWorkOrderForm
+
+
+    def get_readonly_fields(self, request, obj=None):
+        # TODO: figure out a way to get this list dynamically
+        return {'vendor', 'invoice', 'building', 'storm_name', 'storm_date', 'last_service_date',
+                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
+                'flag_hasdiscrepanciesfailure', 'flag_completed'}
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def get_queryset(self, request):
+        qs = super(NWAModeratesWorkOrders, self).get_queryset(request)
+        return qs.filter(
+            flag_weatherready=True,
+            flag_visitsdocumented=True,
+            flag_completed=False).filter(Q(flag_failure__isnull=True) | Q(flag_failure=False))
