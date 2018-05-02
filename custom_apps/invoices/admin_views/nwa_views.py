@@ -79,8 +79,8 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
 
     actions = [mark_has_no_discrepancies, mark_has_discrepancies_failure]
     inlines = [WorkVisitInline, SafetyReportInline, DiscrepancyReportInline]
-    list_display = ['vendor', 'invoice', 'building', 'storm_name']
-    list_filter = ['vendor', 'invoice', 'building', 'storm_name', 'has_ice', 'duration', 'snowfall']
+    list_display = ['vendor', 'invoice', 'building', 'storm_name', 'has_ice', 'duration', 'snowfall']
+    list_filter = ['vendor', 'invoice', 'building', 'storm_name']
     raw_id_fields = ('building',)
 
 
