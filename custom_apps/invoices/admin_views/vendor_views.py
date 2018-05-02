@@ -79,9 +79,7 @@ mark_visitsdocumented.short_description = 'Mark as visits documented'
 class VendorWorkOrderForm(forms.ModelForm):
     class Meta:
         model = WorkOrder
-        exclude = ['vendor', 'invoice',
-                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
-                'flag_hasdiscrepanciesfailure', 'flag_completed']
+        fields = ['building']
 
 # this is the admin for creating and editing workorders
 @register(WorkOrderProxyVendor)
