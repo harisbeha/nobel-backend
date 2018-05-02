@@ -98,7 +98,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     form = VendorWorkOrderForm
 
     def get_form(self, request, obj=None, **kwargs):
-       self.exclude = ('vendor', 'invoice',
+        self.exclude = ('vendor', 'invoice',
                 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
                 'flag_hasdiscrepanciesfailure', 'flag_completed',)
         self.list_display = ('building',)
