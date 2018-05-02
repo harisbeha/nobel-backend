@@ -8,7 +8,7 @@ from django.template import loader
 
 from base import settings
 from custom_apps.invoices.admin_views.common import AppendOnlyMixin
-from custom_apps.invoices.models import SafetyReport, WorkVisit, DiscrepancyReport
+from custom_apps.invoices.models import SafetyReport, WorkVisit, DiscrepancyReport, WorkOrder
 from ..models import WorkOrderProxyVendor, Vendor
 from ..enums import Group
 
@@ -46,7 +46,7 @@ class DiscrepancyReportForm(forms.ModelForm):
     class Meta:
         model = DiscrepancyReport
         fields = ['message']
-
+        exclude = ['author', 'work_order']
 
 
 # this is the inline for adding discrepancy reports to a workorder
@@ -76,6 +76,13 @@ def mark_visitsdocumented(modeladmin, request, queryset):
 mark_visitsdocumented.short_description = 'Mark as visits documented'
 
 
+class VendorWorkOrderForm(forms.ModelForm):
+    class Meta:
+        model = WorkOrder
+        exclude = ['vendor', 'invoice',
+                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
+                'flag_hasdiscrepanciesfailure', 'flag_completed']
+
 # this is the admin for creating and editing workorders
 @register(WorkOrderProxyVendor)
 class VendorCreatesWorkOrders(VendorModelAdmin):
@@ -88,6 +95,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     list_filter = ('flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure')
     list_display = ['vendor', 'invoice', 'building', 'storm_name']
     raw_id_fields = ('building',)
+    form = VendorWorkOrderForm
 
     def get_changeform_initial_data(self, request):
         initial = super(VendorCreatesWorkOrders, self).get_changeform_initial_data(request)
