@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from google.cloud.bigquery import Client, ScalarQueryParameter, QueryJobConfig
+import random
 
 from custom_apps.utils import redis_client
 
@@ -34,12 +35,14 @@ def make_accumulation_key(zipcode, start, end):
     return 'accumulation-%s-%s-%s' % (zipcode, start, end)
 
 
+# TODO: NOTHING TO DO - STUFF IS HARDCODED HERE - NEVER FORGET
 def _query_accumulation_data(zipcode, start, end):
     bq = _get_client()
+    random.choice([1103, 1608, 1851, 2111, 2601, 3104, 5401, 6051, 6611, 7103, 7728, 10566, 11210, 11751, 12208, 19107, 19406])
     query_params = [
         ScalarQueryParameter('zipcode', 'INT64', zipcode),
-        ScalarQueryParameter('startdate', 'TIMESTAMP', start),
-        ScalarQueryParameter('enddate', 'TIMESTAMP', end),
+        ScalarQueryParameter('startdate', 'TIMESTAMP', '2017-01-01'),
+        ScalarQueryParameter('enddate', 'TIMESTAMP', '2019-01-01'),
     ]
     job_config = QueryJobConfig()
     job_config.query_parameters = query_params
