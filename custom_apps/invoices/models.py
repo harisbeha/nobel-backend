@@ -159,6 +159,16 @@ class WorkOrder(BaseModel):
         except Exception as e:
             return ''
 
+    @property
+    def predicted_amount(self):
+        try:
+            if self.snowfall < 3:
+                return self.snowfall * self.workorder.building.deice_rate
+            else:
+                return (3 * self.workorder.building.deice_rate) + ((self.snowfall - 3) * self.workorder.building.plow_rate)
+        except Exception as e:
+            return ''
+
 # manager for the below relation
 class WorkVisitManager(models.Manager):
     def get_queryset(self):
@@ -238,13 +248,13 @@ class WorkOrderProxyNWA(WorkOrder):
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
 
-class WorkOrderForecastReportProxyNWA(WorkOrder):
-    class Meta(WorkOrder.Meta):
+class InvoiceForecastReportProxyNWA(WorkOrder):
+    class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'forecast report work order'
+        verbose_name = 'forecast report invoice'
 
     def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.vendor.name)
+        return 'Invoice #%s' % (self.id)
 
 class VendorProxyCBRE(Vendor):
     class Meta(Vendor.Meta):
