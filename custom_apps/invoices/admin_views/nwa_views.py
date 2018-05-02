@@ -84,7 +84,8 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
     list_filter = ['vendor', 'invoice', 'building', 'storm_name', 'has_ice', 'duration', 'snowfall']
     raw_id_fields = ('building',)
 
-    def get_has_ice(self):
+
+    def has_ice(self):
 
         has_ice = query_for_accumulation_zip(self.model.building.address_field_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
@@ -92,13 +93,13 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
         return has_ice
 
 
-    def get_duration(self):
+    def duration(self):
         duration = query_for_accumulation_zip(self.model.building.address_field_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['duration']
         return duration
 
-    def get_snowfall(self):
+    def snowfall(self):
         snowfall = query_for_accumulation_zip(self.model.building.address_field_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['snowfall']
