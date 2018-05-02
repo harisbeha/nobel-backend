@@ -192,6 +192,8 @@ class BaseModelAdmin(NestedModelAdmin):
         for h in readonly_fields:
             if h in formset.form.base_fields:
                 formset.form.base_fields[h].disabled = True
+        if 'address_info_storage' in formset.form.base_fields:
+            formset.form.base_fields['address_info_storage'].disabled = True
 
         return formset
 
