@@ -248,10 +248,10 @@ class WorkOrderProxyNWA(WorkOrder):
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
 
-class InvoiceForecastReportProxyNWA(Invoice):
+class InvoiceForecastReportProxyNWA(WorkOrder):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'forecast report invoice'
+        verbose_name = 'forecast report invoice (actually a WO)'
 
     def __str__(self):
         return 'Invoice #%s' % (self.id)
