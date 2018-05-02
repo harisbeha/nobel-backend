@@ -131,25 +131,33 @@ class WorkOrder(BaseModel):
 
     @property
     def has_ice(self):
-        has_ice = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
+        try:
+            has_ice = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-        return has_ice
+            return has_ice
+        except Exception as e:
+            return ''
 
     @property
     def snowfall(self):
-        snowfall = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
+        try:
+            snowfall = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-        return snowfall
+            return snowfall
+        except Exception as e:
+            return ''
 
     @property
     def duration(self):
-        duration = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
+        try:
+            duration = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['duration']
-        return duration
-
+            return duration
+        except Exception as e:
+            return ''
 
 # manager for the below relation
 class WorkVisitManager(models.Manager):
