@@ -82,7 +82,6 @@ class VendorWorkOrderForm(forms.ModelForm):
         fields = ['building']
 
 # this is the admin for creating and editing workorders
-@register(WorkOrderProxyVendor)
 class VendorCreatesWorkOrders(VendorModelAdmin):
     # TODO: widget for searching for buildings during object creation
     # TODO: add to weather processing queue on creation
@@ -102,7 +101,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
             'fields' : [['building',],
                         ['vendor',],
             ],
-        }],]
+        }]]
 
 
     def get_exclude(self, request, obj=None):
@@ -188,3 +187,6 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
         for formset in super(VendorCreatesWorkOrders, self).get_formsets_with_inlines(request, obj=obj):
 
             yield formset
+
+# from django.contrib import admin
+# admin.site.register(WorkOrder, VendorCreatesWorkOrders)
