@@ -95,7 +95,14 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     raw_id_fields = ('building',)
     exclude = ('vendor', 'invoice', 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure', 'flag_completed',)
     form = VendorWorkOrderForm
-    fieldsets = ('wtf', {'fields': ('building',)})
+    fieldsets = [
+        [_('Visible class'), {
+            'classes' : ['NO',],
+            'description' : 'NO',
+            'fields' : [['building',],
+                        ['vendor',],
+            ],
+        }],]
 
 
     def get_exclude(self, request, obj=None):
