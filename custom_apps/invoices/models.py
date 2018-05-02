@@ -164,9 +164,10 @@ class WorkOrder(BaseModel):
         try:
             snowfall = int(self.snowfall)
             if snowfall < 3:
-                return snowfall * self.workorder.building.deice_rate
+                return snowfall * self.building.deice_rate + self.building.deice_tax
             else:
-                return (3 * self.workorder.building.deice_rate) + ((snowfall - 3) * self.workorder.building.plow_rate)
+                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
+                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
         except Exception as e:
             return ''
 
