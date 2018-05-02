@@ -95,13 +95,11 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     raw_id_fields = ('building',)
     form = VendorWorkOrderForm
 
-    def get_form(self, request, obj=None, **kwargs):
-        self.exclude = ('vendor', 'invoice',
-                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
-                'flag_hasdiscrepanciesfailure', 'flag_completed',)
-        self.list_display = ('building',)
-        form = super(VendorCreatesWorkOrders, self).get_form(request, obj, **kwargs)
-        return form
+    def get_exclude(self, request, obj=None):
+        """
+        Hook for specifying exclude.
+        """
+        return ('vendor', 'invoice', 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure', 'flag_completed',)
 
 
     def get_changeform_initial_data(self, request):
