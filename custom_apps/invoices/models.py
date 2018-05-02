@@ -131,21 +131,21 @@ class WorkOrder(BaseModel):
 
     @property
     def has_ice(self):
-        has_ice = query_for_accumulation_zip(self.building.address_field_storage['postal_code'],
+        has_ice = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['has_ice']
         return has_ice
 
     @property
     def snowfall(self):
-        snowfall = query_for_accumulation_zip(self.building.address_field_storage['postal_code'],
+        snowfall = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['snowfall']
         return snowfall
 
     @property
     def duration(self):
-        duration = query_for_accumulation_zip(self.building.address_field_storage['postal_code'],
+        duration = query_for_accumulation_zip(self.building.address_info_storage['postal_code'],
                                              settings.DEMO_SNOWFALL_DATA_START,
                                              settings.DEMO_SNOWFALL_DATA_END)['duration']
         return duration
