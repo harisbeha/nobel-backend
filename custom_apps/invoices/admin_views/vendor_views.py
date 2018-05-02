@@ -98,14 +98,11 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     form = VendorWorkOrderForm
 
     def get_form(self, request, obj=None, **kwargs):
-        current_user = request.user
-        if not current_user.profile.is_manager:
-            self.exclude = ('vendor', 'invoice',
+       self.exclude = ('vendor', 'invoice',
                 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
                 'flag_hasdiscrepanciesfailure', 'flag_completed',)
-            self.list_display = ('building',)
+        self.list_display = ('building',)
         form = super(VendorCreatesWorkOrders, self).get_form(request, obj, **kwargs)
-        form.current_user = current_user
         return form
 
 
