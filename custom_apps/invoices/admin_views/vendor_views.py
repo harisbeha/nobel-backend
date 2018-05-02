@@ -188,5 +188,5 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
 
             yield formset
 
-# from django.contrib import admin
-# admin.site.register(WorkOrder, VendorCreatesWorkOrders)
+from django.contrib import admin
+admin.site.register(WorkOrder, VendorCreatesWorkOrders)
