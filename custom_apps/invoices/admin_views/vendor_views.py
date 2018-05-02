@@ -95,12 +95,12 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     exclude = ('vendor', 'invoice', 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure', 'flag_completed',)
     form = VendorWorkOrderForm
     fieldsets = [
-        [('Visible class'), {
+        ['Visible class', {
             'classes' : ['NO',],
             'description' : 'NO',
             'fields' : [['building',],
-                        ['vendor',],
-            ],
+                        ['vendor',]
+            ]
         }]]
 
 
