@@ -34,15 +34,7 @@ def make_accumulation_key(zipcode, start, end):
     return 'accumulation-%s-%s-%s' % (zipcode, start, end)
 
 
-def query_for_accumulation_zip(zipcode, start, end):
-    cache_key = make_accumulation_key(zipcode, start, end)
-    cached_result = redis_client.get_key(cache_key)
-    if cached_result is not None:
-        try:
-            return json.loads(cached_result)
-        except ValueError:
-            pass
-
+def _query_accumulation_data(zipcode, start, end):
     bq = _get_client()
     query_params = [
         ScalarQueryParameter('zipcode', 'INT64', zipcode),
@@ -54,7 +46,31 @@ def query_for_accumulation_zip(zipcode, start, end):
     query = bq.query(ACCUMULATION_QUERY, job_config=job_config)
     result = query.result()
     r = dict(list(result)[0].items())
-    redis_client.set_key(cache_key, json.dumps(r), 60)
     return r
+
+
+def query_for_accumulation_zip(zipcode, start, end):
+    cache_key = make_accumulation_key(zipcode, start, end)
+    cached_result = redis_client.get_key(cache_key)
+    if cached_result is not None:
+        try:
+            return json.loads(cached_result)
+        except ValueError:
+            pass
+    from .tasks import ingest_snowfall_data
+    ingest_snowfall_data.delay(zipcode, start, end)
+
+
+def fetch_for_accumulation_zip(zipcode, start, end, work_order=None):
+    cache_key = make_accumulation_key(zipcode, start, end)
+    fetch_key = 'fetch-%s' % cache_key
+    if redis_client.get_key(fetch_key) is not None:
+        redis_client.set_key(fetch_key, '1', 3600)
+        r = _query_accumulation_data(zipcode, start, end)
+        redis_client.set_key(cache_key, json.dumps(r))
+        redis_client.del_key(fetch_key)
+    if work_order:
+        work_order.flag_weatherready = True
+        work_order.save()
 
 # print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))
