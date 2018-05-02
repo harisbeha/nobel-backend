@@ -70,9 +70,7 @@ mark_passed.short_description = 'Mark as passed'
 class CBREWorkOrderForm(forms.ModelForm):
     class Meta:
         model = WorkOrder
-        exclude = ['vendor', 'invoice', 'building', 'storm_name', 'storm_date', 'last_service_date',
-                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
-                'flag_hasdiscrepanciesfailure', 'flag_completed']
+        fields = ['vendor', 'invoice']
 
 
 @register(WorkOrderProxyCBRE)
