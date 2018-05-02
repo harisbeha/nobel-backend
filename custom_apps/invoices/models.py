@@ -162,10 +162,11 @@ class WorkOrder(BaseModel):
     @property
     def predicted_amount(self):
         try:
-            if self.snowfall < 3:
-                return self.snowfall * self.workorder.building.deice_rate
+            snowfall = int(self.snowfall)
+            if snowfall < 3:
+                return snowfall * self.workorder.building.deice_rate
             else:
-                return (3 * self.workorder.building.deice_rate) + ((self.snowfall - 3) * self.workorder.building.plow_rate)
+                return (3 * self.workorder.building.deice_rate) + ((snowfall - 3) * self.workorder.building.plow_rate)
         except Exception as e:
             return ''
 
@@ -249,9 +250,9 @@ class WorkOrderProxyNWA(WorkOrder):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
 
 class InvoiceForecastReportProxyNWA(WorkOrder):
-    class Meta(Invoice.Meta):
+    class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'forecast report invoice (actually a WO)'
+        verbose_name = 'forecast report work order'
 
     def __str__(self):
         return 'Invoice #%s' % (self.id)
