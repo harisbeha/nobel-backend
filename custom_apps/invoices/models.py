@@ -56,7 +56,7 @@ class RegionalAdmin(BaseModel):
 
 class Invoice(AddressMetadataStorageMixin, BaseModel):
     vendor = models.ForeignKey('invoices.Vendor')
-    remission_address = AddressField('Full mailing addresses to send remission', null=True, blank=True)
+    remission_address = AddressField('remission address', null=True, blank=True)
 
     # objects = InvoiceManger()
 
@@ -79,10 +79,10 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     address = AddressField('Full building address')
     type = models.IntegerField('Type of property', choices=BuildingType.choices())
 
-    deice_rate = DollarsField('Cost without tax per de-icing service')
-    deice_tax = DollarsField('Tax per de-icing service')
-    plow_rate = DollarsField('Cost without tax per plow service')
-    plow_tax = DollarsField('Tax per plow service')
+    deice_rate = DollarsField('Cost per de-icing w/o tax')
+    deice_tax = DollarsField('Tax per de-icing')
+    plow_rate = DollarsField('Cost per plow w/o tax')
+    plow_tax = DollarsField('Tax per plow')
 
     objects = BuildingManager()
     audit = AuditTrailWatcher()
@@ -105,21 +105,21 @@ class WorkOrder(BaseModel):
     invoice = models.ForeignKey('invoices.Invoice', blank=True, null=True)
     building = models.ForeignKey('invoices.Building')
 
-    storm_name = models.CharField('Name of the event for which work is being done in response', max_length=100)
-    storm_date = models.DateField('Date of the last storm event')
-    last_service_date = models.DateField('Date of last service at this location')
+    storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100)
+    storm_date = models.DateField(help_text='Date of the last storm event')
+    last_service_date = models.DateField(help_text='Date of last service at this location')
 
-    flag_safe = models.BooleanField('Property safe to open?', null=False, default=False)
-    flag_visitsdocumented = models.BooleanField('all information about work visits entered?', null=False,
+    flag_safe = models.BooleanField(help_text='Property safe to open?', null=False, default=False)
+    flag_visitsdocumented = models.BooleanField(help_text='all information about work visits entered?', null=False,
                                                 default=False)
-    flag_weatherready = models.BooleanField('Spending forecast generated for work order?',
+    flag_weatherready = models.BooleanField(help_text='Spending forecast generated for work order?',
                                             null=False, default=False)
-    flag_failure = models.NullBooleanField('Service failure marked by cbre?', null=True, default=None)
+    flag_failure = models.NullBooleanField(help_text='Service failure marked by client?', null=True, default=None)
     flag_hasdiscrepancies = models.NullBooleanField(
-        'Discrepancies in forecasted/actual spending for the work order?', null=True, default=None)
+        help_text='Discrepancies in forecasted/actual spending for the work order?', null=True, default=None)
     flag_hasdiscrepanciesfailure = models.BooleanField(
-        'Vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
-    flag_completed = models.BooleanField('Sent to the vendor on a finalized invoice?',
+        help_text='Vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
+    flag_completed = models.BooleanField(help_text='Sent to the vendor on a finalized invoice?',
                                          null=False, default=False)
 
     objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
@@ -224,7 +224,7 @@ class DiscrepancyReport(BaseModel):
 class RegionalAdminProxyNWA(RegionalAdmin):
     class Meta(RegionalAdmin.Meta):
         proxy = True
-        verbose_name = 'Create CBRE admin'
+        verbose_name = 'internal regional admin'
 
     def __str__(self):
         return 'CBRE admin %s' % (self.name)
@@ -233,7 +233,7 @@ class RegionalAdminProxyNWA(RegionalAdmin):
 class WorkOrderProxyNWA(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Check for discrepancies in work order'
+        verbose_name = 'discrepancy reviewable work order'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
@@ -242,7 +242,7 @@ class WorkOrderProxyNWA(WorkOrder):
 class VendorProxyCBRE(Vendor):
     class Meta(Vendor.Meta):
         proxy = True
-        verbose_name = 'Create new vendor'
+        verbose_name = 'client vendor'
 
     def __str__(self):
         return 'Vendor %s' % (self.name)
@@ -251,7 +251,7 @@ class VendorProxyCBRE(Vendor):
 class WorkOrderProxyCBRE(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Check work orders for failure'
+        verbose_name = 'reviewable work orders'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
@@ -260,7 +260,7 @@ class WorkOrderProxyCBRE(WorkOrder):
 class WorkOrderProxyVendor(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Create and manage work order'
+        verbose_name = 'vendor work order'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
