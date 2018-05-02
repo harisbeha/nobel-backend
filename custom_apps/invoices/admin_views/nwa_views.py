@@ -4,10 +4,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.template import loader
 
-from ..models import RegionalAdminProxyNWA, WorkOrderProxyNWA, WorkVisit, SafetyReport, DiscrepancyReport
+from ..models import RegionalAdminProxyNWA, WorkOrderProxyNWA, WorkVisit, SafetyReport, DiscrepancyReport, WorkOrder
 from ..enums import Group
 from .common import ReadOnlyMixin, AppendOnlyMixin
-
+from django import forms
 
 # all the views in this file should be visible only to nwa
 class NWAModelAdmin(ModelAdmin):
@@ -70,6 +70,15 @@ def mark_has_discrepancies_failure(modeladmin, request, queryset):
 mark_has_discrepancies_failure.short_description = 'Mark as failure with discrepancies'
 
 
+class NWAWorkOrderForm(forms.ModelForm):
+    class Meta:
+        model = WorkOrder
+        exclude = ['vendor', 'invoice', 'building', 'storm_name', 'storm_date', 'last_service_date',
+                'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
+                'flag_hasdiscrepanciesfailure', 'flag_completed']
+
+
+
 # this is the inline for nwa to moderate work orders
 @register(WorkOrderProxyNWA)
 class NWAModeratesWorkOrders(NWAModelAdmin):
@@ -82,6 +91,7 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
     list_display = ['vendor', 'invoice', 'building', 'storm_name', 'has_ice', 'duration', 'snowfall']
     list_filter = ['vendor', 'invoice', 'building', 'storm_name']
     raw_id_fields = ('building',)
+    form = NWAWorkOrderForm
 
 
     def get_readonly_fields(self, request, obj=None):
