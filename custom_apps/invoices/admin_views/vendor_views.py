@@ -80,7 +80,7 @@ mark_visitsdocumented.short_description = 'Mark as visits documented'
 class VendorWorkOrderForm(forms.ModelForm):
     class Meta:
         model = WorkOrder
-        fields = ['building']
+        fields = ['building', 'storm_name', 'storm_date']
 
 
 # this is the admin for creating and editing workorders
@@ -97,7 +97,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     raw_id_fields = ('building',)
     exclude = ('vendor', 'invoice', 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure', 'flag_completed',)
     form = VendorWorkOrderForm
-    fieldsets = ( ('Installation Info', {'fields': ('building', 'vendor',), 'classes': ['wide']}),
+    fieldsets = ( ('Installation Info', {'fields': ('building', 'storm_name', 'storm_date', 'vendor',), 'classes': ['wide']}),
                 )
 
 
