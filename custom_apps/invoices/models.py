@@ -8,7 +8,8 @@ from model_utils import FieldTracker
 from custom_apps.invoices.enums import *
 from custom_apps.utils.fields import AddressField, DollarsField, AddressMetadataStorageMixin
 from ..utils.models import BaseModel
-
+from custom_apps.data_ingestion.bq import query_for_accumulation_zip
+from django.conf import settings
 
 # An invoice (e.g. https://drive.google.com/file/d/1XWeqbQ-VRXV4C4zy6mOwv2Sasnwpv2WO/view) has multiple work orders
 # and a work order has multiple jobs
@@ -127,6 +128,27 @@ class WorkOrder(BaseModel):
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
+
+    @property
+    def has_ice(self):
+        has_ice = query_for_accumulation_zip(self.building.address_field_storage['postal_code'],
+                                             settings.DEMO_SNOWFALL_DATA_START,
+                                             settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+        return has_ice
+
+    @property
+    def snowfall(self):
+        snowfall = query_for_accumulation_zip(self.building.address_field_storage['postal_code'],
+                                             settings.DEMO_SNOWFALL_DATA_START,
+                                             settings.DEMO_SNOWFALL_DATA_END)['snowfall']
+        return snowfall
+
+    @property
+    def duration(self):
+        duration = query_for_accumulation_zip(self.building.address_field_storage['postal_code'],
+                                             settings.DEMO_SNOWFALL_DATA_START,
+                                             settings.DEMO_SNOWFALL_DATA_END)['duration']
+        return duration
 
 
 # manager for the below relation
