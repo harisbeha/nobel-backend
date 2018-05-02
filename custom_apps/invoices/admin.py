@@ -186,12 +186,14 @@ class BaseModelAdmin(NestedModelAdmin):
         hidden_fields = self._get_hidden_fields(request, model)
         for h in hidden_fields:
             if h in formset.form.base_fields:
-                formset.form.base_fields[h].widget = HiddenInput()
+                formset.form.base_fields[h].disabled = True
 
         readonly_fields = self._get_readonly_fields(request, model)
         for h in readonly_fields:
             if h in formset.form.base_fields:
                 formset.form.base_fields[h].disabled = True
+        if 'address_info_storage' in formset.form.base_fields:
+            formset.form.base_fields['address_info_storage'].disabled = True
 
         return formset
 

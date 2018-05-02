@@ -6,6 +6,7 @@ from ..models import *
 
 # all the views in this file should be visible only to the superuser
 class SuperuserModelAdmin(ImportExportActionModelAdmin):
+    exclude = ['address_info_storage']
     def has_module_permission(self, request):
         if request.user.is_superuser:
             return True

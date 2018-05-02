@@ -12,6 +12,7 @@ from django import forms
 
 # all the views in this file should be visible only to nwa
 class NWAModelAdmin(ModelAdmin):
+    exclude = ['address_info_storage']
     def has_module_permission(self, request):
         if request.user.groups.filter(name=Group.NWA.value).count() > 0:
             return True

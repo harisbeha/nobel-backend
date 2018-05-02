@@ -10,10 +10,12 @@ from django import forms
 
 # all the views in this file should be visible only to cbre
 class CBREModelAdmin(ModelAdmin):
+    exclude = ['address_info_storage']
     def has_module_permission(self, request):
         if request.user.groups.filter(name=Group.CBRE.value).count() > 0:
             return True
         return False
+
 
 
 # this is the admin to create vendors

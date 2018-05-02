@@ -15,6 +15,7 @@ from ..enums import Group
 
 # all the views in this file should be visible only to vendor
 class VendorModelAdmin(ImportExportActionModelAdmin):
+    exclude = ['address_info_storage']
     def has_module_permission(self, request):
         if request.user.groups.filter(name='Vendor').count() > 0:
             return True
