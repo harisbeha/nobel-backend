@@ -224,7 +224,7 @@ class DiscrepancyReport(BaseModel):
 class RegionalAdminProxyNWA(RegionalAdmin):
     class Meta(RegionalAdmin.Meta):
         proxy = True
-        verbose_name = 'Create CBRE admin'
+        verbose_name = 'internal regional admin'
 
     def __str__(self):
         return 'CBRE admin %s' % (self.name)
@@ -233,7 +233,7 @@ class RegionalAdminProxyNWA(RegionalAdmin):
 class WorkOrderProxyNWA(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Check for discrepancies in work order'
+        verbose_name = 'discrepancy reviewable work order'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
@@ -242,7 +242,7 @@ class WorkOrderProxyNWA(WorkOrder):
 class VendorProxyCBRE(Vendor):
     class Meta(Vendor.Meta):
         proxy = True
-        verbose_name = 'Create new vendor'
+        verbose_name = 'client vendor'
 
     def __str__(self):
         return 'Vendor %s' % (self.name)
@@ -251,7 +251,7 @@ class VendorProxyCBRE(Vendor):
 class WorkOrderProxyCBRE(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Check work orders for failure'
+        verbose_name = 'reviewable work orders'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
@@ -260,7 +260,7 @@ class WorkOrderProxyCBRE(WorkOrder):
 class WorkOrderProxyVendor(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Create and manage work order'
+        verbose_name = 'vendor work order'
 
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
