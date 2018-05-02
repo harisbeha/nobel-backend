@@ -26,7 +26,7 @@ class CBRECreatesVendors(CBREModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         # TODO: figure out a way to get this list dynamically
-        return {'region'}
+        return {'region', 'address_info_storage'}
 
     def save_model(self, request, obj, form, change):
         user = request.user
@@ -93,6 +93,7 @@ class CBREModeratesWorkOrders(CBREModelAdmin):
         return {'vendor', 'invoice', 'building', 'storm_name', 'storm_date', 'last_service_date',
                 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies',
                 'flag_hasdiscrepanciesfailure', 'flag_completed'}
+
 
     def has_delete_permission(self, request, obj=None):
         return False
