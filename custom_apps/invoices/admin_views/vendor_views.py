@@ -81,6 +81,12 @@ class VendorWorkOrderForm(forms.ModelForm):
         model = WorkOrder
         fields = ['building']
 
+    def get_exclude(self, request, obj=None):
+        """
+        Hook for specifying exclude.
+        """
+        return ('vendor', 'invoice', 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure', 'flag_completed',)
+
 # this is the admin for creating and editing workorders
 @register(WorkOrderProxyVendor)
 class VendorCreatesWorkOrders(VendorModelAdmin):
@@ -94,6 +100,7 @@ class VendorCreatesWorkOrders(VendorModelAdmin):
     list_display = ['vendor', 'invoice', 'building', 'storm_name']
     raw_id_fields = ('building',)
     form = VendorWorkOrderForm
+    exclude = ('vendor', 'invoice', 'flag_safe', 'flag_visitsdocumented', 'flag_weatherready', 'flag_failure', 'flag_hasdiscrepancies', 'flag_hasdiscrepanciesfailure', 'flag_completed',)
 
     def get_exclude(self, request, obj=None):
         """
