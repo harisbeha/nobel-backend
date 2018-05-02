@@ -238,6 +238,13 @@ class WorkOrderProxyNWA(WorkOrder):
     def __str__(self):
         return 'WO#%s for %s' % (self.id, self.vendor.name)
 
+class WorkOrderForecastReportProxyNWA(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'forecast report work order'
+
+    def __str__(self):
+        return 'WO#%s for %s' % (self.id, self.vendor.name)
 
 class VendorProxyCBRE(Vendor):
     class Meta(Vendor.Meta):

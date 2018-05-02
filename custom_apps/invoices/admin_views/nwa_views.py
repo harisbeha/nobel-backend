@@ -4,7 +4,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.template import loader
 
-from ..models import RegionalAdminProxyNWA, WorkOrderProxyNWA, WorkVisit, SafetyReport, DiscrepancyReport, WorkOrder
+from ..models import RegionalAdminProxyNWA, WorkOrderProxyNWA, WorkVisit, SafetyReport, DiscrepancyReport, WorkOrder, \
+    WorkOrderForecastReportProxyNWA
 from ..enums import Group
 from .common import ReadOnlyMixin, AppendOnlyMixin
 from django import forms
@@ -116,7 +117,7 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
             flag_visitsdocumented=True,
             flag_completed=False).filter(Q(flag_failure__isnull=True) | Q(flag_failure=False))
 
-@register(WorkOrderProxyNWA)
+@register(WorkOrderForecastReportProxyNWA)
 class NWAForecastReports(NWAModelAdmin):
     # TODO: set flag_hasdiscrepancies = True and send email on discrepancy report - signal?
     # TODO: set authorship for discrepancy orders automatically
@@ -146,7 +147,7 @@ class NWAForecastReports(NWAModelAdmin):
         return True
 
     def get_queryset(self, request):
-        qs = super(NWAModeratesWorkOrders, self).get_queryset(request)
+        qs = super(NWAForecastReports, self).get_queryset(request)
         return qs.filter(
             flag_weatherready=True,
             flag_visitsdocumented=True,
