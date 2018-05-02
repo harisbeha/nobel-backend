@@ -7,7 +7,8 @@ from django.template import loader
 from ..models import RegionalAdminProxyNWA, WorkOrderProxyNWA, WorkVisit, SafetyReport, DiscrepancyReport
 from ..enums import Group
 from .common import ReadOnlyMixin, AppendOnlyMixin
-
+from custom_apps.data_ingestion.bq import query_for_accumulation_zip
+from django.conf import settings
 
 # all the views in this file should be visible only to nwa
 class NWAModelAdmin(ModelAdmin):
@@ -80,7 +81,29 @@ class NWAModeratesWorkOrders(NWAModelAdmin):
     actions = [mark_has_no_discrepancies, mark_has_discrepancies_failure]
     inlines = [WorkVisitInline, SafetyReportInline, DiscrepancyReportInline]
     list_display = ['vendor', 'invoice', 'building', 'storm_name']
+    list_filter = ['vendor', 'invoice', 'building', 'storm_name', 'has_ice', 'duration', 'snowfall']
     raw_id_fields = ('building',)
+
+    def get_has_ice(self):
+
+        has_ice = query_for_accumulation_zip(self.model.building.address_field_storage['postal_code'],
+                                             settings.DEMO_SNOWFALL_DATA_START,
+                                             settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+        return has_ice
+
+
+    def get_duration(self):
+        duration = query_for_accumulation_zip(self.model.building.address_field_storage['postal_code'],
+                                             settings.DEMO_SNOWFALL_DATA_START,
+                                             settings.DEMO_SNOWFALL_DATA_END)['duration']
+        return duration
+
+    def get_snowfall(self):
+        snowfall = query_for_accumulation_zip(self.model.building.address_field_storage['postal_code'],
+                                             settings.DEMO_SNOWFALL_DATA_START,
+                                             settings.DEMO_SNOWFALL_DATA_END)['snowfall']
+        return snowfall
+
 
     def get_readonly_fields(self, request, obj=None):
         # TODO: figure out a way to get this list dynamically
