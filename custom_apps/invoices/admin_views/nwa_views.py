@@ -127,11 +127,11 @@ let's make the predicted amount something stupid and simple, like '$' + (750 * s
 @register(InvoiceForecastReportProxyNWA)
 class NWAForecastReports(NWAModelAdmin):
 
-    list_display = ['id', 'invoice', 'building', 'has_ice', 'duration', 'snowfall', 'predicted_amount']
+    list_display = ['id', 'workorder__building', 'workorder__has_ice', 'workorder__duration', 'workorder__snowfall', 'workorder__predicted_amount']
 
     def get_readonly_fields(self, request, obj=None):
         # TODO: figure out a way to get this list dynamically
-        return {'id', 'invoice', 'building', 'has_ice', 'duration', 'snowfall', 'predicted_amount'}
+        return {'id', 'workorder__building', 'workorder__has_ice', 'workorder__duration', 'workorder__snowfall', 'workorder__predicted_amount'}
 
     def has_delete_permission(self, request, obj=None):
         return False
