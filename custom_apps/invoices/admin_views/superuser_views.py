@@ -161,6 +161,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 @register(InvoiceProxyPrelim)
 class InvoiceAdmin(admin.ModelAdmin):
     inlines = [WorkOrderInline]
+    list_display = ['safetyreport']
     limited_manytomany_fields = {}
 
     def get_changeform_initial_data(self, request):
@@ -258,9 +259,9 @@ class BuildingAdmin(SuperuserModelAdmin):
 
 #
 #
-# @register(RegionalAdmin)
-# class RegionalManagerAdmin(SuperuserModelAdmin):
-#     list_display = ['name', 'system_user']
+@register(RegionalAdmin)
+class RegionalManagerAdmin(SuperuserModelAdmin):
+    list_display = ['name', 'system_user']
 #
 #
 # @register(VendorSettings)
