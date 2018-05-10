@@ -29,13 +29,12 @@ class SRFormSet(BaseInlineFormSet):
 
 
 from django.forms import ModelForm
-class WOrderForm(ModelForm):
-    fields = ['vendor', 'building', 'number_plows', 'number_salts']
+# class WOrderForm(ModelForm):
+#     fields = ['vendor', 'building', 'number_plows', 'number_salts']
 
 
 class WOFormSet(BaseInlineFormSet):
     model = WorkOrder
-    form = WOrderForm
 
     def __init__(self, *args, **kwargs):
         super(WOFormSet, self).__init__(*args, **kwargs)
@@ -45,7 +44,6 @@ class WOFormSet(BaseInlineFormSet):
 from django.utils.functional import curry
 class WorkOrderInline(admin.TabularInline):
     model = WorkOrder
-    form = WOrderForm
     formset = WOFormSet
 
     def get_formset(self, *args, **kwargs):
@@ -62,9 +60,15 @@ class WorkOrderInline(admin.TabularInline):
             # Populate initial based on request
             #
             locations = get_locations_by_system_user(request.user).values('id')
-            vendor = get_locations_by_system_user(request.user).values('vendor_id')
+            vendor = obj.vendor_id
+            if obj:
+                storm_name = obj.storm_name
+            else:
+                storm_name = ''
+
+            print(locations.count())
             for l in locations:
-                initial.append({'building': str(l['id']), 'vendor': str(vendor)})
+                initial.append({'building': str(l['id']), 'vendor': vendor, 'storm_name': storm_name})
             # initial.append({
             #     'building': locations,
             # })
@@ -77,9 +81,7 @@ class WorkOrderInline(admin.TabularInline):
         """Dynamically sets the number of extra forms. 0 if the related object
         already exists or the extra configuration otherwise."""
         if obj:
-            # Don't add any extra forms if the related object already exists.
-            return 0
-        return get_locations_by_system_user(request.user).count()
+            return get_locations_by_system_user(request.user).count()
 
 
 
@@ -106,7 +108,7 @@ class SafetyReportInline(admin.TabularInline):
             locations = get_locations_by_system_user(request.user).values('id')
             print(locations.count())
             for l in locations:
-                initial.append({'building': str(l['id'])})
+                initial.append({'building': str(l['id']), 'safe_to_open': True, 'last_service_date': '2018-05-10'})
             # initial.append({
             #     'building': locations,
             # })
@@ -161,7 +163,6 @@ class InvoiceAdmin(admin.ModelAdmin):
 @register(InvoiceProxyPrelim)
 class InvoiceAdmin(admin.ModelAdmin):
     inlines = [WorkOrderInline]
-    list_display = ['safetyreport']
     limited_manytomany_fields = {}
 
     def get_changeform_initial_data(self, request):
