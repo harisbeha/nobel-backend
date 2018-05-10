@@ -309,7 +309,7 @@ class WorkOrderProxyVendor(WorkOrder):
 class InvoiceProxyVendor(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Closeout Report'
+        verbose_name = 'Generate Safety Reports'
 
     def __str__(self):
         return 'Inv admin %s' % (self.id)
