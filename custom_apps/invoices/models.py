@@ -94,6 +94,8 @@ class BuildingManager(models.Manager):
 class Building(AddressMetadataStorageMixin, BaseModel):
     address = AddressField('Full building address')
     type = models.IntegerField('Type of property', choices=BuildingType.choices())
+    short_name = models.CharField(max_length=255, null=True, blank=True)
+    building_code = models.CharField(max_length=255, null=True, blank=True)
 
     deice_rate = DollarsField('Cost per de-icing w/o tax')
     deice_tax = DollarsField('Tax per de-icing')
@@ -105,7 +107,9 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     audit = AuditTrailWatcher()
 
     def __str__(self):
-        return 'Building#%s at %s' % (self.id, self.address)
+        if self.building_code:
+            return 'BC#: {0} - {1} '.format(self.id, self.building_code)
+        return 'ID: {0} - {1} '.format(self.id, self.address)
 
 
 # manager for the below relation
