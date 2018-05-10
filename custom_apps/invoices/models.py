@@ -35,7 +35,7 @@ class Vendor(AddressMetadataStorageMixin, BaseModel):
     audit = AuditTrailWatcher()
 
     def __str__(self):
-        return 'temp'
+        return '{0}'.format(self.name)
 
 
 class RegionalAdmin(BaseModel):
