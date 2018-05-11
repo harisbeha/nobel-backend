@@ -108,7 +108,7 @@ class Building(AddressMetadataStorageMixin, BaseModel):
 
     def __str__(self):
         if self.building_code:
-            return 'BC#: {0} - {1} '.format(self.id, self.building_code)
+            return 'BC#: {0} - {1} '.format(self.building_code, self.address)
         return 'ID: {0} - {1} '.format(self.id, self.address)
 
 
