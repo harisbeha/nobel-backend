@@ -341,7 +341,7 @@ class InvoiceProxyPrelim(Invoice):
         verbose_name = 'Preliminary Invoice'
 
     def __str__(self):
-        return 'Inv # %s' % self.id
+        return 'Invoice # {0}'.format(self.id)
 
 
 

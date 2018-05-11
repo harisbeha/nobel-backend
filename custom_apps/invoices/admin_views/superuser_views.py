@@ -256,7 +256,7 @@ def plow_tax(self, obj=None):
     return self.building.plow_tax
 
 def work_order(self, obj=None):
-    return self.id
+    return self
 
 def deicing_fee(self, obj=None):
     return 'PH'
@@ -279,14 +279,21 @@ def refreeze(self, obj=None):
 def number_salts(self, obj=None):
     return 'PH'
 
-def delta_salts(self, obj=None):
+def salts_delta(self, obj=None):
     return 'PH'
 
 def number_plows(self, obj=None):
     return 'PH'
 
-def delta_plows(self, obj=None):
+def push_delta(self, obj=None):
     return 'PH'
+
+def deicing_cost_delta(self, obj=None):
+    return 'PH'
+
+def plowing_cost_delta(self, obj=None):
+    return 'PH'
+
 
 
 class ServiceForecast(admin.ModelAdmin):
@@ -301,7 +308,7 @@ class DiscrepancyReview(admin.ModelAdmin):
     model = WorkProxyServiceDiscrepancy
     list_display = [invoice, vendor, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, work_order, snowfall, storm_days, refreeze,
-                    number_salts, number_plows, deicing_fee, plow_fee, storm_total]
+                    number_salts, salts_delta, number_plows, push_delta, deicing_cost_delta, plowing_cost_delta]
 
 
 @register(Building)
