@@ -259,40 +259,43 @@ def work_order(self, obj=None):
     return self
 
 def deicing_fee(self, obj=None):
-    return 'PH'
+    cost = self.building.deice_rate * self.num_salts
+    return str(cost)
 
 def plow_fee(self, obj=None):
-    return 'PH'
+    cost = self.building.plow_rate * self.num_plows
+    return str(cost)
 
 def storm_total(self, obj=None):
-    return 'PH'
+    total = deicing_fee(self) + plow_fee(self)
+    return total
 
 def snowfall(self, obj=None):
-    return 'PH'
+    return 1.4
 
 def storm_days(self, obj=None):
-    return 'PH'
+    return 2
 
 def refreeze(self, obj=None):
-    return 'PH'
+    return '0'
 
 def number_salts(self, obj=None):
-    return 'PH'
+    return self.num_salts
 
 def salts_delta(self, obj=None):
-    return 'PH'
+    return '3'
 
 def number_plows(self, obj=None):
-    return 'PH'
+    return self.num_plows
 
 def push_delta(self, obj=None):
-    return 'PH'
+    return '4'
 
 def deicing_cost_delta(self, obj=None):
-    return 'PH'
+    return '$128.99'
 
 def plowing_cost_delta(self, obj=None):
-    return 'PH'
+    return '$199.10'
 
 
 
