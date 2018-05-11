@@ -61,7 +61,7 @@ class PrelimInvoice(AddressMetadataStorageMixin, BaseModel):
     event_end = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return 'Invoice %s for %s' % (self.id, self.vendor.name)
+        return 'Invoice #: {0}'.format(self.id)
 
     audit = AuditTrailWatcher()
 
@@ -77,7 +77,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     # objects = InvoiceManger()
 
     def __str__(self):
-        return 'Invoice %s for %s' % (self.id, self.vendor.name)
+        return 'Invoice # {0}'.format(self.id)
 
     audit = AuditTrailWatcher()
 

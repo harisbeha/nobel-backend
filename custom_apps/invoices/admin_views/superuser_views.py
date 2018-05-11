@@ -228,49 +228,49 @@ class InvoiceAdmin(admin.ModelAdmin):
 #
 #     pass
 
-def total_plows(self):
+def total_plows(self, obj=None):
     return 1
 
-def total_salts(self):
+def total_salts(self, obj=None):
     return 2
 
-def invoice(obj):
+def invoice(self, obj=None):
+    return self.invoice
+
+def vendor(self, obj=None):
+    return self.vendor
+
+def location(self, obj=None):
+    return self.building
+
+def deicing_rate(self, obj=None):
+    return self.building.deice_rate
+
+def deicing_tax(self, obj=None):
+    return self.building.deice_tax
+
+def plow_rate(self, obj=None):
+    return self.building.plow_rate
+
+def plow_tax(self, obj=None):
+    return self.building.plow_tax
+
+def work_order(self, obj=None):
+    return self.id
+
+def deicing_fee(self, obj=None):
     return 'PH'
 
-def vendor(obj):
+def plow_fee(self, obj=None):
     return 'PH'
 
-def location(self):
+def storm_total(self, obj=None):
     return 'PH'
 
-def deicing_rate(self):
+def snowfall(self, obj=None):
     return 'PH'
 
-def deicing_tax(self):
-    return 'PH'
-
-def plow_rate(self):
-    return 'PH'
-
-def plow_tax(self):
-    return 'PH'
-
-def work_order(self):
-    return 'PH'
-
-def deicing_fee(self):
-    return 'PH'
-
-def plow_fee(self):
-    return 'PH'
-
-def storm_total(self):
-    return 'PH'
-
-def snowfall(self):
-    return 'PH'
-
-def storm_days(self):
+def storm_days(self, obj=None):
     return 'PH'
 
 def refreeze(self, obj=None):
@@ -291,6 +291,7 @@ def delta_plows(self, obj=None):
 
 class ServiceForecast(admin.ModelAdmin):
     model = WorkProxyServiceForecast
+    list_filter = ('invoice__storm_name', 'invoice__storm_date')
     list_display = [invoice, vendor, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, work_order, snowfall, storm_days, refreeze,
                     number_salts, number_plows, deicing_fee, plow_fee, storm_total]
@@ -335,9 +336,24 @@ class VendorAdmin(SuperuserModelAdmin):
 #     list_display = ['work_order', 'response_time_start', 'response_time_end']
 #
 #
-# @register(SafetyReport)
-# class SafetyReportAdmin(SuperuserModelAdmin):
-#     list_display = ['work_order', 'safe_to_open']
+
+
+def storm_date(obj):
+    return obj.invoice.storm_date
+
+
+def storm_name(obj):
+    return obj.invoice.storm_name
+
+@register(SafetyReport)
+class SafetyReportAdmin(admin.ModelAdmin):
+    # list_filter = (storm_date, storm_date)
+    list_display = ['building', storm_name, storm_date, 'existing_work_order', 'safe_to_open', 'last_service_date']
+
+    def existing_work_order(self, obj):
+        existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
+        return existing_work_order
+    existing_work_order.boolean = True
 #
 #
 # @register(DiscrepancyReport)
