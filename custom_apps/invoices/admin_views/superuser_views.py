@@ -83,7 +83,8 @@ class WorkOrderInline(admin.TabularInline):
         """Dynamically sets the number of extra forms. 0 if the related object
         already exists or the extra configuration otherwise."""
         if obj:
-            return get_locations_by_system_user(request.user).count()
+            return 0
+        return get_locations_by_system_user(request.user).count()
 
 
 
@@ -230,30 +231,76 @@ class InvoiceAdmin(admin.ModelAdmin):
 def total_plows(self):
     return 1
 
-
 def total_salts(self):
     return 2
 
+def invoice(obj):
+    return 'PH'
 
-@register(InvoiceProxyForecast)
-class WorkOrderWeatherReviewAdmin(admin.ModelAdmin):
-    model = InvoiceProxyForecast
-    list_display = ['vendor',
-                    total_plows,
-                    total_salts]
+def vendor(obj):
+    return 'PH'
 
-    index_template = 'admin/invoice_admin.html'
+def location(self):
+    return 'PH'
+
+def deicing_rate(self):
+    return 'PH'
+
+def deicing_tax(self):
+    return 'PH'
+
+def plow_rate(self):
+    return 'PH'
+
+def plow_tax(self):
+    return 'PH'
+
+def work_order(self):
+    return 'PH'
+
+def deicing_fee(self):
+    return 'PH'
+
+def plow_fee(self):
+    return 'PH'
+
+def storm_total(self):
+    return 'PH'
+
+def snowfall(self):
+    return 'PH'
+
+def storm_days(self):
+    return 'PH'
+
+def refreeze(self, obj=None):
+    return 'PH'
+
+def number_salts(self, obj=None):
+    return 'PH'
+
+def delta_salts(self, obj=None):
+    return 'PH'
+
+def number_plows(self, obj=None):
+    return 'PH'
+
+def delta_plows(self, obj=None):
+    return 'PH'
 
 
+class ServiceForecast(admin.ModelAdmin):
+    model = WorkProxyServiceForecast
+    list_display = [invoice, vendor, location, deicing_rate, deicing_tax, plow_rate,
+                    plow_tax, work_order, snowfall, storm_days, refreeze,
+                    number_salts, number_plows, deicing_fee, plow_fee, storm_total]
 
 
-class DiscrepancyForecast(admin.ModelAdmin):
-    list_display = ['building']
-
-
-@register(InvoiceProxyDiscrepancy)
-class InvoiceDiscrepAdmin(admin.ModelAdmin):
-    pass
+class DiscrepancyReview(admin.ModelAdmin):
+    model = WorkProxyServiceDiscrepancy
+    list_display = [invoice, vendor, location, deicing_rate, deicing_tax, plow_rate,
+                    plow_tax, work_order, snowfall, storm_days, refreeze,
+                    number_salts, number_plows, deicing_fee, plow_fee, storm_total]
 
 
 @register(Building)

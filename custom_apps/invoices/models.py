@@ -342,3 +342,22 @@ class InvoiceProxyPrelim(Invoice):
 
     def __str__(self):
         return 'Inv # %s' % self.id
+
+
+
+class WorkProxyServiceForecast(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'Service Forecast'
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.invoice_id, self.id)
+
+
+class WorkProxyServiceDiscrepancy(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'Discrepancy Report'
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.invoice_id, self.id)

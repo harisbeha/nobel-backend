@@ -21,7 +21,7 @@ from .enums import ReportState
 from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings
 
 
-from .admin_views import superuser_views
+from .admin_views.superuser_views import ServiceForecast, DiscrepancyReview, WorkProxyServiceForecast, WorkProxyServiceDiscrepancy
 
-
-
+admin.site.register(WorkProxyServiceForecast, ServiceForecast)
+admin.site.register(WorkProxyServiceDiscrepancy, DiscrepancyReview)
