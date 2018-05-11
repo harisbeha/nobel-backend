@@ -267,7 +267,7 @@ def plow_fee(self, obj=None):
     return str(cost)
 
 def storm_total(self, obj=None):
-    total = deicing_fee(self) + plow_fee(self)
+    total = str((self.building.plow_rate * self.num_plows) + (self.building.deice_rate * self.num_salts))
     return total
 
 def snowfall(self, obj=None):
