@@ -63,12 +63,14 @@ class WorkOrderInline(admin.TabularInline):
             vendor = obj.vendor_id
             if obj:
                 storm_name = obj.storm_name
+                storm_date = obj.storm_date
             else:
                 storm_name = ''
+                storm_date = ''
 
             print(locations.count())
             for l in locations:
-                initial.append({'building': str(l['id']), 'vendor': vendor, 'storm_name': storm_name})
+                initial.append({'building': str(l['id']), 'vendor': vendor, 'storm_name': storm_name, 'storm_date': storm_date, 'last_service_date': '2018-05-10'})
             # initial.append({
             #     'building': locations,
             # })
