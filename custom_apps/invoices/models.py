@@ -100,10 +100,10 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     short_name = models.CharField(max_length=255, null=True, blank=True)
     building_code = models.CharField(max_length=255, null=True, blank=True)
 
-    deice_rate = DollarsField('Cost per de-icing w/o tax')
-    deice_tax = DollarsField('Tax per de-icing')
-    plow_rate = DollarsField('Cost per plow w/o tax')
-    plow_tax = DollarsField('Tax per plow')
+    deice_rate = DollarsField('Cost per de-icing w/o tax', default=0)
+    deice_tax = DollarsField('Tax per de-icing', default=0)
+    plow_rate = DollarsField('Cost per plow w/o tax', default=0)
+    plow_tax = DollarsField('Tax per plow', default=0)
     service_provider = models.ForeignKey('invoices.Vendor', related_name='vendor_locations', null=True, blank=True)
 
     objects = BuildingManager()
@@ -146,8 +146,8 @@ class WorkOrder(BaseModel):
     #     help_text='Vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
     # flag_completed = models.BooleanField(help_text='Sent to the vendor on a finalized invoice?',
     #                                      null=False, default=False)
-    num_plows = models.IntegerField('# Plows', null=True, blank=True)
-    num_salts = models.IntegerField('# Salts', null=True, blank=True)
+    num_plows = models.IntegerField('# Plows', null=True, blank=True, default=0)
+    num_salts = models.IntegerField('# Salts', null=True, blank=True, default=0)
     failed_service = models.BooleanField('Service Failed?', default=False)
 
     tracker = FieldTracker()
