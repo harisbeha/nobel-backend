@@ -34,6 +34,9 @@ class Vendor(AddressMetadataStorageMixin, BaseModel):
 
     audit = AuditTrailWatcher()
 
+    class Meta:
+        verbose_name = 'Service Provider'
+
     def __str__(self):
         return '{0}'.format(self.name)
 
@@ -67,7 +70,7 @@ class PrelimInvoice(AddressMetadataStorageMixin, BaseModel):
 
 
 class Invoice(AddressMetadataStorageMixin, BaseModel):
-    vendor = models.ForeignKey('invoices.Vendor')
+    service_provider = models.ForeignKey('invoices.Vendor')
     remission_address = AddressField('remission address', null=True, blank=True)
     storm_name = models.CharField(max_length=255, null=True, blank=True)
     storm_date = models.DateField(null=True, blank=True)
@@ -101,7 +104,7 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     deice_tax = DollarsField('Tax per de-icing')
     plow_rate = DollarsField('Cost per plow w/o tax')
     plow_tax = DollarsField('Tax per plow')
-    vendor = models.ForeignKey('invoices.Vendor', related_name='vendor_locations', null=True, blank=True)
+    service_provider = models.ForeignKey('invoices.Vendor', related_name='vendor_locations', null=True, blank=True)
 
     objects = BuildingManager()
     audit = AuditTrailWatcher()
@@ -122,42 +125,43 @@ class WorkOrderManager(models.Manager):
 
 
 class WorkOrder(BaseModel):
-    vendor = models.ForeignKey('invoices.Vendor', null=True, blank=True)
+    work_order_code = models.CharField(max_length=255, blank=True, null=True)
+    service_provider = models.ForeignKey('invoices.Vendor', null=True, blank=True)
     invoice = models.ForeignKey('invoices.Invoice', blank=True, null=True)
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
 
-    storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100)
-    storm_date = models.DateField(help_text='Date of the last storm event')
-    last_service_date = models.DateField(help_text='Date of last service at this location')
+    storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100, blank=True, null=True)
+    storm_date = models.DateField(help_text='Date of the last storm event', blank=True, null=True)
+    last_service_date = models.DateField(help_text='Date of last service at this location', null=True, blank=True)
 
-    flag_safe = models.BooleanField(help_text='Property safe to open?', null=False, default=False)
-    flag_visitsdocumented = models.BooleanField(help_text='all information about work visits entered?', null=False,
-                                                default=False)
-    flag_weatherready = models.BooleanField(help_text='Spending forecast generated for work order?',
-                                            null=False, default=False)
-    flag_failure = models.NullBooleanField(help_text='Service failure marked by client?', null=True, default=None)
-    flag_hasdiscrepancies = models.NullBooleanField(
-        help_text='Discrepancies in forecasted/actual spending for the work order?', null=True, default=None)
-    flag_hasdiscrepanciesfailure = models.BooleanField(
-        help_text='Vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
-    flag_completed = models.BooleanField(help_text='Sent to the vendor on a finalized invoice?',
-                                         null=False, default=False)
-    num_plows = models.IntegerField('# Plows')
-    num_salts = models.IntegerField('# Salts')
+    # flag_safe = models.BooleanField(help_text='Property safe to open?', null=False, default=False)
+    # flag_visitsdocumented = models.BooleanField(help_text='all information about work visits entered?', null=False,
+    #                                             default=False)
+    # flag_weatherready = models.BooleanField(help_text='Spending forecast generated for work order?',
+    #                                         null=False, default=False)
+    # flag_failure = models.NullBooleanField(help_text='Service failure marked by client?', null=True, default=None)
+    # flag_hasdiscrepancies = models.NullBooleanField(
+    #     help_text='Discrepancies in forecasted/actual spending for the work order?', null=True, default=None)
+    # flag_hasdiscrepanciesfailure = models.BooleanField(
+    #     help_text='Vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
+    # flag_completed = models.BooleanField(help_text='Sent to the vendor on a finalized invoice?',
+    #                                      null=False, default=False)
+    num_plows = models.IntegerField('# Plows', null=True, blank=True)
+    num_salts = models.IntegerField('# Salts', null=True, blank=True)
+    failed_service = models.BooleanField('Service Failed?', default=False)
 
-    objects = WorkOrderManager()  # makes extra _cost fields summing tax + rate appear on each query
     tracker = FieldTracker()
     audit = AuditTrailWatcher()
 
     def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.vendor.name)
+        return '{0}'.format(self.work_order_code)
 
     @property
     def has_ice(self):
         try:
             has_ice = _query_accumulation_data(self.building.address_info_storage['postal_code'],
-                                             settings.DEMO_SNOWFALL_DATA_START,
-                                             settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+                                               settings.DEMO_SNOWFALL_DATA_START,
+                                               settings.DEMO_SNOWFALL_DATA_END)['has_ice']
             return has_ice
         except Exception as e:
             return ''
@@ -166,8 +170,8 @@ class WorkOrder(BaseModel):
     def snowfall(self):
         try:
             snowfall = _query_accumulation_data(self.building.address_info_storage['postal_code'],
-                                             settings.DEMO_SNOWFALL_DATA_START,
-                                             settings.DEMO_SNOWFALL_DATA_END)['snowfall']
+                                                settings.DEMO_SNOWFALL_DATA_START,
+                                                settings.DEMO_SNOWFALL_DATA_END)['snowfall']
             return snowfall
         except Exception as e:
             return ''
@@ -176,8 +180,8 @@ class WorkOrder(BaseModel):
     def duration(self):
         try:
             duration = _query_accumulation_data(self.building.address_info_storage['postal_code'],
-                                             settings.DEMO_SNOWFALL_DATA_START,
-                                             settings.DEMO_SNOWFALL_DATA_END)['duration']
+                                                settings.DEMO_SNOWFALL_DATA_START,
+                                                settings.DEMO_SNOWFALL_DATA_END)['duration']
             return duration
         except Exception as e:
             return ''
@@ -193,6 +197,7 @@ class WorkOrder(BaseModel):
                        (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
         except Exception as e:
             return ''
+
 
 # manager for the below relation
 class WorkVisitManager(models.Manager):
@@ -242,7 +247,7 @@ class SafetyReport(BaseModel):
     audit = AuditTrailWatcher()
 
     def __str__(self):
-        return 'Safety Report #%s for' % (self.id)
+        return 'Safety Report #{0} for'.format(self.id)
 
 
 class DiscrepancyReport(BaseModel):
@@ -273,7 +278,7 @@ class WorkOrderProxyNWA(WorkOrder):
         verbose_name = 'discrepancy reviewable work order'
 
     def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.vendor.name)
+        return 'WO#%s for %s' % (self.id, self.service_provider.name)
 
 class InvoiceForecastReportProxyNWA(WorkOrder):
     class Meta(WorkOrder.Meta):
@@ -298,7 +303,7 @@ class WorkOrderProxyCBRE(WorkOrder):
         verbose_name = 'reviewable work orders'
 
     def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.vendor.name)
+        return 'WO#%s for %s' % (self.id, self.service_provider.name)
 
 
 class WorkOrderProxyVendor(WorkOrder):
@@ -307,7 +312,7 @@ class WorkOrderProxyVendor(WorkOrder):
         verbose_name = 'vendor work order'
 
     def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.vendor.name)
+        return 'WO#%s for %s' % (self.id, self.service_provider.name)
 
 
 class InvoiceProxyVendor(Invoice):
@@ -316,7 +321,7 @@ class InvoiceProxyVendor(Invoice):
         verbose_name = 'Generate Safety Report'
 
     def __str__(self):
-        return 'Inv admin %s' % (self.id)
+        return 'Invoice Draft (Safety Report Batch) %s' % (self.id)
 
 class InvoiceProxyForecast(Invoice):
     class Meta(Invoice.Meta):
@@ -338,11 +343,10 @@ class InvoiceProxyDiscrepancy(RegionalAdmin):
 class InvoiceProxyPrelim(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Preliminary Invoice'
+        verbose_name = 'Create Preliminary Invoice'
 
     def __str__(self):
         return 'Invoice # {0}'.format(self.id)
-
 
 
 class WorkProxyServiceForecast(WorkOrder):
@@ -358,6 +362,15 @@ class WorkProxyServiceDiscrepancy(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
         verbose_name = 'Discrepancy Report'
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.invoice_id, self.id)
+
+
+class ModifiablePrelimInvoice(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'Modify Preliminary Invoice'
 
     def __str__(self):
         return '{0} - {1}'.format(self.invoice_id, self.id)

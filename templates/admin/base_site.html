@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+    {{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}
+        <style>
+
+
+    body {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    color: #333;
+    background: #f1f1f1;
+}
+
+    #header {
+    width: auto;
+    height: 60px;
+    padding: 10px 40px;
+    background: #FFF;
+    line-height: 40px;
+    color: #ffc;
+    overflow: hidden;
+}
+
+    #user-tools {
+        float: right;
+        padding: 0;
+        margin: 10px 0 0 40px;
+        font-weight: 300;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        text-align: right;
+        color: #0e3e26;
+}
+
+        #header a:link, #header a:visited {
+            color: #0e3e26;
+        }
+
+        a:link, a:visited {
+            color: #0e3e26;
+            text-decoration: none;
+        }
+
+        .module h2, .module caption, .inline-group h2 {
+            margin: 0;
+            padding: 8px;
+            font-weight: 400;
+            font-size: 13px;
+            text-align: left;
+            background: #1A5336;
+            color: #fff;
+        }
+
+    </style>
+    <h1 id="site-name"><img src="https://www.tdbank.com/assets/logo_tdbank.gif" style="margin-bottom: 10px;" /></h1>
+
+
+{% endblock %}
+
+
+{% block nav-global %}{% endblock %}

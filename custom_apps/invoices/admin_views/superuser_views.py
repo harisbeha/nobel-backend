@@ -14,11 +14,108 @@ class SuperuserModelAdmin(ImportExportActionModelAdmin):
             return True
         return False
 
+
+def total_plows(self, obj=None):
+    return 1
+
+def total_salts(self, obj=None):
+    return 2
+
+def invoice(self, obj=None):
+    return self.invoice
+
+def vendor(self, obj=None):
+    return self.service_provider
+
+def service_provider(self, obj=None):
+    return self.service_provider
+
+def location(self, obj=None):
+    return self.building
+
+def deicing_rate(self, obj=None):
+    return self.building.deice_rate
+
+def deicing_tax(self, obj=None):
+    return self.building.deice_tax
+
+def plow_rate(self, obj=None):
+    return self.building.plow_rate
+
+def plow_tax(self, obj=None):
+    return self.building.plow_tax
+
+def work_order(self, obj=None):
+    return self.work_order_code
+
+def deicing_fee(self, obj=None):
+    try:
+        cost = self.building.deice_rate * self.num_salts
+        return str(cost)
+    except:
+        return ''
+
+def plow_fee(self, obj=None):
+    try:
+        cost = self.building.plow_rate * self.num_plows
+        return str(cost)
+    except:
+        return ''
+
+def storm_total(self, obj=None):
+    total = str((self.building.plow_rate * self.num_plows) + (self.building.deice_rate * self.num_salts))
+    return total
+
+def snowfall(self, obj=None):
+    return 1.4
+
+def storm_days(self, obj=None):
+    return 2
+
+def refreeze(self, obj=None):
+    return '0'
+
+def number_salts(self, obj=None):
+    return self.num_salts
+
+def number_salts_predicted(self, obj=None):
+    try:
+        pred = self.num_salts - 1
+        return pred
+    except:
+        return ''
+    # print(self.__dict__)
+    # import random
+    # return random.randint(1,3)
+
+def number_plows_predicted(self, obj=None):
+    try:
+        pred = self.num_plows - 1
+        return pred
+    except:
+        return ''
+
+def salts_delta(self, obj=None):
+    return '3'
+
+def number_plows(self, obj=None):
+    return self.num_plows
+
+def push_delta(self, obj=None):
+    return '4'
+
+def deicing_cost_delta(self, obj=None):
+    return '$128.99'
+
+def plowing_cost_delta(self, obj=None):
+    return '$199.10'
+
 def get_locations_by_system_user(user=None):
     # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
-    vendor = Vendor.objects.get(system_user__username='vendor-user@bank.com')
-    locations = Building.objects.filter(vendor=vendor)
+    vend = Vendor.objects.get(system_user__username='vendor-user@bank.com')
+    locations = Building.objects.filter(service_provider=vend)
     return locations
+
 
 class SRFormSet(BaseInlineFormSet):
     model = SafetyReport
@@ -42,6 +139,8 @@ class WOFormSet(BaseInlineFormSet):
 
 
 from django.utils.functional import curry
+
+
 class WorkOrderInline(admin.TabularInline):
     model = WorkOrder
     formset = WOFormSet
@@ -60,20 +159,16 @@ class WorkOrderInline(admin.TabularInline):
             # Populate initial based on request
             #
             locations = get_locations_by_system_user(request.user).values('id')
-            vendor = obj.vendor_id
-            if obj:
-                storm_name = obj.storm_name
-                storm_date = obj.storm_date
-            else:
-                storm_name = ''
-                storm_date = ''
+            s_name = None if not obj else obj.storm_name
+            s_date = '2017-12-10' if not obj else obj.storm_date
+            s_provider = None if not obj else obj.service_provider
 
-            print(locations.count())
             for l in locations:
-                initial.append({'building': str(l['id']), 'vendor': vendor, 'storm_name': storm_name, 'storm_date': storm_date, 'last_service_date': '2018-05-10'})
-            # initial.append({
-            #     'building': locations,
-            # })
+                print({'building': str(l['id']), 'service_provider': s_provider,
+                                'storm_name': s_name,'storm_date': s_date,
+                                'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
+                                'failed_service':False, 'work_order_code':'Td1290'})
+                initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
@@ -87,9 +182,6 @@ class WorkOrderInline(admin.TabularInline):
         return get_locations_by_system_user(request.user).count()
 
 
-
-
-from django.utils.functional import curry
 class SafetyReportInline(admin.TabularInline):
     model = SafetyReport
     # form = SafetyReportForm
@@ -111,7 +203,7 @@ class SafetyReportInline(admin.TabularInline):
             locations = get_locations_by_system_user(request.user).values('id')
             print(locations.count())
             for l in locations:
-                initial.append({'building': str(l['id']), 'safe_to_open': True, 'last_service_date': '2018-05-10'})
+                initial.append({'building': str(l['id']), 'safe_to_open': True, 'last_service_date': '2017-12-09'})
             # initial.append({
             #     'building': locations,
             # })
@@ -164,7 +256,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 
 @register(InvoiceProxyPrelim)
-class InvoiceAdmin(admin.ModelAdmin):
+class PrelimInvoiceAdmin(admin.ModelAdmin):
     inlines = [WorkOrderInline]
     limited_manytomany_fields = {}
 
@@ -228,90 +320,52 @@ class InvoiceAdmin(admin.ModelAdmin):
 #
 #     pass
 
-def total_plows(self, obj=None):
-    return 1
-
-def total_salts(self, obj=None):
-    return 2
-
-def invoice(self, obj=None):
-    return self.invoice
-
-def vendor(self, obj=None):
-    return self.vendor
-
-def location(self, obj=None):
-    return self.building
-
-def deicing_rate(self, obj=None):
-    return self.building.deice_rate
-
-def deicing_tax(self, obj=None):
-    return self.building.deice_tax
-
-def plow_rate(self, obj=None):
-    return self.building.plow_rate
-
-def plow_tax(self, obj=None):
-    return self.building.plow_tax
-
-def work_order(self, obj=None):
-    return self
-
-def deicing_fee(self, obj=None):
-    cost = self.building.deice_rate * self.num_salts
-    return str(cost)
-
-def plow_fee(self, obj=None):
-    cost = self.building.plow_rate * self.num_plows
-    return str(cost)
-
-def storm_total(self, obj=None):
-    total = str((self.building.plow_rate * self.num_plows) + (self.building.deice_rate * self.num_salts))
-    return total
-
-def snowfall(self, obj=None):
-    return 1.4
-
-def storm_days(self, obj=None):
-    return 2
-
-def refreeze(self, obj=None):
-    return '0'
-
-def number_salts(self, obj=None):
-    return self.num_salts
-
-def salts_delta(self, obj=None):
-    return '3'
-
-def number_plows(self, obj=None):
-    return self.num_plows
-
-def push_delta(self, obj=None):
-    return '4'
-
-def deicing_cost_delta(self, obj=None):
-    return '$128.99'
-
-def plowing_cost_delta(self, obj=None):
-    return '$199.10'
-
-
-
 class ServiceForecast(admin.ModelAdmin):
     model = WorkProxyServiceForecast
-    list_filter = ('invoice__storm_name', 'invoice__storm_date')
-    list_display = [invoice, vendor, location, deicing_rate, deicing_tax, plow_rate,
-                    plow_tax, work_order, snowfall, storm_days, refreeze,
+    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
+    list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
+                    plow_tax, snowfall, storm_days, refreeze,
                     number_salts, number_plows, deicing_fee, plow_fee, storm_total]
 
 
 class DiscrepancyReview(admin.ModelAdmin):
     model = WorkProxyServiceDiscrepancy
-    list_display = [invoice, vendor, location, deicing_rate, deicing_tax, plow_rate,
-                    plow_tax, work_order, snowfall, storm_days, refreeze,
-                    number_salts, salts_delta, number_plows, push_delta, deicing_cost_delta, plowing_cost_delta]
+    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
+    list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
+                    plow_tax, snowfall, storm_days, refreeze,
+                    number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
+                    'push_delta', 'deice_cost_delta', 'plow_cost_delta']
+
+
+    def salt_delta(self, obj):
+        try:
+            # pred = self.num_plows - 1
+            pred = 1
+            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+        except Exception as e:
+            return ''
+
+    salt_delta.allow_tags = True
+
+    def push_delta(self, obj):
+        try:
+            # pred = self.num_plows - 1
+            pred = 1
+            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+        except Exception as e:
+            return ''
+
+    push_delta.allow_tags = True
+
+    def deice_cost_delta(self, obj):
+        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$129.10')
+
+    deice_cost_delta.allow_tags = True
+
+    def plow_cost_delta(self, obj):
+        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$199.10')
+
+    plow_cost_delta.allow_tags = True
 
 
 @register(Building)
@@ -364,6 +418,17 @@ class SafetyReportAdmin(admin.ModelAdmin):
         existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
         return existing_work_order
     existing_work_order.boolean = True
+
+
+@register(ModifiablePrelimInvoice)
+class ModifyPrelimInvoiceAdmin(admin.ModelAdmin):
+    # list_filter = (storm_date, storm_date)
+    list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__storm_date', 'failed_service']
+    list_editable = ['building', 'last_service_date', 'num_plows', 'num_salts', 'failed_service']
+    list_display = ['id', 'building', service_provider, storm_name, storm_date, 'last_service_date',
+                    'num_plows', 'num_salts', 'failed_service']
+
+
 #
 #
 # @register(DiscrepancyReport)
