@@ -203,7 +203,7 @@ class SafetyReportInline(admin.TabularInline):
             locations = get_locations_by_system_user(request.user).values('id')
             print(locations.count())
             for l in locations:
-                initial.append({'building': str(l['id']), 'safe_to_open': True, 'last_service_date': '2017-12-09'})
+                initial.append({'building': str(l['id']), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
             # initial.append({
             #     'building': locations,
             # })
@@ -412,7 +412,7 @@ def storm_name(obj):
 @register(SafetyReport)
 class SafetyReportAdmin(admin.ModelAdmin):
     # list_filter = (storm_date, storm_date)
-    list_display = ['building', storm_name, storm_date, 'existing_work_order', 'safe_to_open', 'last_service_date']
+    list_display = ['building', storm_name, storm_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
 
     def existing_work_order(self, obj):
         existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()

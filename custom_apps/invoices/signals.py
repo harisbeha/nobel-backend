@@ -22,4 +22,4 @@ def create_work_orders(sender, instance, created, **kwargs):
     WorkOrder.objects.get_or_create(building=instance.building, invoice=instance.invoice,
                                     storm_date=instance.invoice.storm_date, storm_name=instance.invoice.storm_name,
                                     service_provider=instance.building.service_provider,
-                                    work_order_code=work_order_code, last_service_date=instance.last_service_date)
+                                    work_order_code=work_order_code, last_service_date=instance.service_time)

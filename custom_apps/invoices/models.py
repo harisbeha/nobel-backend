@@ -237,8 +237,9 @@ class WorkVisit(BaseModel):
 class SafetyReport(BaseModel):
     invoice = models.ForeignKey('invoices.Invoice', null=True, blank=True)
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
-    last_service_date = models.DateField(null=True, blank=True)
-    safe_to_open = models.BooleanField('Safe to open site?')
+    service_time = models.DateField('Service Time', null=True, blank=True)
+    site_serviced = models.BooleanField('Site Serviced?', default=True)
+    safe_to_open = models.BooleanField('Safe to open site?', default=True)
     safety_concerns = models.CharField('Any concerns? Let us know of all site conditions', max_length=255, blank=True)
     snow_instructions = models.CharField('Extra instructions for handling remaining snow', max_length=255, blank=True)
     haul_stack_status = models.IntegerField('Snow hauling or stacking required?', choices=SnowStatus.choices(), default=0, null=True, blank=True)
@@ -321,7 +322,7 @@ class InvoiceProxyVendor(Invoice):
         verbose_name = 'Generate Safety Report'
 
     def __str__(self):
-        return 'Invoice Draft (Safety Report Batch) %s' % (self.id)
+        return 'Safety Report: %s' % (self.id)
 
 class InvoiceProxyForecast(Invoice):
     class Meta(Invoice.Meta):
