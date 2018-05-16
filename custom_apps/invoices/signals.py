@@ -20,6 +20,7 @@ def create_work_orders(sender, instance, created, **kwargs):
     from custom_apps.invoices.models import WorkOrder
     work_order_code = 'T'.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVXYZ') for i in range(6))
     WorkOrder.objects.get_or_create(building=instance.building, invoice=instance.invoice,
-                                    storm_date=instance.invoice.storm_date, storm_name=instance.invoice.storm_name,
+                                    last_service_date=instance.invoice.storm_date,
+                                    storm_name=instance.invoice.storm_name,
                                     service_provider=instance.building.service_provider,
-                                    work_order_code=work_order_code, last_service_date=instance.service_time)
+                                    work_order_code=work_order_code)
