@@ -131,8 +131,8 @@ class WorkOrder(BaseModel):
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
 
     storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100, blank=True, null=True)
-    storm_date = models.DateField(help_text='Date of the last storm event', blank=True, null=True)
-    last_service_date = models.DateField(help_text='Date of last service at this location', null=True, blank=True)
+    last_service_date = models.DateField(help_text='Date of the last service', blank=True, null=True)
+    service_time = models.DateTimeField(help_text='Last time serviced', null=True, blank=True)
 
     # flag_safe = models.BooleanField(help_text='Property safe to open?', null=False, default=False)
     # flag_visitsdocumented = models.BooleanField(help_text='all information about work visits entered?', null=False,
