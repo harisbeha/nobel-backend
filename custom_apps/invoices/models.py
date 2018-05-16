@@ -124,6 +124,16 @@ class WorkOrderManager(models.Manager):
         )
 
 
+SERVICE_TIME_CHOICES = (
+    ('Midnight - 4 AM','Midnight - 4 AM'),
+    ('4 AM - 8 AM', '4 AM - 8 AM'),
+    ('8AM - Noon', '8 AM - Noon'),
+    ('Noon - 4 PM', 'Noon - 4 PM'),
+    ('4 PM - 8 PM', '4 PM - 8 PM'),
+    ('8 PM - Midnight', '8 PM - Midnight'),
+)
+
+
 class WorkOrder(BaseModel):
     work_order_code = models.CharField(max_length=255, blank=True, null=True)
     service_provider = models.ForeignKey('invoices.Vendor', null=True, blank=True)
@@ -132,7 +142,7 @@ class WorkOrder(BaseModel):
 
     storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100, blank=True, null=True)
     last_service_date = models.DateField(help_text='Date of the last service', blank=True, null=True)
-    service_time = models.DateTimeField(help_text='Last time serviced', auto_now_add=True, null=True, blank=True)
+    service_time = models.CharField(help_text='Last time serviced', max_length=255, null=True, blank=True, choices=SERVICE_TIME_CHOICES)
 
     # flag_safe = models.BooleanField(help_text='Property safe to open?', null=False, default=False)
     # flag_visitsdocumented = models.BooleanField(help_text='all information about work visits entered?', null=False,
