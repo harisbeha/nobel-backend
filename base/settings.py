@@ -56,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'custom_apps.utils.middleware.PermissionsErrorMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'base.urls'
@@ -222,3 +225,7 @@ from django.utils import timezone
 
 
 TIME_ZONE = 'US/Eastern'
+
+from memcacheify import memcacheify
+
+CACHES = memcacheify()
