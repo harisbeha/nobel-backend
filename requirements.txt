@@ -25,3 +25,4 @@ python-dateutil
 redis
 django-jet
 django-favicon
+django-heroku-memcacheify
