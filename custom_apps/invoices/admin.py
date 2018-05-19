@@ -25,3 +25,5 @@ from .admin_views.superuser_views import ServiceForecast, DiscrepancyReview, Wor
 
 admin.site.register(WorkProxyServiceForecast, ServiceForecast)
 admin.site.register(WorkProxyServiceDiscrepancy, DiscrepancyReview)
+
+

@@ -223,6 +223,7 @@ class SafetyReportInline(admin.TabularInline):
 
 @register(InvoiceProxyVendor)
 class InvoiceAdmin(admin.ModelAdmin):
+    exclude=['remission_address', 'address_info_storage']
     inlines = [SafetyReportInline]
     limited_manytomany_fields = {}
 
@@ -257,6 +258,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @register(InvoiceProxyPrelim)
 class PrelimInvoiceAdmin(admin.ModelAdmin):
+    exclude=['remission_address', 'address_info_storage']
     inlines = [WorkOrderInline]
     limited_manytomany_fields = {}
 
@@ -409,24 +411,24 @@ def storm_date(obj):
 def storm_name(obj):
     return obj.invoice.storm_name
 
-@register(SafetyReport)
-class SafetyReportAdmin(admin.ModelAdmin):
-    # list_filter = (storm_date, storm_date)
-    list_display = ['building', storm_name, storm_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
+# @register(SafetyReport)
+# class SafetyReportAdmin(admin.ModelAdmin):
+#     # list_filter = (storm_date, storm_date)
+#     list_display = ['building', storm_name, storm_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
+#
+#     def existing_work_order(self, obj):
+#         existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
+#         return existing_work_order
+#     existing_work_order.boolean = True
 
-    def existing_work_order(self, obj):
-        existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
-        return existing_work_order
-    existing_work_order.boolean = True
 
-
-@register(ModifiablePrelimInvoice)
-class ModifyPrelimInvoiceAdmin(admin.ModelAdmin):
-    # list_filter = (storm_date, storm_date)
-    list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__storm_date', 'failed_service']
-    list_editable = ['building', 'last_service_date', 'num_plows', 'num_salts', 'failed_service']
-    list_display = ['id', 'building', service_provider, storm_name, storm_date, 'last_service_date',
-                    'num_plows', 'num_salts', 'failed_service']
+# @register(ModifiablePrelimInvoice)
+# class ModifyPrelimInvoiceAdmin(admin.ModelAdmin):
+#     # list_filter = (storm_date, storm_date)
+#     list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__storm_date', 'failed_service']
+#     list_editable = ['building', 'last_service_date', 'num_plows', 'num_salts', 'failed_service']
+#     list_display = ['id', 'building', service_provider, storm_name, storm_date, 'last_service_date',
+#                     'num_plows', 'num_salts', 'failed_service']
 
 
 #

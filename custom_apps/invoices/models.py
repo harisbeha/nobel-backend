@@ -326,10 +326,11 @@ class WorkOrderProxyVendor(WorkOrder):
         return 'WO#%s for %s' % (self.id, self.service_provider.name)
 
 
+# In use
 class InvoiceProxyVendor(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Generate Safety Report'
+        verbose_name = 'Safety Report'
 
     def __str__(self):
         return 'Safety Report: %s' % (self.id)
@@ -354,7 +355,7 @@ class InvoiceProxyDiscrepancy(RegionalAdmin):
 class InvoiceProxyPrelim(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Create Preliminary Invoice'
+        verbose_name = 'Preliminary Invoice'
 
     def __str__(self):
         return 'Invoice # {0}'.format(self.id)
@@ -363,7 +364,7 @@ class InvoiceProxyPrelim(Invoice):
 class WorkProxyServiceForecast(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Service Forecast'
+        verbose_name = 'Initial Spend Forecast'
 
     def __str__(self):
         return '{0} - {1}'.format(self.invoice_id, self.id)
