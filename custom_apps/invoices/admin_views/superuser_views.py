@@ -81,7 +81,10 @@ def number_salts(self, obj=None):
 def number_salts_predicted(self, obj=None):
     try:
         pred = self.num_salts - 1
-        return pred
+        if pred >= 0:
+            return pred
+        else:
+            return 0
     except:
         return ''
     # print(self.__dict__)
@@ -91,7 +94,10 @@ def number_salts_predicted(self, obj=None):
 def number_plows_predicted(self, obj=None):
     try:
         pred = self.num_plows - 1
-        return pred
+        if pred >= 0:
+            return pred
+        else:
+            return 0
     except:
         return ''
 
