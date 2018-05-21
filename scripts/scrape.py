@@ -9,7 +9,7 @@ from HTMLParser import HTMLParser
 SCRAPE_API_KEY = os.environ.get('SCRAPE_API_KEY', 'cst_37mqLLFuPbUfQUYEwKNO2fir2B')
 
 # default: 15 days
-SCRAPE_SINCE = int(time.time()) - int(os.environ.get('SCRAPE_SINCE', 60*60*24*15))
+SCRAPE_SINCE = int(time.time()) - int(os.environ.get('SCRAPE_SINCE', 60*60*24*180))
 
 
 def get_raw(since, api_key):
