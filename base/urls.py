@@ -17,6 +17,8 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.static import serve
+from custom_apps.invoices.admin import nwa_site, cbre_site, vendor_site
+
 
 SITE_NAME = 'Nobel Weather Associates'
 admin.site.site_url = None
@@ -28,6 +30,9 @@ urlpatterns = [
     #url(r'^jet/', include('jet.urls', 'jet')),
     url(r'^static/(?P<path>.*)', serve, kwargs={'document_root': settings.STATIC_ROOT}),
     url(r'^admin/', admin.site.urls),
+    url(r'^nwa/', nwa_site.urls),
+    url(r'^cbre/', cbre_site.urls),
+    url(r'^provider/', vendor_site.urls),
     url(r'^admin/', include("massadmin.urls")),
     url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^', include('favicon.urls')),

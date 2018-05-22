@@ -17,6 +17,31 @@ from django.contrib import admin
 # that document has rows of jobs joined with their work orders
 
 
+SERVICE_TIME_CHOICES = (
+    ('Midnight - 4 AM','Midnight - 4 AM'),
+    ('4 AM - 8 AM', '4 AM - 8 AM'),
+    ('8AM - Noon', '8 AM - Noon'),
+    ('Noon - 4 PM', 'Noon - 4 PM'),
+    ('4 PM - 8 PM', '4 PM - 8 PM'),
+    ('8 PM - Midnight', '8 PM - Midnight'),
+)
+
+PLOW_COUNT = (
+    (0,0),
+    (1,1),
+)
+
+INVOICE_STATUSES = (
+    ('not_created','Not Created'),
+    ('safety_report', 'Safety Report Created'),
+    ('preliminary_created', 'Preliminary'),
+    ('submitted', 'Submitted'),
+    ('reviewed - 4 PM', 'Reviewed'),
+    ('dispute', 'In Dispute'),
+    ('finalized', 'Finalized'),
+)
+
+
 class VendorSettings(BaseModel):
     class Meta:
         verbose_name_plural = 'Vendor settings'
@@ -74,6 +99,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     remission_address = AddressField('remission address', null=True, blank=True)
     storm_name = models.CharField(max_length=255, null=True, blank=True)
     storm_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=255, choices=INVOICE_STATUSES, default='not_created', null=True, blank=True)
 
     verbose_name = 'Closeout Reports'
 
@@ -124,16 +150,6 @@ class WorkOrderManager(models.Manager):
         )
 
 
-SERVICE_TIME_CHOICES = (
-    ('Midnight - 4 AM','Midnight - 4 AM'),
-    ('4 AM - 8 AM', '4 AM - 8 AM'),
-    ('8AM - Noon', '8 AM - Noon'),
-    ('Noon - 4 PM', 'Noon - 4 PM'),
-    ('4 PM - 8 PM', '4 PM - 8 PM'),
-    ('8 PM - Midnight', '8 PM - Midnight'),
-)
-
-
 class WorkOrder(BaseModel):
     work_order_code = models.CharField(max_length=255, blank=True, null=True)
     service_provider = models.ForeignKey('invoices.Vendor', null=True, blank=True)
@@ -165,6 +181,9 @@ class WorkOrder(BaseModel):
 
     def __str__(self):
         return '{0}'.format(self.work_order_code)
+
+    # def get_plow_count(self):
+    #     return self.
 
     @property
     def has_ice(self):
@@ -214,12 +233,12 @@ class WorkVisitManager(models.Manager):
     def get_queryset(self):
         return super(WorkVisitManager, self).get_queryset().annotate(
             deice_fee=models.Case(
-                models.When(provided_deicing=True, then=
+                models.When(num_salts__gte=1, then=
                 models.F('work_order__building__deice_rate') + models.F('work_order__building__deice_tax')),
                 default=models.Value(0),
                 output_field=DollarsField('Cost billed for deicing')),
             plow_fee=models.Case(
-                models.When(provided_plowing=True, then=
+                models.When(num_plows__gte=1, then=
                 models.F('work_order__building__plow_rate') + models.F('work_order__building__plow_tax')),
                 default=models.Value(0),
                 output_field=DollarsField('Cost billed for plowing')),
@@ -230,18 +249,16 @@ class WorkVisitManager(models.Manager):
 
 class WorkVisit(BaseModel):
     work_order = models.ForeignKey('invoices.WorkOrder', null=True, blank=True)
-    response_time_start = models.DateTimeField('Time clocked in')
-    response_time_end = models.DateTimeField('Time clocked out')
-
-    provided_deicing = models.BooleanField('De-icing services provided?')
-    provided_plowing = models.BooleanField('Plowing services provided? (includes plowing and shoveling ONLY)')
+    service_time = models.CharField(help_text='Last time serviced', max_length=255, null=True, blank=True, choices=SERVICE_TIME_CHOICES)
+    num_plows = models.IntegerField('# Plows', null=True, blank=True, default=0, choices=PLOW_COUNT)
+    num_salts = models.IntegerField('# Salts', null=True, blank=True, default=0, choices=PLOW_COUNT)
+    failed_service = models.BooleanField('Service Failed?', default=False)
 
     audit = AuditTrailWatcher()
-    objects = WorkVisitManager()
+    aggregates = WorkVisitManager()
 
     def __str__(self):
-        return 'Work for %s on %s' % (
-            self.work_order.id, self.response_time_start.strftime('%b %e, %l:%M %p'))
+        return 'Work for WO#: {0} on {1}'.format(self.work_order.id, self.service_time)
 
 
 class SafetyReport(BaseModel):
@@ -386,3 +403,103 @@ class ModifiablePrelimInvoice(WorkOrder):
 
     def __str__(self):
         return '{0} - {1}'.format(self.invoice_id, self.id)
+
+
+
+
+# Superuser
+
+
+
+
+
+
+
+
+# NWA
+class NWAServiceProvider(Vendor):
+    class Meta(Vendor.Meta):
+        proxy = True
+        verbose_name = 'Service Provider'
+
+    def __str__(self):
+        return '{0}'.format(self.name)
+
+class NWABuilding(Building):
+    class Meta(Building.Meta):
+        proxy = True
+        verbose_name = 'Building'
+
+    def __str__(self):
+        if self.building_code:
+            return 'BC#: {0} - {1} '.format(self.building_code, self.address)
+        return 'ID: {0} - {1} '.format(self.id, self.address)
+
+class NWASafetyProxy(Invoice):
+    class Meta(Invoice.Meta):
+        proxy = True
+        verbose_name = 'Safety Report'
+
+    def __str__(self):
+        return 'Safety Report # {0}'.format(self.id)
+
+class NWAInvoiceProxy(Invoice):
+    class Meta(Invoice.Meta):
+        proxy = True
+        verbose_name = 'Preliminary Invoice'
+
+    def __str__(self):
+        return 'Invoice # {0}'.format(self.id)
+
+class NWAServiceForecast(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'Initial Spend Forecast'
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.invoice_id, self.id)
+
+
+class NWAServiceDiscrepancy(WorkOrder):
+    class Meta(WorkOrder.Meta):
+        proxy = True
+        verbose_name = 'Discrepancy Report'
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.invoice_id, self.id)
+
+
+# CBRE
+class CBRESafetyProxy(Invoice):
+    class Meta(Invoice.Meta):
+        proxy = True
+        verbose_name = 'Safety Report'
+
+    def __str__(self):
+        return 'Safety Report # {0}'.format(self.id)
+
+class CBREInvoiceProxy(Invoice):
+    class Meta(Invoice.Meta):
+        proxy = True
+        verbose_name = 'Submitted Invoice'
+
+    def __str__(self):
+        return 'Invoice # {0}'.format(self.id)
+
+
+# Vendor
+class VendorSafetyProxy(Invoice):
+    class Meta(Invoice.Meta):
+        proxy = True
+        verbose_name = 'Safety Report'
+
+    def __str__(self):
+        return 'Safety Report # {0}'.format(self.id)
+
+class VendorInvoiceProxy(Invoice):
+    class Meta(Invoice.Meta):
+        proxy = True
+        verbose_name = 'Preliminary Invoice'
+
+    def __str__(self):
+        return 'Invoice # {0}'.format(self.id)

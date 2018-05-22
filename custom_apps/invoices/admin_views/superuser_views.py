@@ -5,6 +5,8 @@ from ..models import *
 from django.forms.models import BaseModelFormSet
 
 from django.forms.models import BaseInlineFormSet, BaseFormSet
+import nested_admin
+
 
 # all the views in this file should be visible only to the superuser
 class SuperuserModelAdmin(ImportExportActionModelAdmin):
@@ -227,7 +229,6 @@ class SafetyReportInline(admin.TabularInline):
         return get_locations_by_system_user(request.user).count()
 
 
-@register(InvoiceProxyVendor)
 class InvoiceAdmin(admin.ModelAdmin):
     exclude=['remission_address', 'address_info_storage']
     inlines = [SafetyReportInline]
@@ -262,7 +263,6 @@ class InvoiceAdmin(admin.ModelAdmin):
                     initial[k] = initial[k].split(",")
 
 
-@register(InvoiceProxyPrelim)
 class PrelimInvoiceAdmin(admin.ModelAdmin):
     exclude=['remission_address', 'address_info_storage']
     inlines = [WorkOrderInline]
@@ -376,13 +376,11 @@ class DiscrepancyReview(admin.ModelAdmin):
     plow_cost_delta.allow_tags = True
 
 
-@register(Building)
 class BuildingAdmin(SuperuserModelAdmin):
     list_display = ['address', 'type']
 
 #
 #
-@register(RegionalAdmin)
 class RegionalManagerAdmin(SuperuserModelAdmin):
     list_display = ['name', 'system_user']
 #
@@ -392,7 +390,6 @@ class RegionalManagerAdmin(SuperuserModelAdmin):
 #     list_display = ['const_a', 'const_b', 'vendor']
 #
 #
-@register(Vendor)
 class VendorAdmin(SuperuserModelAdmin):
     list_display = ['name', 'address', 'system_user']
 #

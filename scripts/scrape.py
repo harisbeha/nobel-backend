@@ -3,7 +3,7 @@ import requests
 import dateutil.parser
 import time
 import json
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 # default: test key with access to new england
 SCRAPE_API_KEY = os.environ.get('SCRAPE_API_KEY', 'cst_37mqLLFuPbUfQUYEwKNO2fir2B')
@@ -12,8 +12,8 @@ SCRAPE_API_KEY = os.environ.get('SCRAPE_API_KEY', 'cst_37mqLLFuPbUfQUYEwKNO2fir2
 SCRAPE_SINCE = int(time.time()) - int(os.environ.get('SCRAPE_SINCE', 60*60*24*180))
 
 
-def get_raw(since, api_key):
-    r = requests.get('https://certifiedsnowfalltotals.com/api/storms', params={'publish_start': str(since)}, auth=(api_key, ''))
+def get_raw(scrape_since, api_key):
+    r = requests.get('https://certifiedsnowfalltotals.com/api/storms', params={'publish_start': str(scrape_since)}, auth=(api_key, ''))
     for storm in r.json():
         for stormloc in storm['storm_locations']:
             out = dict()
@@ -29,6 +29,7 @@ def get_raw(since, api_key):
 
 class MLStripper(HTMLParser):
     def __init__(self):
+        super().__init__()
         self.reset()
         self.fed = []
 
@@ -52,4 +53,4 @@ def strip_tags(html):
 
 if __name__ == '__main__':
     for row in get_raw(SCRAPE_SINCE, SCRAPE_API_KEY):
-        print json.dumps(row)
+        print('{0},'.format(json.dumps(row)))

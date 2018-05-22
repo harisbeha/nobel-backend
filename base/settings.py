@@ -225,6 +225,7 @@ from django.utils import timezone
 
 
 TIME_ZONE = 'US/Eastern'
+SITE_NAME = 'Nobel Weather Associates'
 
 from memcacheify import memcacheify
 
