@@ -66,7 +66,7 @@ ROOT_URLCONF = 'base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -225,7 +225,10 @@ from django.utils import timezone
 
 
 TIME_ZONE = 'US/Eastern'
+SITE_NAME = 'Nobel Weather Associates'
 
 from memcacheify import memcacheify
 
 CACHES = memcacheify()
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS=10000

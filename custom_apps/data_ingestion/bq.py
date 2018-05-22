@@ -38,8 +38,6 @@ def make_accumulation_key(zipcode, start, end):
 # TODO: NOTHING TO DO - STUFF IS HARDCODED HERE - NEVER FORGET
 def _query_accumulation_data(zipcode, start, end):
     bq = _get_client()
-    zipcode = random.choice([12202, 12203, 12204, 12205, 12206, 12207, 12208, 12209, 12210, 12211, 12222,
-                             20810, 20811, 20812, 22206, 22301, 22302, 22304, 22305, 22311, 22312, 22314])
     query_params = [
         ScalarQueryParameter('zipcode', 'INT64', zipcode),
         ScalarQueryParameter('startdate', 'TIMESTAMP', '2017-12-06'),

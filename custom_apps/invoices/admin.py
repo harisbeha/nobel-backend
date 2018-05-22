@@ -19,6 +19,8 @@ from custom_apps.utils.fields import AddressMetadataStorageMixin
 from custom_apps.utils.forecast import forecast
 from .enums import ReportState
 from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings
+from django.contrib.admin import AdminSite
+from .models import *
 
 
 from .admin_views.superuser_views import ServiceForecast, DiscrepancyReview, WorkProxyServiceForecast, WorkProxyServiceDiscrepancy
@@ -27,3 +29,44 @@ admin.site.register(WorkProxyServiceForecast, ServiceForecast)
 admin.site.register(WorkProxyServiceDiscrepancy, DiscrepancyReview)
 
 
+class NWASite(AdminSite):
+    site_url = None
+    site_header = settings.SITE_NAME
+    site_title = settings.SITE_NAME
+    index_title = settings.SITE_NAME
+
+
+class CBRESite(AdminSite):
+    site_url = None
+    site_header = settings.SITE_NAME
+    site_title = settings.SITE_NAME
+    index_title = settings.SITE_NAME
+
+
+class VendorSite(AdminSite):
+    site_url = None
+    site_header = settings.SITE_NAME
+    site_title = settings.SITE_NAME
+    index_title = settings.SITE_NAME
+
+
+nwa_site = NWASite(name='nwa_admin')
+cbre_site = CBRESite(name='cbre_site')
+vendor_site = VendorSite(name='vendor_site')
+
+# from custom_apps.invoices.admin_views import superuser_views
+# from custom_apps.invoices.admin_views import cbre_views
+# from custom_apps.invoices.admin_views import vendor_views
+from custom_apps.invoices.admin_views import nwa_views, vendor_views, cbre_views
+
+
+nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)
+nwa_site.register(NWAServiceForecast, nwa_views.ServiceForecast)
+nwa_site.register(NWAServiceDiscrepancy, nwa_views.DiscrepancyReview)
+nwa_site.register(NWASubmittedInvoiceProxy, nwa_views.NWASubmittedInvoiceAdmin)
+
+cbre_site.register(CBRESafetyProxy, cbre_views.InvoiceAdmin)
+cbre_site.register(CBREInvoiceProxy, cbre_views.PrelimInvoiceAdmin)
+
+vendor_site.register(VendorSafetyProxy, vendor_views.InvoiceAdmin)
+vendor_site.register(VendorInvoiceProxy, vendor_views.PrelimInvoiceAdmin)

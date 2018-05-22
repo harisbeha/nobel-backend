@@ -2,9 +2,13 @@ from django.contrib.admin import register, ModelAdmin
 from import_export.admin import ImportExportActionModelAdmin
 
 from ..models import *
+from ..resources import *
 from django.forms.models import BaseModelFormSet
 
 from django.forms.models import BaseInlineFormSet, BaseFormSet
+from import_export.admin import ExportMixin
+import nested_admin
+
 
 # all the views in this file should be visible only to the superuser
 class SuperuserModelAdmin(ImportExportActionModelAdmin):
@@ -67,7 +71,7 @@ def storm_total(self, obj=None):
     return total
 
 def snowfall(self, obj=None):
-    return 1.4
+    return self.snowfall
 
 def storm_days(self, obj=None):
     return 2
@@ -76,7 +80,7 @@ def refreeze(self, obj=None):
     return '0'
 
 def number_salts(self, obj=None):
-    return self.num_salts
+    return self.aggregate_invoiced_salts
 
 def number_salts_predicted(self, obj=None):
     try:
@@ -105,7 +109,7 @@ def salts_delta(self, obj=None):
     return '3'
 
 def number_plows(self, obj=None):
-    return self.num_plows
+    return self.aggregate_invoiced_plows
 
 def push_delta(self, obj=None):
     return '4'
@@ -172,7 +176,7 @@ class WorkOrderInline(admin.TabularInline):
             for l in locations:
                 print({'building': str(l['id']), 'service_provider': s_provider,
                                 'storm_name': s_name,'storm_date': s_date,
-                                'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
+                                'last_service_date': '2017-12-09',
                                 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
@@ -227,7 +231,6 @@ class SafetyReportInline(admin.TabularInline):
         return get_locations_by_system_user(request.user).count()
 
 
-@register(InvoiceProxyVendor)
 class InvoiceAdmin(admin.ModelAdmin):
     exclude=['remission_address', 'address_info_storage']
     inlines = [SafetyReportInline]
@@ -262,9 +265,9 @@ class InvoiceAdmin(admin.ModelAdmin):
                     initial[k] = initial[k].split(",")
 
 
-@register(InvoiceProxyPrelim)
-class PrelimInvoiceAdmin(admin.ModelAdmin):
+class PrelimInvoiceAdmin(admin.ModelAdmin, ExportMixin):
     exclude=['remission_address', 'address_info_storage']
+    resource_class = InvoiceResource
     inlines = [WorkOrderInline]
     limited_manytomany_fields = {}
 
@@ -336,9 +339,10 @@ class ServiceForecast(admin.ModelAdmin):
                     number_salts, number_plows, deicing_fee, plow_fee, storm_total]
 
 
-class DiscrepancyReview(admin.ModelAdmin):
+class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     model = WorkProxyServiceDiscrepancy
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
+    resource_class=InvoiceResource
+    list_filter = ('id',)
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
                     number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
@@ -375,14 +379,17 @@ class DiscrepancyReview(admin.ModelAdmin):
 
     plow_cost_delta.allow_tags = True
 
-
 @register(Building)
 class BuildingAdmin(SuperuserModelAdmin):
-    list_display = ['address', 'type']
+    list_display = ['building_code', 'address', 'service_provider', 'weather_station', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'type']
+    filter_list = ['service_provider', 'weather_station']
 
+
+@register(WorkOrderIDSuperProxy)
+class WorkOrderIDAdmin(SuperuserModelAdmin):
+    list_display = ['work_order_code','vendor', 'available']
 #
 #
-@register(RegionalAdmin)
 class RegionalManagerAdmin(SuperuserModelAdmin):
     list_display = ['name', 'system_user']
 #
@@ -392,7 +399,6 @@ class RegionalManagerAdmin(SuperuserModelAdmin):
 #     list_display = ['const_a', 'const_b', 'vendor']
 #
 #
-@register(Vendor)
 class VendorAdmin(SuperuserModelAdmin):
     list_display = ['name', 'address', 'system_user']
 #
@@ -447,3 +453,10 @@ def storm_name(obj):
 # @register(Invoice)
 # class InvoiceAdmin(SuperuserModelAdmin):
 #     list_display = ['vendor', 'remission_address']
+
+@register(WeatherStationSuperProxy)
+class WeatherStationSuperProxyAdmin(SuperuserModelAdmin):
+    list_display = ['short_name', 'zip_code_list']
+
+    def zip_code_list(self, obj):
+        return str(obj.zip_codes)
