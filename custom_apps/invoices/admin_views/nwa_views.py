@@ -373,12 +373,16 @@ class ServiceForecast(admin.ModelAdmin):
 
 class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
-    list_display=['reports', 'status']
+    list_display=['invoices', 'status']
     inlines = [WorkOrderInline]
     readonly_fields = []
     limited_manytomany_fields = {}
 
-    def reports(self, obj):
+    def get_queryset(self, request):
+        qs = super(NWASubmittedInvoiceAdmin, self).get_queryset(request)
+        return qs.filter(invoice__status__in=['submitted'])
+
+    def invoices(self, obj):
         return obj
 
 
