@@ -1,4 +1,5 @@
 from import_export import resources
+from import_export.resources import Field
 from .models import *
 
 """
@@ -41,6 +42,16 @@ class InvoiceResource(resources.ModelResource):
         fields = '__all__'
 
 
+class VendorInvoiceProxyResource(resources.ModelResource):
+    class Meta:
+        model = VendorInvoiceProxy
+        fields = '__all__'
+
+class NWADiscrepancyProxyResource(resources.ModelResource):
+    class Meta:
+        model = NWAServiceDiscrepancy
+        fields = '__all__'
+
 class BuildingResource(resources.ModelResource):
     class Meta:
         model = Building
@@ -48,17 +59,10 @@ class BuildingResource(resources.ModelResource):
 
 
 class WorkOrderResource(resources.ModelResource):
-    flag_safe = Field()
-    flag_visitsdocumented = Field()
-    flag_weatherready = Field()
-    flag_failure = Field()
-    flag_hasdiscrepancies = Field()
-    flag_hasdiscrepanciesfailure = Field()
-    flag_completed = Field()
 
     class Meta:
         model = WorkOrder
-        fields = (flag_safe, flag_visitsdocumented, )
+        fields = '__all__'
 
     def dehydrate_flag_safe(self, obj):
         return '%s' % ('true' if not obj.flag_safe else 'false')

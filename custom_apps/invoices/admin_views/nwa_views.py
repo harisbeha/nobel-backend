@@ -2,10 +2,17 @@ from django.contrib.admin import register, ModelAdmin
 from import_export.admin import ImportExportActionModelAdmin
 
 from ..models import *
+from ..resources import *
 from django.forms.models import BaseModelFormSet
 
 from django.forms.models import BaseInlineFormSet, BaseFormSet
 import nested_admin
+from import_export.admin import ExportMixin
+from django.conf.urls import url
+from django.shortcuts import HttpResponseRedirect
+import sendgrid
+import os
+from sendgrid.helpers.mail import *
 
 
 # all the views in this file should be visible only to the superuser
@@ -149,9 +156,37 @@ class WOFormSet(BaseInlineFormSet):
 from django.utils.functional import curry
 
 
-class WorkOrderInline(admin.TabularInline):
+class WorkVisitProxyInline(nested_admin.NestedTabularInline):
+    model = WorkVisit
+    extra = 1
+    readonly_fields = []
+    classes = ['collapse']
+
+
+class WorkOrderInline(nested_admin.NestedTabularInline):
     model = WorkOrder
     formset = WOFormSet
+    inlines = [WorkVisitProxyInline]
+    readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax']
+
+
+    def get_fields(self, request, obj=None):
+        fields = super(WorkOrderInline, self).get_fields(request, obj)
+        rate_fields = fields[10:14]
+        new_fields = fields[0:4] + rate_fields + fields[5:9]
+        return new_fields
+
+    def deice_rate(self, obj):
+        return obj.building.deice_rate
+
+    def deice_tax(self, obj):
+        return obj.building.deice_tax
+
+    def plow_rate(self, obj):
+        return obj.building.plow_rate
+
+    def plow_tax(self, obj):
+        return obj.building.plow_tax
 
     def get_formset(self, *args, **kwargs):
         formset = super(WorkOrderInline, self).get_formset(*args, **kwargs)
@@ -336,6 +371,17 @@ class ServiceForecast(admin.ModelAdmin):
                     number_salts, number_plows, deicing_fee, plow_fee, storm_total]
 
 
+class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
+    exclude=['remission_address', 'address_info_storage']
+    list_display=['reports', 'status']
+    inlines = [WorkOrderInline]
+    readonly_fields = []
+    limited_manytomany_fields = {}
+
+    def reports(self, obj):
+        return obj
+
+
 class DiscrepancyReview(admin.ModelAdmin):
     model = WorkProxyServiceDiscrepancy
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
@@ -343,6 +389,47 @@ class DiscrepancyReview(admin.ModelAdmin):
                     plow_tax, snowfall, storm_days, refreeze,
                     number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
+
+    resource_class = NWADiscrepancyProxyResource
+
+    actions=['flag_discrepancy']
+
+    change_list_template = "admin/provider/safety_report_changelist.html"
+
+    def get_queryset(self, request):
+        qs = super(DiscrepancyReview, self).get_queryset(request)
+        return qs.filter(invoice__status__in=['submitted'])
+
+    def invoices(self, obj):
+        return obj
+
+    def get_urls(self):
+        urls = super(DiscrepancyReview, self).get_urls()
+        my_urls = [
+            url('flag_discrepancy/', self.flag_discrepancy),
+        ]
+        return my_urls + urls
+
+    def flag_discrepancy(self, request, queryset):
+        rows_updated = queryset.update(invoice__status='submitted')
+        if rows_updated == 1:
+            message_bit = "1 invoice was"
+        else:
+            message_bit = "%s invoices were" % rows_updated
+        self.message_user(request, "%s flagged for discrepancies." % message_bit)
+
+        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+        from_email = Email(settings.DEFAULT_FROM_EMAIL)
+        to_email = Email("harisbeha@gmail.com")
+        subject = "Discrepancies Flagged"
+        invoice_id = queryset[0].id
+        content = Content("text/plain", "Discrepancy flagged in Invoice #{0}".format(invoice_idc))
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+        print(response)
+        return HttpResponseRedirect("/provider/invoices/nwaservicediscrepancy/")
+
+    flag_discrepancy.short_description = "Flag discrepancies"
 
 
     def salt_delta(self, obj):
@@ -376,8 +463,8 @@ class DiscrepancyReview(admin.ModelAdmin):
     plow_cost_delta.allow_tags = True
 
 
-class BuildingAdmin(SuperuserModelAdmin):
-    list_display = ['address', 'type']
+class NWABuildingAdmin(SuperuserModelAdmin):
+    list_display = ['building_code', 'address', 'service_provider', 'weather_station', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'type']
 
 #
 #

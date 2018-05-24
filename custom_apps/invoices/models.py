@@ -32,10 +32,10 @@ PLOW_COUNT = (
 )
 
 INVOICE_STATUSES = (
-    ('not_created','Not Created'),
-    ('safety_report', 'Safety Report Created'),
-    ('preliminary_created', 'Preliminary'),
-    ('submitted', 'Submitted'),
+    ('not_created','Safety Report - Initial'),
+    ('safety_report', 'Closeout Report Generated'),
+    ('preliminary_created', 'Preliminary Invoice - In Progress'),
+    ('submitted', 'Invoice Submitted - In Review'),
     ('reviewed - 4 PM', 'Reviewed'),
     ('dispute', 'In Dispute'),
     ('finalized', 'Finalized'),
@@ -125,6 +125,7 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     type = models.IntegerField('Type of property', choices=BuildingType.choices())
     short_name = models.CharField(max_length=255, null=True, blank=True)
     building_code = models.CharField(max_length=255, null=True, blank=True)
+    weather_station = models.ForeignKey('invoices.WeatherStation', null=True, blank=True)
 
     deice_rate = DollarsField('Cost per de-icing w/o tax', default=0)
     deice_tax = DollarsField('Tax per de-icing', default=0)
@@ -139,6 +140,23 @@ class Building(AddressMetadataStorageMixin, BaseModel):
         if self.building_code:
             return 'BC#: {0} - {1} '.format(self.building_code, self.address)
         return 'ID: {0} - {1} '.format(self.id, self.address)
+
+
+class WorkOrderID(BaseModel):
+    work_order_code = models.CharField(max_length=255)
+    vendor = models.ForeignKey('invoices.Vendor', null=True, blank=True)
+    available = models.BooleanField(default=True)
+
+
+class WeatherStation(BaseModel):
+    station_name = models.CharField(max_length=255, null=True, blank=True)
+    short_name = models.CharField(max_length=255)
+    short_description = models.CharField(max_length=255, null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    zip_codes = models.CommaSeparatedIntegerField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return self.short_name
 
 
 # manager for the below relation
@@ -249,6 +267,7 @@ class WorkVisitManager(models.Manager):
 
 class WorkVisit(BaseModel):
     work_order = models.ForeignKey('invoices.WorkOrder', null=True, blank=True)
+    service_date = models.DateField(help_text='Date the service was performed', blank=True, null=True)
     service_time = models.CharField(help_text='Last time serviced', max_length=255, null=True, blank=True, choices=SERVICE_TIME_CHOICES)
     num_plows = models.IntegerField('# Plows', null=True, blank=True, default=0, choices=PLOW_COUNT)
     num_salts = models.IntegerField('# Salts', null=True, blank=True, default=0, choices=PLOW_COUNT)
@@ -264,7 +283,21 @@ class WorkVisit(BaseModel):
 class SafetyReport(BaseModel):
     invoice = models.ForeignKey('invoices.Invoice', null=True, blank=True)
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
-    service_time = models.DateField('Service Time', null=True, blank=True)
+    site_serviced = models.BooleanField('Site Serviced?', default=True)
+    safe_to_open = models.BooleanField('Safe to open site?', default=True)
+    safety_concerns = models.CharField('Any concerns? Let us know of all site conditions', max_length=255, blank=True)
+    snow_instructions = models.CharField('Extra instructions for handling remaining snow', max_length=255, blank=True)
+    haul_stack_status = models.IntegerField('Snow hauling or stacking required?', choices=SnowStatus.choices(), default=0, null=True, blank=True)
+    haul_stack_estimate = DollarsField('Cost estimate for future snow hauling or stacking', default=0, null=True, blank=True)
+
+    audit = AuditTrailWatcher()
+
+    def __str__(self):
+        return 'Safety Report #{0} for'.format(self.id)
+
+class SafetyVisit(BaseModel):
+    safety_report = models.ForeignKey('invoices.SafetyReport', null=True, blank=True)
+    inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True)
     site_serviced = models.BooleanField('Site Serviced?', default=True)
     safe_to_open = models.BooleanField('Safe to open site?', default=True)
     safety_concerns = models.CharField('Any concerns? Let us know of all site conditions', max_length=255, blank=True)
@@ -410,6 +443,22 @@ class ModifiablePrelimInvoice(WorkOrder):
 # Superuser
 
 
+class WeatherStationSuperProxy(WeatherStation):
+    class Meta(WeatherStation.Meta):
+        proxy = True
+        verbose_name = 'Weather Station'
+
+    def __str__(self):
+        return '{0}'.format(self.short_name)
+
+
+class WorkOrderIDSuperProxy(WorkOrderID):
+    class Meta(WeatherStation.Meta):
+        proxy = True
+        verbose_name = 'Available Work Order ID'
+
+    def __str__(self):
+        return '{0}'.format(self.work_order_code)
 
 
 
@@ -469,6 +518,14 @@ class NWAServiceDiscrepancy(WorkOrder):
         return '{0} - {1}'.format(self.invoice_id, self.id)
 
 
+class NWASubmittedInvoiceProxy(Invoice):
+    class Meta(Invoice.Meta):
+        proxy = True
+        verbose_name = 'Submitted Invoice'
+
+    def __str__(self):
+        return '{0} Invoice # {1}'.format(self.service_provider, self.id)
+
 # CBRE
 class CBRESafetyProxy(Invoice):
     class Meta(Invoice.Meta):
@@ -494,7 +551,18 @@ class VendorSafetyProxy(Invoice):
         verbose_name = 'Safety Report'
 
     def __str__(self):
-        return 'Safety Report # {0}'.format(self.id)
+        try:
+            if self.workorder_set.last():
+                return 'Safety Report # {0} ({1} - {2})'.format(self.id, self.storm_date,
+                                                                self.workorder_set.last().last_service_date)
+            elif self.storm_date:
+                return 'Safety Report # {0} ({1} - present)'.format(self.id, str(self.storm_date),
+                                                                    str(self.workorder_set.last().last_service_date))
+            else:
+                return 'Safety Report # {0}'.format(self.id)
+        except:
+            return 'Safety Report # {0}'.format(self.id)
+
 
 class VendorInvoiceProxy(Invoice):
     class Meta(Invoice.Meta):

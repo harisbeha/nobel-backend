@@ -1,7 +1,15 @@
 from django.contrib.admin import register, ModelAdmin
 from import_export.admin import ImportExportActionModelAdmin
+from django.shortcuts import HttpResponseRedirect
+from django.conf.urls import url
+import sendgrid
+import os
+from sendgrid.helpers.mail import *
+from django.conf import settings
+from import_export.admin import ExportMixin
 
 from ..models import *
+from ..resources import *
 from django.forms.models import BaseModelFormSet
 
 from django.forms.models import BaseInlineFormSet, BaseFormSet
@@ -154,12 +162,34 @@ from django.utils.functional import curry
 class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     model = WorkVisit
     extra = 1
+    readonly_fields = []
     classes = ['collapse']
+
 
 class WorkOrderInline(nested_admin.NestedTabularInline):
     model = WorkOrder
     formset = WOFormSet
     inlines = [WorkVisitProxyInline]
+    readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax']
+
+
+    def get_fields(self, request, obj=None):
+        fields = super(WorkOrderInline, self).get_fields(request, obj)
+        rate_fields = fields[10:14]
+        new_fields = fields[0:4] + rate_fields + fields[5:9]
+        return new_fields
+
+    def deice_rate(self, obj):
+        return obj.building.deice_rate
+
+    def deice_tax(self, obj):
+        return obj.building.deice_tax
+
+    def plow_rate(self, obj):
+        return obj.building.plow_rate
+
+    def plow_tax(self, obj):
+        return obj.building.plow_tax
 
     def get_formset(self, *args, **kwargs):
         formset = super(WorkOrderInline, self).get_formset(*args, **kwargs)
@@ -197,11 +227,17 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             return 0
         return get_locations_by_system_user(request.user).count()
 
+class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
+    model = SafetyVisit
+    extra = 1
+    classes = ['collapse']
 
-class SafetyReportInline(admin.TabularInline):
+class SafetyReportInline(nested_admin.NestedTabularInline):
     model = SafetyReport
     # form = SafetyReportForm
     formset = SRFormSet
+    inlines = [SafetyVisitProxyInline]
+
 
     def get_formset(self, *args, **kwargs):
         formset = super(SafetyReportInline, self).get_formset(*args, **kwargs)
@@ -238,73 +274,94 @@ class SafetyReportInline(admin.TabularInline):
 
 
 @register(InvoiceProxyVendor)
-class InvoiceAdmin(admin.ModelAdmin):
+class InvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
+    list_display=['reports', 'status']
     inlines = [SafetyReportInline]
+    readonly_fields = []
     limited_manytomany_fields = {}
+    actions=['finalize_safety_report']
 
-    def get_changeform_initial_data(self, request):
-        """
-        Get the initial form data from the request's GET params.
-        """
-        from django.db import models
-        initial_o = Invoice().__dict__
-        initial = initial_o
-        for k in initial:
-            try:
-                f = self.model._meta.get_field(k)
-            except Exception as e:
-                continue
-            # We have to special-case M2Ms as a list of comma-separated PKs.
-            if isinstance(f, models.ManyToManyField):
-                initial[k] = initial[k].split(",")
+    change_list_template = "admin/provider/safety_report_changelist.html"
+
+    def reports(self, obj):
+        return obj
+
+    def get_urls(self):
+        urls = super(InvoiceAdmin, self).get_urls()
+        my_urls = [
+            url('finalize_safety_report/', self.finalize_safety_report),
+        ]
+        return my_urls + urls
+
+    def finalize_safety_report(self, request, queryset):
+        rows_updated = queryset.update(status='safety_report')
+        if rows_updated == 1:
+            message_bit = "1 closeout report was"
         else:
-            from django.db import models
-            initial_o = Invoice().__dict__
-            initial = initial_o
-            for k in initial:
-                try:
-                    f = self.model._meta.get_field(k)
-                except Exception as e:
-                    continue
-                # We have to special-case M2Ms as a list of comma-separated PKs.
-                if isinstance(f, models.ManyToManyField):
-                    initial[k] = initial[k].split(",")
+            message_bit = "%s closeout reports were" % rows_updated
+        self.message_user(request, "%s successfully generated." % message_bit)
+
+        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+        from_email = Email(settings.DEFAULT_FROM_EMAIL)
+        to_email = Email("harisbeha@gmail.com")
+        subject = "Closeout Report Generated"
+        invoice_id = queryset[0].id
+        content = Content("text/plain", "Closeout report generated: {0}{1}".format('http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+        print(response)
+        return HttpResponseRedirect("/provider/invoices/vendorsafetyproxy/")
+
+    finalize_safety_report.short_description = "Generate closeout report"
 
 
-class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin):
+class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelAdmin):
+    resource_class = VendorInvoiceProxyResource
     exclude=['remission_address', 'address_info_storage']
+    list_display=['invoices', 'status']
     inlines = [WorkOrderInline]
     readonly_fields = ['status']
     limited_manytomany_fields = {}
 
-    def get_changeform_initial_data(self, request):
-        """
-        Get the initial form data from the request's GET params.
-        """
-        from django.db import models
-        initial_o = Invoice().__dict__
-        initial = initial_o
-        for k in initial:
-            try:
-                f = self.model._meta.get_field(k)
-            except Exception as e:
-                continue
-            # We have to special-case M2Ms as a list of comma-separated PKs.
-            if isinstance(f, models.ManyToManyField):
-                initial[k] = initial[k].split(",")
+    def get_queryset(self, request):
+        qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
+        return qs.filter(status__in=['safety_report','submitted'])
+
+    actions=['finalize_submit_invoice']
+
+    change_list_template = "admin/provider/safety_report_changelist.html"
+
+    def invoices(self, obj):
+        return obj
+
+    def get_urls(self):
+        urls = super(PrelimInvoiceAdmin, self).get_urls()
+        my_urls = [
+            url('finalize_submit_invoice/', self.finalize_submit_invoice),
+        ]
+        return my_urls + urls
+
+    def finalize_submit_invoice(self, request, queryset):
+        rows_updated = queryset.update(status='submitted')
+        if rows_updated == 1:
+            message_bit = "1 invoice was"
         else:
-            from django.db import models
-            initial_o = Invoice().__dict__
-            initial = initial_o
-            for k in initial:
-                try:
-                    f = self.model._meta.get_field(k)
-                except Exception as e:
-                    continue
-                # We have to special-case M2Ms as a list of comma-separated PKs.
-                if isinstance(f, models.ManyToManyField):
-                    initial[k] = initial[k].split(",")
+            message_bit = "%s invoices were" % rows_updated
+        self.message_user(request, "%s submitted successfully." % message_bit)
+
+        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+        from_email = Email(settings.DEFAULT_FROM_EMAIL)
+        to_email = Email("harisbeha@gmail.com")
+        subject = "Invoice Submitted"
+        invoice_id = queryset[0].id
+        content = Content("text/plain", "Invoice #{0} submitted: {1}{2}".format(invoice_id, 'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+        print(response)
+        return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
+
+    finalize_submit_invoice.short_description = "Finalize and submit invoice"
 
 
 # @register(Invoice)
@@ -386,7 +443,6 @@ class DiscrepancyReview(admin.ModelAdmin):
     plow_cost_delta.allow_tags = True
 
 
-@register(Building)
 class BuildingAdmin(SuperuserModelAdmin):
     list_display = ['address', 'type']
 

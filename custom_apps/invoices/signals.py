@@ -25,3 +25,8 @@ def create_work_orders(sender, instance, created, **kwargs):
                                     storm_name=instance.invoice.storm_name,
                                     service_provider=instance.building.service_provider,
                                     work_order_code=work_order_code)
+
+@receiver(post_save, sender=SafetyReport)
+def email_safety_report(sender, instance, created, **kwargs):
+    import random
+    from custom_apps.invoices.models import WorkOrder

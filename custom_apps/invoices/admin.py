@@ -60,9 +60,10 @@ vendor_site = VendorSite(name='vendor_site')
 from custom_apps.invoices.admin_views import nwa_views, vendor_views, cbre_views
 
 
-nwa_site.register(NWABuilding, nwa_views.BuildingAdmin)
+nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)
 nwa_site.register(NWAServiceForecast, nwa_views.ServiceForecast)
 nwa_site.register(NWAServiceDiscrepancy, nwa_views.DiscrepancyReview)
+nwa_site.register(NWASubmittedInvoiceProxy, nwa_views.NWASubmittedInvoiceAdmin)
 
 cbre_site.register(CBRESafetyProxy, cbre_views.InvoiceAdmin)
 cbre_site.register(CBREInvoiceProxy, cbre_views.PrelimInvoiceAdmin)

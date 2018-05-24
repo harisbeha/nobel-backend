@@ -2,9 +2,11 @@ from django.contrib.admin import register, ModelAdmin
 from import_export.admin import ImportExportActionModelAdmin
 
 from ..models import *
+from ..resources import *
 from django.forms.models import BaseModelFormSet
 
 from django.forms.models import BaseInlineFormSet, BaseFormSet
+from import_export.admin import ExportMixin
 import nested_admin
 
 
@@ -263,8 +265,9 @@ class InvoiceAdmin(admin.ModelAdmin):
                     initial[k] = initial[k].split(",")
 
 
-class PrelimInvoiceAdmin(admin.ModelAdmin):
+class PrelimInvoiceAdmin(admin.ModelAdmin, ExportMixin):
     exclude=['remission_address', 'address_info_storage']
+    resource_class = InvoiceResource
     inlines = [WorkOrderInline]
     limited_manytomany_fields = {}
 
@@ -336,8 +339,9 @@ class ServiceForecast(admin.ModelAdmin):
                     number_salts, number_plows, deicing_fee, plow_fee, storm_total]
 
 
-class DiscrepancyReview(admin.ModelAdmin):
+class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     model = WorkProxyServiceDiscrepancy
+    resource_class=InvoiceResource
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
@@ -375,10 +379,14 @@ class DiscrepancyReview(admin.ModelAdmin):
 
     plow_cost_delta.allow_tags = True
 
-
+@register(Building)
 class BuildingAdmin(SuperuserModelAdmin):
-    list_display = ['address', 'type']
+    list_display = ['building_code', 'address', 'service_provider', 'weather_station', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'type']
+    filter_list = ['service_provider', 'weather_station']
 
+@register(WorkOrderIDSuperProxy)
+class WorkOrderIDAdmin(SuperuserModelAdmin):
+    list_display = ['work_order_code','vendor', 'available']
 #
 #
 class RegionalManagerAdmin(SuperuserModelAdmin):
@@ -444,3 +452,10 @@ def storm_name(obj):
 # @register(Invoice)
 # class InvoiceAdmin(SuperuserModelAdmin):
 #     list_display = ['vendor', 'remission_address']
+
+@register(WeatherStationSuperProxy)
+class WeatherStationSuperProxyAdmin(SuperuserModelAdmin):
+    list_display = ['short_name', 'zip_code_list']
+
+    def zip_code_list(self, obj):
+        return str(obj.zip_codes)
