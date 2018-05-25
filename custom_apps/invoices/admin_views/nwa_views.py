@@ -380,7 +380,7 @@ class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
 
     def get_queryset(self, request):
         qs = super(NWASubmittedInvoiceAdmin, self).get_queryset(request)
-        return qs.filter(invoice__status__in=['submitted'])
+        return qs.filter(status__in=['submitted'])
 
     def invoices(self, obj):
         return obj
