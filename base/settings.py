@@ -230,3 +230,5 @@ SITE_NAME = 'Nobel Weather Associates'
 from memcacheify import memcacheify
 
 CACHES = memcacheify()
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS=10000
