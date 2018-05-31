@@ -71,7 +71,7 @@ def storm_total(self, obj=None):
     return total
 
 def snowfall(self, obj=None):
-    return 1.4
+    return self.snowfall
 
 def storm_days(self, obj=None):
     return 2
@@ -80,7 +80,7 @@ def refreeze(self, obj=None):
     return '0'
 
 def number_salts(self, obj=None):
-    return self.num_salts
+    return self.aggregate_invoiced_salts
 
 def number_salts_predicted(self, obj=None):
     try:
@@ -109,7 +109,7 @@ def salts_delta(self, obj=None):
     return '3'
 
 def number_plows(self, obj=None):
-    return self.num_plows
+    return self.aggregate_invoiced_plows
 
 def push_delta(self, obj=None):
     return '4'
@@ -176,7 +176,7 @@ class WorkOrderInline(admin.TabularInline):
             for l in locations:
                 print({'building': str(l['id']), 'service_provider': s_provider,
                                 'storm_name': s_name,'storm_date': s_date,
-                                'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
+                                'last_service_date': '2017-12-09',
                                 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)

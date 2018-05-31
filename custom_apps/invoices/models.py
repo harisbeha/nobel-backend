@@ -11,6 +11,8 @@ from ..utils.models import BaseModel
 from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_accumulation_data
 from django.conf import settings
 from django.contrib import admin
+from django.utils.functional import cached_property
+
 
 # An invoice (e.g. https://drive.google.com/file/d/1XWeqbQ-VRXV4C4zy6mOwv2Sasnwpv2WO/view) has multiple work orders
 # and a work order has multiple jobs
@@ -36,7 +38,7 @@ INVOICE_STATUSES = (
     ('safety_report', 'Closeout Report Generated'),
     ('preliminary_created', 'Preliminary Invoice - In Progress'),
     ('submitted', 'Invoice Submitted - In Review'),
-    ('reviewed - 4 PM', 'Reviewed'),
+    ('reviewed', 'Reviewed'),
     ('dispute', 'In Dispute'),
     ('finalized', 'Finalized'),
 )
@@ -110,6 +112,59 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 
     audit = AuditTrailWatcher()
 
+    def aggregate_predicted_salts(self):
+        predicted_values = 0
+        for work_order in self.workorder_set.all():
+            predicted_values += int(work_order.aggregate_predicted_salts)
+        return predicted_values
+
+
+    def aggregate_predicted_plows(self):
+        predicted_values = 0
+        for work_order in self.workorder_set.all():
+            predicted_values += int(work_order.aggregate_predicted_plows)
+        return predicted_values
+
+
+    def aggregate_predicted_plow_cost(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += int(work_order.aggregate_predicted_plow_cost)
+        return predicted_cost
+
+    def aggregate_predicted_salt_cost(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += int(work_order.aggregate_predicted_salt_cost)
+        return predicted_cost
+
+
+    def aggregate_invoiced_plows(self):
+        predicted_values = 0
+        for work_order in self.workorder_set.all():
+            predicted_values += int(work_order.aggregate_invoiced_plows)
+        return predicted_values
+
+    def aggregate_invoiced_salts(self):
+        predicted_values = 0
+        for work_order in self.workorder_set.all():
+            predicted_values += int(work_order.aggregate_invoiced_salts)
+        return predicted_values
+
+
+    def aggregate_invoiced_plow_cost(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += int(work_order.aggregate_invoiced_plow_cost)
+        return predicted_cost
+
+
+    def aggregate_invoiced_salt_cost(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += int(work_order.aggregate_predicted_salt_cost)
+        return predicted_cost
+
 
 # manager for the below relation
 class BuildingManager(models.Manager):
@@ -176,23 +231,6 @@ class WorkOrder(BaseModel):
 
     storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100, blank=True, null=True)
     last_service_date = models.DateField(help_text='Date of the last service', blank=True, null=True)
-    service_time = models.CharField(help_text='Last time serviced', max_length=255, null=True, blank=True, choices=SERVICE_TIME_CHOICES)
-
-    # flag_safe = models.BooleanField(help_text='Property safe to open?', null=False, default=False)
-    # flag_visitsdocumented = models.BooleanField(help_text='all information about work visits entered?', null=False,
-    #                                             default=False)
-    # flag_weatherready = models.BooleanField(help_text='Spending forecast generated for work order?',
-    #                                         null=False, default=False)
-    # flag_failure = models.NullBooleanField(help_text='Service failure marked by client?', null=True, default=None)
-    # flag_hasdiscrepancies = models.NullBooleanField(
-    #     help_text='Discrepancies in forecasted/actual spending for the work order?', null=True, default=None)
-    # flag_hasdiscrepanciesfailure = models.BooleanField(
-    #     help_text='Vendor failed to provide a satisfactory response to the discrepancies?', null=False, default=False)
-    # flag_completed = models.BooleanField(help_text='Sent to the vendor on a finalized invoice?',
-    #                                      null=False, default=False)
-    num_plows = models.IntegerField('# Plows', null=True, blank=True, default=0)
-    num_salts = models.IntegerField('# Salts', null=True, blank=True, default=0)
-    failed_service = models.BooleanField('Service Failed?', default=False)
 
     tracker = FieldTracker()
     audit = AuditTrailWatcher()
@@ -213,7 +251,7 @@ class WorkOrder(BaseModel):
         except Exception as e:
             return ''
 
-    @property
+    @cached_property
     def snowfall(self):
         try:
             snowfall = _query_accumulation_data(self.building.address_info_storage['postal_code'],
@@ -223,18 +261,8 @@ class WorkOrder(BaseModel):
         except Exception as e:
             return ''
 
-    @property
-    def duration(self):
-        try:
-            duration = _query_accumulation_data(self.building.address_info_storage['postal_code'],
-                                                settings.DEMO_SNOWFALL_DATA_START,
-                                                settings.DEMO_SNOWFALL_DATA_END)['duration']
-            return duration
-        except Exception as e:
-            return ''
-
-    @property
-    def predicted_amount(self):
+    @cached_property
+    def aggregate_predicted_plows(self):
         try:
             snowfall = int(self.snowfall)
             if snowfall < 3:
@@ -244,6 +272,80 @@ class WorkOrder(BaseModel):
                        (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
         except Exception as e:
             return ''
+
+    @cached_property
+    def aggregate_predicted_salts(self):
+        try:
+            snowfall = int(self.snowfall)
+            if snowfall < 3:
+                return snowfall * self.building.deice_rate + self.building.deice_tax
+            else:
+                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
+                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
+        except Exception as e:
+            return ''
+
+    @cached_property
+    def aggregate_predicted_plow_cost(self):
+        try:
+            snowfall = int(self.snowfall)
+            if snowfall < 3:
+                return snowfall * self.building.deice_rate + self.building.deice_tax
+            else:
+                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
+                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
+        except Exception as e:
+            return 0
+
+    @cached_property
+    def aggregate_predicted_salt_cost(self):
+        try:
+            snowfall = int(self.snowfall)
+            if snowfall < 3:
+                return snowfall * self.building.deice_rate + self.building.deice_tax
+            else:
+                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
+                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
+        except Exception as e:
+            return 0
+
+
+    @cached_property
+    def aggregate_invoiced_plows(self):
+        try:
+            invoiced_count = 0
+            invoiced_values = self.workvisit_set.values_list('num_plows', flat=True)
+            for item in invoiced_values:
+                invoiced_count += int(item)
+            return invoiced_count
+        except Exception as e:
+            return 0
+
+    @cached_property
+    def aggregate_invoiced_salts(self):
+        try:
+            snowfall = int(self.snowfall)
+            invoiced_count = 0
+            invoiced_values = self.workvisit_set.values_list('num_salts', flat=True)
+            for item in invoiced_values:
+                invoiced_count += int(item)
+            return invoiced_count
+        except Exception as e:
+            return 0
+
+    @cached_property
+    def aggregate_invoiced_plow_cost(self):
+        try:
+            return (int(self.aggregate_invoiced_plows) * int(self.building.plow_rate)) + int(self.building.plow_tax)
+        except Exception as e:
+            return 0
+
+    @cached_property
+    def aggregate_invoiced_salt_cost(self):
+        try:
+            return (int(self.aggregate_invoiced_salts) * int(self.building.deice_rate)) + int(self.building.deice_tax)
+        except Exception as e:
+            return 0
 
 
 # manager for the below relation
@@ -274,7 +376,7 @@ class WorkVisit(BaseModel):
     failed_service = models.BooleanField('Service Failed?', default=False)
 
     audit = AuditTrailWatcher()
-    aggregates = WorkVisitManager()
+    # aggregates = WorkVisitManager()
 
     def __str__(self):
         return 'Work for WO#: {0} on {1}'.format(self.work_order.id, self.service_time)
