@@ -342,7 +342,7 @@ class ServiceForecast(admin.ModelAdmin):
 class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     model = WorkProxyServiceDiscrepancy
     resource_class=InvoiceResource
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
+    list_filter = ('id',)
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
                     number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,

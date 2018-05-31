@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1b361cd4-e75e-48d4-936c-eda7bc530423" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/custom_apps/invoices/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/models.py" afterDir="false" />
     </list>
@@ -30,8 +30,8 @@
       <file leaf-file-name="superuser_views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-826">
-              <caret line="92" column="17" lean-forward="true" selection-start-line="92" selection-start-column="17" selection-end-line="92" selection-end-column="17" />
+            <state relative-caret-position="275">
+              <caret line="342" column="39" selection-start-line="342" selection-start-column="12" selection-end-line="342" selection-end-column="39" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
               </folding>
@@ -63,8 +63,8 @@
       <file leaf-file-name="nwa_views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1476">
-              <caret line="401" selection-start-line="401" selection-end-line="401" />
+            <state relative-caret-position="430">
+              <caret line="445" lean-forward="true" selection-start-line="445" selection-end-line="445" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
               </folding>
@@ -108,8 +108,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="538">
-              <caret line="347" column="20" selection-start-line="347" selection-start-column="20" selection-end-line="347" selection-end-column="20" />
+            <state relative-caret-position="197">
+              <caret line="255" column="20" selection-start-line="255" selection-start-column="20" selection-end-line="255" selection-end-column="20" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -137,8 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>79aec8</find>
-      <find>vendor_id</find>
       <find>'vendor'</find>
       <find>vendor</find>
       <find>work_order_id</find>
@@ -167,6 +165,8 @@
       <find>num_salts</find>
       <find>snowfall</find>
       <find>work_order_set</find>
+      <find>invoice_id</find>
+      <find>location</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -190,8 +190,8 @@
         <option value="$PROJECT_DIR$/custom_apps/invoices/admin.py" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/resources.py" />
-        <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py" />
+        <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/models.py" />
       </list>
     </option>
@@ -741,20 +741,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py">
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1476">
-          <caret line="401" selection-start-line="401" selection-end-line="401" />
+        <state relative-caret-position="275">
+          <caret line="342" column="39" selection-start-line="342" selection-start-column="12" selection-end-line="342" selection-end-column="39" />
           <folding>
             <element signature="e#0#53#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py">
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-826">
-          <caret line="92" column="17" lean-forward="true" selection-start-line="92" selection-start-column="17" selection-end-line="92" selection-end-column="17" />
+        <state relative-caret-position="430">
+          <caret line="445" lean-forward="true" selection-start-line="445" selection-end-line="445" />
           <folding>
             <element signature="e#0#53#0" expanded="true" />
           </folding>
@@ -763,8 +763,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="538">
-          <caret line="347" column="20" selection-start-line="347" selection-start-column="20" selection-end-line="347" selection-end-column="20" />
+        <state relative-caret-position="197">
+          <caret line="255" column="20" selection-start-line="255" selection-start-column="20" selection-end-line="255" selection-end-column="20" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
           </folding>

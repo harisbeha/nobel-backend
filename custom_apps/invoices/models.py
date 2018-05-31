@@ -112,39 +112,42 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 
     audit = AuditTrailWatcher()
 
+    @cached_property
     def aggregate_predicted_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += int(work_order.aggregate_predicted_salts)
         return predicted_values
 
-
+    @cached_property
     def aggregate_predicted_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += int(work_order.aggregate_predicted_plows)
         return predicted_values
 
-
+    @cached_property
     def aggregate_predicted_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += int(work_order.aggregate_predicted_plow_cost)
         return predicted_cost
 
+    @cached_property
     def aggregate_predicted_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += int(work_order.aggregate_predicted_salt_cost)
         return predicted_cost
 
-
+    @cached_property
     def aggregate_invoiced_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += int(work_order.aggregate_invoiced_plows)
         return predicted_values
 
+    @cached_property
     def aggregate_invoiced_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
@@ -152,13 +155,14 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
         return predicted_values
 
 
+    @cached_property
     def aggregate_invoiced_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += int(work_order.aggregate_invoiced_plow_cost)
         return predicted_cost
 
-
+    @cached_property
     def aggregate_invoiced_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
@@ -249,7 +253,7 @@ class WorkOrder(BaseModel):
                                                settings.DEMO_SNOWFALL_DATA_END)['has_ice']
             return has_ice
         except Exception as e:
-            return ''
+            return 0
 
     @cached_property
     def snowfall(self):
@@ -259,7 +263,7 @@ class WorkOrder(BaseModel):
                                                 settings.DEMO_SNOWFALL_DATA_END)['snowfall']
             return snowfall
         except Exception as e:
-            return ''
+            return 0
 
     @cached_property
     def aggregate_predicted_plows(self):
@@ -271,7 +275,7 @@ class WorkOrder(BaseModel):
                 return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
                        (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
         except Exception as e:
-            return ''
+            return 0
 
     @cached_property
     def aggregate_predicted_salts(self):
@@ -283,7 +287,7 @@ class WorkOrder(BaseModel):
                 return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
                        (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
         except Exception as e:
-            return ''
+            return 0
 
     @cached_property
     def aggregate_predicted_plow_cost(self):
@@ -611,13 +615,13 @@ class NWAServiceForecast(WorkOrder):
         return '{0} - {1}'.format(self.invoice_id, self.id)
 
 
-class NWAServiceDiscrepancy(WorkOrder):
-    class Meta(WorkOrder.Meta):
+class NWAServiceDiscrepancy(Invoice):
+    class Meta(Invoice.Meta):
         proxy = True
         verbose_name = 'Discrepancy Report'
 
     def __str__(self):
-        return '{0} - {1}'.format(self.invoice_id, self.id)
+        return 'Invoice {0}'.format(self.id)
 
 
 class NWASubmittedInvoiceProxy(Invoice):

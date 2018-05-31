@@ -387,14 +387,13 @@ class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
 
 
 class DiscrepancyReview(admin.ModelAdmin):
-    model = WorkProxyServiceDiscrepancy
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
-    list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
-                    plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
+    model = NWAServiceDiscrepancy
+    list_filter = ('id', 'storm_name', 'storm_date')
+    list_display = ['id', service_provider, 'snowfall', storm_days, refreeze,
+                    'number_salts', 'number_salts_predicted', 'salt_delta', 'number_plows', 'number_plows_predicted',
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
-    resource_class = NWADiscrepancyProxyResource
+    resource_class = NWAServiceDiscrepancy
 
     actions=['flag_discrepancy']
 
@@ -402,7 +401,7 @@ class DiscrepancyReview(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(DiscrepancyReview, self).get_queryset(request)
-        return qs.filter(invoice__status__in=['submitted'])
+        return qs.filter(status__in=['submitted'])
 
     def invoices(self, obj):
         return obj
@@ -415,7 +414,7 @@ class DiscrepancyReview(admin.ModelAdmin):
         return my_urls + urls
 
     def flag_discrepancy(self, request, queryset):
-        rows_updated = queryset.update(invoice__status='submitted')
+        rows_updated = queryset.update(status='submitted')
         if rows_updated == 1:
             message_bit = "1 invoice was"
         else:
@@ -435,6 +434,21 @@ class DiscrepancyReview(admin.ModelAdmin):
 
     flag_discrepancy.short_description = "Flag discrepancies"
 
+
+    def number_salts(self, obj):
+        return obj.aggregate_invoiced_salts
+
+    def number_plows(self, obj):
+        return obj.aggregate_invoiced_plows
+
+    def number_salts_predicted(self, obj):
+        return obj.aggregate_predicted_salts
+
+    def number_plows_predicted(self, obj):
+        return obj.aggregate_predicted_plows
+
+    def snowfall(self, obj):
+        return 0
 
     def salt_delta(self, obj):
         try:
