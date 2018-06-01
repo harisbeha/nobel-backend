@@ -456,7 +456,7 @@ def storm_name(obj):
 
 @register(WeatherStationSuperProxy)
 class WeatherStationSuperProxyAdmin(SuperuserModelAdmin):
-    list_display = ['short_name', 'zip_code_list']
+    list_display = ['short_name', 'zip_code_list', 'nws_code', 'cst_reference']
 
     def zip_code_list(self, obj):
         return str(obj.zip_codes)
