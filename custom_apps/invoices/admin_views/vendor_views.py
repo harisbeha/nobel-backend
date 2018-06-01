@@ -128,7 +128,7 @@ def plowing_cost_delta(self, obj=None):
 
 def get_locations_by_system_user(user=None):
     # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
-    vend = Vendor.objects.get(system_user__username='vendor-user@bank.com')
+    vend = Vendor.objects.get(system_user=user)
     locations = Building.objects.filter(service_provider=vend)
     return locations
 

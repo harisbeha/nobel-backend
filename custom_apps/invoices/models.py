@@ -213,6 +213,8 @@ class WeatherStation(BaseModel):
     short_description = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     zip_codes = models.CommaSeparatedIntegerField(max_length=255, null=True, blank=True)
+    nws_code = models.CharField(max_length=255, null=True, blank=True)
+    cst_reference = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.short_name

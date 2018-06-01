@@ -483,6 +483,7 @@ class DiscrepancyReview(admin.ModelAdmin):
 
 class NWABuildingAdmin(SuperuserModelAdmin):
     list_display = ['building_code', 'address', 'service_provider', 'weather_station', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'type']
+    filter_list = ['service_provider', 'weather_station']
 
 #
 #
