@@ -191,6 +191,7 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     plow_rate = DollarsField('Cost per plow w/o tax', default=0)
     plow_tax = DollarsField('Tax per plow', default=0)
     service_provider = models.ForeignKey('invoices.Vendor', related_name='vendor_locations', null=True, blank=True)
+    facility_manager = models.ForeignKey('auth.User', null=True, blank=True)
 
     objects = BuildingManager()
     audit = AuditTrailWatcher()
