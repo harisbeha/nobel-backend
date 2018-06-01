@@ -100,7 +100,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     service_provider = models.ForeignKey('invoices.Vendor')
     remission_address = AddressField('remission address', null=True, blank=True)
     storm_name = models.CharField(max_length=255, null=True, blank=True)
-    storm_date = models.DateField(null=True, blank=True)
+    storm_date = models.DateField(verbose_name="Report Date", null=True, blank=True)
     status = models.CharField(max_length=255, choices=INVOICE_STATUSES, default='not_created', null=True, blank=True)
 
     verbose_name = 'Closeout Reports'
@@ -191,6 +191,7 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     plow_rate = DollarsField('Cost per plow w/o tax', default=0)
     plow_tax = DollarsField('Tax per plow', default=0)
     service_provider = models.ForeignKey('invoices.Vendor', related_name='vendor_locations', null=True, blank=True)
+    facility_manager = models.ForeignKey('auth.User', null=True, blank=True)
 
     objects = BuildingManager()
     audit = AuditTrailWatcher()
@@ -408,8 +409,7 @@ class SafetyVisit(BaseModel):
     inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True)
     site_serviced = models.BooleanField('Site Serviced?', default=True)
     safe_to_open = models.BooleanField('Safe to open site?', default=True)
-    safety_concerns = models.CharField('Any concerns? Let us know of all site conditions', max_length=255, blank=True)
-    snow_instructions = models.CharField('Extra instructions for handling remaining snow', max_length=255, blank=True)
+    safety_concerns = models.CharField('Concerns/Extra Instructions', max_length=255, blank=True, null=True)
     haul_stack_status = models.IntegerField('Snow hauling or stacking required?', choices=SnowStatus.choices(), default=0, null=True, blank=True)
     haul_stack_estimate = DollarsField('Cost estimate for future snow hauling or stacking', default=0, null=True, blank=True)
 
@@ -496,7 +496,7 @@ class InvoiceProxyVendor(Invoice):
 class InvoiceProxyForecast(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Forecast Report'
+        verbose_name = 'Initial Spend Forecast'
 
     def __str__(self):
         return 'Inv # %s' % 'temp'

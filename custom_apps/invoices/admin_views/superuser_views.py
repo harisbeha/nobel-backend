@@ -174,10 +174,10 @@ class WorkOrderInline(admin.TabularInline):
             s_provider = None if not obj else obj.service_provider
 
             for l in locations:
-                print({'building': str(l['id']), 'service_provider': s_provider,
-                                'storm_name': s_name,'storm_date': s_date,
-                                'last_service_date': '2017-12-09',
-                                'failed_service':False, 'work_order_code':'Td1290'})
+                # print({'building': str(l['id']), 'service_provider': s_provider,
+                #                 'storm_name': s_name,'storm_date': s_date,
+                #                 'last_service_date': '2017-12-09',
+                #                 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
@@ -211,7 +211,7 @@ class SafetyReportInline(admin.TabularInline):
             # Populate initial based on request
             #
             locations = get_locations_by_system_user(request.user).values('id')
-            print(locations.count())
+            # print(locations.count())
             for l in locations:
                 initial.append({'building': str(l['id']), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
             # initial.append({
@@ -383,6 +383,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
 class BuildingAdmin(SuperuserModelAdmin):
     list_display = ['building_code', 'address', 'service_provider', 'weather_station', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'type']
     filter_list = ['service_provider', 'weather_station']
+    search_fields = ['service_provider__name']
 
 
 @register(WorkOrderIDSuperProxy)
@@ -456,7 +457,7 @@ def storm_name(obj):
 
 @register(WeatherStationSuperProxy)
 class WeatherStationSuperProxyAdmin(SuperuserModelAdmin):
-    list_display = ['short_name', 'zip_code_list', 'nws_code', 'cst_reference']
+    list_display = ['station_name', 'short_name', 'zip_code_list', 'nws_code', 'cst_reference']
 
     def zip_code_list(self, obj):
         return str(obj.zip_codes)

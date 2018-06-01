@@ -96,7 +96,6 @@ def number_salts_predicted(self, obj=None):
             return 0
     except:
         return ''
-    # print(self.__dict__)
     # import random
     # return random.randint(1,3)
 
@@ -207,10 +206,10 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             s_provider = None if not obj else obj.service_provider
 
             for l in locations:
-                print({'building': str(l['id']), 'service_provider': s_provider,
-                                'storm_name': s_name,'storm_date': s_date,
-                                'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
-                                'failed_service':False, 'work_order_code':'Td1290'})
+                # print({'building': str(l['id']), 'service_provider': s_provider,
+                #                 'storm_name': s_name,'storm_date': s_date,
+                #                 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
+                #                 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
@@ -244,7 +243,7 @@ class SafetyReportInline(admin.TabularInline):
             # Populate initial based on request
             #
             locations = get_locations_by_system_user(request.user).values('id')
-            print(locations.count())
+            # print(locations.count())
             for l in locations:
                 initial.append({'building': str(l['id']), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
             # initial.append({
@@ -426,10 +425,10 @@ class DiscrepancyReview(admin.ModelAdmin):
         to_email = Email("harisbeha@gmail.com")
         subject = "Discrepancies Flagged"
         invoice_id = queryset[0].id
-        content = Content("text/plain", "Discrepancy flagged in Invoice #{0}".format(invoice_idc))
+        content = Content("text/plain", "Discrepancy flagged in Invoice #{0}".format(invoice_id))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
-        print(response)
+        # print(response)
         return HttpResponseRedirect("/provider/invoices/nwaservicediscrepancy/")
 
     flag_discrepancy.short_description = "Flag discrepancies"

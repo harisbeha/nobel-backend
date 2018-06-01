@@ -47,6 +47,7 @@ CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils']
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -232,3 +233,7 @@ from memcacheify import memcacheify
 CACHES = memcacheify()
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS=10000
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
