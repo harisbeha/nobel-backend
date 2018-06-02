@@ -496,7 +496,7 @@ class InvoiceProxyVendor(Invoice):
 class InvoiceProxyForecast(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Forecast Report'
+        verbose_name = 'Initial Spend Forecast'
 
     def __str__(self):
         return 'Inv # %s' % 'temp'
