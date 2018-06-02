@@ -97,7 +97,7 @@ def number_salts_predicted(self, obj=None):
             return 0
     except:
         return ''
-    # print(self.__dict__)
+    # #print(self.__dict__)
     # import random
     # return random.randint(1,3)
 
@@ -128,7 +128,7 @@ def plowing_cost_delta(self, obj=None):
 
 def get_locations_by_system_user(user=None, provider=None):
     # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
-    print(provider)
+    #print(provider)
     if provider:
         locations = Building.objects.filter(service_provider=provider)
     else:
@@ -143,7 +143,7 @@ class SRFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(SRFormSet, self).__init__(*args, **kwargs)
         if self.request.user.is_superuser:
-            print('yes')
+            #print('yes')
             self.locations = get_locations_by_system_user(None, self.instance.service_provider)
         else:
             self.locations = get_locations_by_system_user(self.request.user, None)
@@ -160,7 +160,7 @@ class WOFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(WOFormSet, self).__init__(*args, **kwargs)
         if self.request.user.is_superuser:
-            print('yes')
+            #print('yes')
             self.locations = get_locations_by_system_user(None, self.instance.service_provider)
         else:
             self.locations = get_locations_by_system_user(self.request.user, None)
@@ -228,7 +228,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             s_provider = None if not obj else obj.service_provider
 
             for l in locations:
-                print({'building': str(l['id']), 'service_provider': s_provider,
+                #print({'building': str(l['id']), 'service_provider': s_provider,
                                 'storm_name': s_name,'report_date': s_date,
                                 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
                                 'failed_service':False, 'work_order_code':'Td1290'})
@@ -274,7 +274,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
                 locations = get_locations_by_system_user(None, obj.service_provider).values('id')
             else:
                 locations = get_locations_by_system_user(request.user).values('id')
-            print(locations.count())
+            #print(locations.count())
             for l in locations:
                 initial.append({'building': str(l['id']), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
             # initial.append({
@@ -331,7 +331,7 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
         content = Content("text/plain", "Closeout report generated: {0}{1}".format('http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
-        print(response)
+        #print(response)
         return HttpResponseRedirect("/provider/invoices/vendorsafetyproxy/")
 
     finalize_safety_report.short_description = "Generate closeout report"
@@ -379,7 +379,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
         content = Content("text/plain", "Invoice #{0} submitted: {1}{2}".format(invoice_id, 'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
-        print(response)
+        # #print(response)
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
     finalize_submit_invoice.short_description = "Finalize and submit invoice"

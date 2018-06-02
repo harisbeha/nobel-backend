@@ -174,10 +174,10 @@ class WorkOrderInline(admin.TabularInline):
             s_provider = None if not obj else obj.service_provider
 
             for l in locations:
-                print({'building': str(l['id']), 'service_provider': s_provider,
-                                'storm_name': s_name,'storm_date': s_date,
-                                'last_service_date': '2017-12-09',
-                                'failed_service':False, 'work_order_code':'Td1290'})
+                # print({'building': str(l['id']), 'service_provider': s_provider,
+                #                 'storm_name': s_name,'storm_date': s_date,
+                #                 'last_service_date': '2017-12-09',
+                #                 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
@@ -211,7 +211,7 @@ class SafetyReportInline(admin.TabularInline):
             # Populate initial based on request
             #
             locations = get_locations_by_system_user(request.user).values('id')
-            print(locations.count())
+            # print(locations.count())
             for l in locations:
                 initial.append({'building': str(l['id']), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
             # initial.append({
