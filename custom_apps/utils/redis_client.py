@@ -2,9 +2,7 @@ import random
 
 from redis import StrictRedis, BlockingConnectionPool
 
-url = random.choice(
-    'redis://admin:ALBHRYUGMHCLOEDK@gcp-us-east1-cpu.7.dblayer.com:18564;redis://admin:ALBHRYUGMHCLOEDK@gcp-us-east1-cpu.5.dblayer.com:18564'.split(
-        ';'))
+url = 'redis://h:pa40c5a1cd1d9e59256784d85851a608c523aa5a5fa9a2502f5b502fed6a6d660@ec2-54-88-234-13.compute-1.amazonaws.com:12539'
 _conn = None
 
 

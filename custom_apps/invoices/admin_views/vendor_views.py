@@ -220,9 +220,10 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             # Populate initial based on request
             #
             if request.user.is_superuser:
-                locations = get_locations_by_system_user(None, obj.service_provider).values('id')
+                locations = locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
             else:
-                locations = get_locations_by_system_user(request.user).values('id')
+                vend = Vendor.objects.get(system_user=request.user)
+                locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
             s_name = None if not obj else obj.storm_name
             s_date = '2017-12-10' if not obj else obj.storm_date
             s_provider = None if not obj else obj.service_provider
@@ -271,15 +272,12 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             # Populate initial based on request
             #
             if request.user.is_superuser:
-                locations = get_locations_by_system_user(None, obj.service_provider).values('id')
+                locations = locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
             else:
-                locations = get_locations_by_system_user(request.user).values('id')
-            #print(locations.count())
+                vend = Vendor.objects.get(system_user=request.user)
+                locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
             for l in locations:
-                initial.append({'building': str(l['id']), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
-            # initial.append({
-            #     'building': locations,
-            # })
+                initial.append({'building': str(l), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
         formset = super(SafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
