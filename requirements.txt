@@ -27,3 +27,4 @@ django-jet
 django-favicon
 django-heroku-memcacheify
 whitenoise
+gunicorn
