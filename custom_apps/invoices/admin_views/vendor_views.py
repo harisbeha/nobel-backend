@@ -229,7 +229,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 
             for l in locations:
                 print({'building': str(l['id']), 'service_provider': s_provider,
-                                'storm_name': s_name,'storm_date': s_date,
+                                'storm_name': s_name,'report_date': s_date,
                                 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
                                 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
@@ -388,7 +388,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 # @register(Invoice)
 # class InvoiceAdmin(admin.ModelAdmin):
 #     model = Invoice
-#     list_display = ['storm_name','storm_date']
+#     list_display = ['storm_name','report_date']
 #     exclude = ['remission_address', 'address_info_storage']
 #     inlines = [SafetyReportInline]
 
@@ -396,7 +396,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 # @register(InvoiceProxyVendor)
 # class InvoiceAdmin(admin.ModelAdmin):
 #     model = InvoiceProxyVendor
-#     list_display = ['storm_name','storm_date']
+#     list_display = ['storm_name','report_date']
 #     exclude = ['remission_address', 'address_info_storage']
 #     inlines = [SafetyReportInline]
 #     # change_form_template = 'admin/invoice_admin.html'
@@ -405,7 +405,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 # @register(InvoiceProxyPrelim)
 # class InvoiceAdmin(admin.ModelAdmin):
 #     model = InvoiceProxyPrelim
-#     list_display = ['storm_name','storm_date']
+#     list_display = ['storm_name','report_date']
 #     exclude = ['remission_address', 'address_info_storage']
 #     inlines = [WorkOrderInline]
 #     change_form_template = 'admin/invoice_admin.html'
@@ -418,7 +418,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
 class ServiceForecast(admin.ModelAdmin):
     model = WorkProxyServiceForecast
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
+    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__report_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
                     number_salts, number_plows, deicing_fee, plow_fee, storm_total]
@@ -426,7 +426,7 @@ class ServiceForecast(admin.ModelAdmin):
 
 class DiscrepancyReview(admin.ModelAdmin):
     model = WorkProxyServiceDiscrepancy
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
+    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__report_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
                     number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
@@ -497,7 +497,7 @@ class VendorAdmin(SuperuserModelAdmin):
 #
 
 
-def storm_date(obj):
+def report_date(obj):
     return obj.invoice.storm_date
 
 
@@ -506,8 +506,8 @@ def storm_name(obj):
 
 # @register(SafetyReport)
 # class SafetyReportAdmin(admin.ModelAdmin):
-#     # list_filter = (storm_date, storm_date)
-#     list_display = ['building', storm_name, storm_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
+#     # list_filter = (report_date, report_date)
+#     list_display = ['building', storm_name, report_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
 #
 #     def existing_work_order(self, obj):
 #         existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
@@ -517,10 +517,10 @@ def storm_name(obj):
 
 # @register(ModifiablePrelimInvoice)
 # class ModifyPrelimInvoiceAdmin(admin.ModelAdmin):
-#     # list_filter = (storm_date, storm_date)
-#     list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__storm_date', 'failed_service']
+#     # list_filter = (report_date, report_date)
+#     list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__report_date', 'failed_service']
 #     list_editable = ['building', 'last_service_date', 'num_plows', 'num_salts', 'failed_service']
-#     list_display = ['id', 'building', service_provider, storm_name, storm_date, 'last_service_date',
+#     list_display = ['id', 'building', service_provider, storm_name, report_date, 'last_service_date',
 #                     'num_plows', 'num_salts', 'failed_service']
 
 
