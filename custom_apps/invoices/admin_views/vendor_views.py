@@ -229,9 +229,9 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 
             for l in locations:
                 #print({'building': str(l['id']), 'service_provider': s_provider,
-                                'storm_name': s_name,'report_date': s_date,
-                                'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
-                                'failed_service':False, 'work_order_code':'Td1290'})
+                                # 'storm_name': s_name,'report_date': s_date,
+                                # 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
+                                # 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
