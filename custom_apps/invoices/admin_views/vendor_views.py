@@ -126,10 +126,14 @@ def deicing_cost_delta(self, obj=None):
 def plowing_cost_delta(self, obj=None):
     return '$199.10'
 
-def get_locations_by_system_user(user=None):
+def get_locations_by_system_user(user=None, provider=None):
     # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
-    vend = Vendor.objects.get(system_user=user)
-    locations = Building.objects.filter(service_provider=vend)
+    print(provider)
+    if provider:
+        locations = Building.objects.filter(service_provider=provider)
+    else:
+        vend = Vendor.objects.get(system_user=user)
+        locations = Building.objects.filter(service_provider=vend)
     return locations
 
 
@@ -138,7 +142,11 @@ class SRFormSet(BaseInlineFormSet):
 
     def __init__(self, *args, **kwargs):
         super(SRFormSet, self).__init__(*args, **kwargs)
-        self.locations = get_locations_by_system_user(self.request.user)
+        if self.request.user.is_superuser:
+            print('yes')
+            self.locations = get_locations_by_system_user(None, self.instance.service_provider)
+        else:
+            self.locations = get_locations_by_system_user(self.request.user, None)
 
 
 from django.forms import ModelForm
@@ -151,7 +159,11 @@ class WOFormSet(BaseInlineFormSet):
 
     def __init__(self, *args, **kwargs):
         super(WOFormSet, self).__init__(*args, **kwargs)
-        self.locations = get_locations_by_system_user(self.request.user)
+        if self.request.user.is_superuser:
+            print('yes')
+            self.locations = get_locations_by_system_user(None, self.instance.service_provider)
+        else:
+            self.locations = get_locations_by_system_user(self.request.user, None)
 
 
 from django.utils.functional import curry
@@ -170,13 +182,13 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
     model = WorkOrder
     formset = WOFormSet
     inlines = [WorkVisitProxyInline]
-    readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax']
+    readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
 
 
     def get_fields(self, request, obj=None):
         fields = super(WorkOrderInline, self).get_fields(request, obj)
-        rate_fields = fields[10:14]
-        new_fields = fields[0:4] + rate_fields + fields[5:9]
+        rate_fields = fields[11:16]
+        new_fields = fields[0:4] + rate_fields + fields[5:11]
         return new_fields
 
     def deice_rate(self, obj):
@@ -191,6 +203,9 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
     def plow_tax(self, obj):
         return obj.building.plow_tax
 
+    def subtotal(self, obj):
+        return '${0}'.format(float(obj.aggregate_invoiced_plow_cost) + float(obj.aggregate_invoiced_salt_cost))
+
     def get_formset(self, *args, **kwargs):
         formset = super(WorkOrderInline, self).get_formset(*args, **kwargs)
         return formset
@@ -204,7 +219,10 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             #
             # Populate initial based on request
             #
-            locations = get_locations_by_system_user(request.user).values('id')
+            if request.user.is_superuser:
+                locations = get_locations_by_system_user(None, obj.service_provider).values('id')
+            else:
+                locations = get_locations_by_system_user(request.user).values('id')
             s_name = None if not obj else obj.storm_name
             s_date = '2017-12-10' if not obj else obj.storm_date
             s_provider = None if not obj else obj.service_provider
@@ -252,7 +270,10 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             #
             # Populate initial based on request
             #
-            locations = get_locations_by_system_user(request.user).values('id')
+            if request.user.is_superuser:
+                locations = get_locations_by_system_user(None, obj.service_provider).values('id')
+            else:
+                locations = get_locations_by_system_user(request.user).values('id')
             print(locations.count())
             for l in locations:
                 initial.append({'building': str(l['id']), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
