@@ -41,14 +41,14 @@ DJANGO_APPS = [
 ]
 
 # SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
-SUPPORT_APPS = ['rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
+SUPPORT_APPS = ['rest_framework', 'django_extensions', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
 CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils']
 
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
