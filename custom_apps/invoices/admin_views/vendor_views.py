@@ -14,6 +14,10 @@ from django.forms.models import BaseModelFormSet
 
 from django.forms.models import BaseInlineFormSet, BaseFormSet
 import nested_admin
+from raven import Client
+
+client = Client('https://4d87c7cd417f4e14be43597f3ffac1b3:d46f2a1776a54a8a80d3d8ab57717c71@sentry.io/1219530')
+
 
 
 # all the views in this file should be visible only to the superuser
@@ -314,9 +318,12 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             for instance in instances:
                 instance.save()
             formset.save_m2m()
+            invoice = instances.last().invoice
+            invoice.status = 'safety_report'
+            invoice.save()
 
         except Exception as e:
-            pass
+            print(e)
 
 
 
@@ -330,6 +337,12 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
     actions=['finalize_safety_report']
 
     change_list_template = "admin/provider/safety_report_changelist.html"
+
+    def get_queryset(self, request):
+        qs = super(InvoiceAdmin, self).get_queryset(request)
+        prelim = VendorSafetyProxy.objects.filter(status__in=['not_created', 'safety_report'],
+                                          service_provider__system_user=request.user)
+        return prelim
 
     def reports(self, obj):
         return obj
@@ -354,12 +367,15 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
     exclude=['remission_address', 'address_info_storage']
     list_display=['invoices', 'status']
     inlines = [WorkOrderInline]
-    readonly_fields = ['status']
     limited_manytomany_fields = {}
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        return qs.filter(status__in=['preliminary_created', 'submitted', 'reviewed', 'dispute', 'finalized'])
+        prelim = VendorInvoiceProxy.objects.filter(status__in=['preliminary_created', 'submitted',
+                                                               'reviewed', 'dispute', 'finalized'],
+                                                   service_provider__system_user=request.user)
+        client.captureMessage('{0}'.format(prelim.values_list('id', flat=True)))
+        return prelim
 
     actions=['finalize_submit_invoice']
 

@@ -29,3 +29,4 @@ django-heroku-memcacheify
 whitenoise>3.3.0
 gunicorn
 django-redis
+raven
