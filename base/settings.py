@@ -230,7 +230,16 @@ SITE_NAME = 'Nobel Weather Associates'
 
 from memcacheify import memcacheify
 
-CACHES = memcacheify()
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": BROKER_URL_WITH_DB 
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS=10000
 
