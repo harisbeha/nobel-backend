@@ -296,7 +296,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
         else:
             vend = Vendor.objects.get(system_user=request.user)
             count = Building.objects.filter(service_provider=vend).count()
-            return
+            return count
 
 
 @register(InvoiceProxyVendor)
