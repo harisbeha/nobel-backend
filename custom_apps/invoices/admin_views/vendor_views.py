@@ -311,15 +311,17 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
 
     def finalize_safety_report(self, request, queryset):
         rows_updated = queryset.update(status='safety_report')
-        if rows_updated == 1:
-            message_bit = "1 closeout report was"
+        sr_left = queryset.safetyreport_set.all().count() - rows_updated
+        send_to = queryset[0].workorder_set.all()[0].building.facility_manager.email
+        if rows_updated == sr_left:
+            message_bit = "All buildings safe to open"
         else:
-            message_bit = "%s closeout reports were" % rows_updated
+            message_bit = "%s buildings not safe to open" % sr_left
         self.message_user(request, "%s successfully generated." % message_bit)
 
         sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
         from_email = Email(settings.DEFAULT_FROM_EMAIL)
-        to_email = Email("harisbeha@gmail.com")
+        to_email = Email(send_to)
         subject = "Closeout Report Generated"
         invoice_id = queryset[0].id
         content = Content("text/plain", "Closeout report generated: {0}{1}".format('http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))

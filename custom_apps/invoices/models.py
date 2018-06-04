@@ -400,7 +400,7 @@ class SafetyReport(BaseModel):
 
 class SafetyVisit(BaseModel):
     safety_report = models.ForeignKey('invoices.SafetyReport', null=True, blank=True)
-    inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True, default='2018-12-08')
+    inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True, default='2017-12-08')
     site_serviced = models.BooleanField('Site Serviced?', default=True)
     safe_to_open = models.BooleanField('Safe to open site?', default=True)
     safety_concerns = models.CharField('Concerns/Extra Instructions', max_length=255, blank=True, null=True)
