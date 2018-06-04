@@ -501,7 +501,7 @@ class InvoiceProxyDiscrepancy(RegionalAdmin):
         verbose_name = 'Discrepancy Report'
 
     def __str__(self):
-        return 'Inv # %s' % 'temp'
+        return 'Discrepancy report for invoice # %s' % 'temp'
 
 
 class InvoiceProxyPrelim(Invoice):
@@ -528,7 +528,7 @@ class WorkProxyServiceDiscrepancy(WorkOrder):
         verbose_name = 'Discrepancy Report'
 
     def __str__(self):
-        return '{0} - {1}'.format(self.invoice_id, self.id)
+        return 'Discrepancy repot for invoice {0}'.format(self.invoice_id)
 
 
 class ModifiablePrelimInvoice(WorkOrder):
@@ -617,7 +617,7 @@ class NWAServiceDiscrepancy(Invoice):
         verbose_name = 'Discrepancy Report'
 
     def __str__(self):
-        return 'Invoice {0}'.format(self.id)
+        return 'Discrepancy Report for invoice # {0}'.format(self.id)
 
 
 class NWASubmittedInvoiceProxy(Invoice):
