@@ -307,18 +307,16 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             from_email = Email(settings.DEFAULT_FROM_EMAIL)
             to_email = Email(send_to)
             subject = "Closeout Report Generated"
-            content = Content("text/plain", "Closeout report generated: {0}{1}".format(
+            content = Content("text/plain", "Closeout report generated: {0}".format(
                 'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', 'temp'))
             mail = Mail(from_email, subject, to_email, content)
 
             for instance in instances:
-                # Do something with `instance`
                 instance.save()
             formset.save_m2m()
 
-
         except Exception as e:
-            print(e)
+            pass
 
 
 
@@ -344,27 +342,7 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
         return my_urls + urls
 
     def finalize_safety_report(self, request, queryset):
-        rows_updated = queryset.update(status='safety_report')
-        sr_left = queryset.safetyreport_set.all().count() - rows_updated
-        send_to = queryset[0].workorder_set.all()[0].building.facility_manager.email
-        if rows_updated == sr_left:
-            message_bit = "All buildings safe to open"
-        else:
-            message_bit = "%s buildings not safe to open" % sr_left
-        self.message_user(request, "%s successfully generated." % message_bit)
-
-        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
-        from_email = Email(settings.DEFAULT_FROM_EMAIL)
-        to_email = Email(send_to)
-        subject = "Closeout Report Generated"
-        invoice_id = queryset[0].id
-        content = Content("text/plain", "Closeout report generated: {0}{1}".format('http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
-        mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body=mail.get())
-        #print(response)
-        return HttpResponseRedirect("/provider/invoices/vendorsafetyproxy/")
-
-    finalize_safety_report.short_description = "Generate closeout report"
+        pass
 
 
 class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelAdmin):
