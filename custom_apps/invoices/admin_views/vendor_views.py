@@ -142,11 +142,11 @@ class SRFormSet(BaseInlineFormSet):
 
     def __init__(self, *args, **kwargs):
         super(SRFormSet, self).__init__(*args, **kwargs)
-        if self.request.user.is_superuser:
-            #print('yes')
-            self.locations = get_locations_by_system_user(None, self.instance.service_provider)
-        else:
-            self.locations = get_locations_by_system_user(self.request.user, None)
+        # if self.request.user.is_superuser:
+        #     #print('yes')
+        #     self.locations = get_locations_by_system_user(None, self.instance.service_provider)
+        # else:
+        #     self.locations = get_locations_by_system_user(self.request.user, None)
 
 
 from django.forms import ModelForm
@@ -249,7 +249,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
     model = SafetyVisit
     readonly_fields = ['building']
-    extra = 0
+    extra = 1
     classes = ['collapse']
 
 class SafetyReportInline(nested_admin.NestedTabularInline):
