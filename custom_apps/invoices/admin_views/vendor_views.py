@@ -244,7 +244,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
         already exists or the extra configuration otherwise."""
         if obj:
             return 0
-        return get_locations_by_system_user(request.user).count()
+        return len(get_locations_by_system_user(request.user).values_list('id', flat=True))
 
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
     model = SafetyVisit
@@ -257,11 +257,6 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
     formset = SRFormSet
     inlines = [SafetyVisitProxyInline]
 
-
-    def get_formset(self, *args, **kwargs):
-        formset = super(SafetyReportInline, self).get_formset(*args, **kwargs)
-        return formset
-
     def get_formset(self, request, obj=None, **kwargs):
         """
         Pre-populating formset using GET params
@@ -271,13 +266,14 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             #
             # Populate initial based on request
             #
-            if request.user.is_superuser:
-                locations = locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
+            if request.user.is_superuser and obj:
+                locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
             else:
                 vend = Vendor.objects.get(system_user=request.user)
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
+
             for l in locations:
-                initial.append({'building': str(l), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
+                initial.append({'building': str(l), 'safe_to_open': True})
         formset = super(SafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
@@ -290,6 +286,38 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             # Don't add any extra forms if the related object already exists.
             return 0
         return get_locations_by_system_user(request.user).count()
+
+    def save_formset(self, request, form, formset, change):
+        try:
+            instances = formset.save(commit=False)
+            safe = []
+            for inst in instances:
+                if inst.safe_to_open:
+                    safe.append(inst)
+            not_safe = instances.exclude(safe).values_list('name', flat=True)
+            not_safe_count = not_safe.count()
+            send_to = instances[0].building.facility_manager.email
+            if not_safe == 0:
+                message_bit = "All buildings safe to open"
+            else:
+                message_bit = "%s buildings not safe to open" % not_safe_count
+            self.message_user(request, "%s successfully generated." % message_bit)
+
+            sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+            from_email = Email(settings.DEFAULT_FROM_EMAIL)
+            to_email = Email(send_to)
+            subject = "Closeout Report Generated"
+            content = Content("text/plain", "Closeout report generated: {0}".format(
+                'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', 'temp'))
+            mail = Mail(from_email, subject, to_email, content)
+
+            for instance in instances:
+                instance.save()
+            formset.save_m2m()
+
+        except Exception as e:
+            pass
+
 
 
 @register(InvoiceProxyVendor)
@@ -315,24 +343,10 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
 
     def finalize_safety_report(self, request, queryset):
         rows_updated = queryset.update(status='safety_report')
-        if rows_updated == 1:
-            message_bit = "1 closeout report was"
-        else:
-            message_bit = "%s closeout reports were" % rows_updated
-        self.message_user(request, "%s successfully generated." % message_bit)
+        return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
-        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
-        from_email = Email(settings.DEFAULT_FROM_EMAIL)
-        to_email = Email("harisbeha@gmail.com")
-        subject = "Closeout Report Generated"
-        invoice_id = queryset[0].id
-        content = Content("text/plain", "Closeout report generated: {0}{1}".format('http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
-        mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body=mail.get())
-        #print(response)
-        return HttpResponseRedirect("/provider/invoices/vendorsafetyproxy/")
+    finalize_safety_report.short_description = "Generate Closeout Report"
 
-    finalize_safety_report.short_description = "Generate closeout report"
 
 
 class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelAdmin):
@@ -345,7 +359,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        return qs.filter(status__in=['safety_report','submitted'])
+        return qs.filter(status__in=['preliminary_created'])
 
     actions=['finalize_submit_invoice']
 

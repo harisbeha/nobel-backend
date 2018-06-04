@@ -59,7 +59,7 @@ class Vendor(AddressMetadataStorageMixin, BaseModel):
     system_user = models.ForeignKey('auth.User')
     region = models.ForeignKey('invoices.RegionalAdmin')
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     class Meta:
         verbose_name = 'Service Provider'
@@ -72,7 +72,7 @@ class RegionalAdmin(BaseModel):
     name = models.CharField('Regional manager\'s company name', max_length=100)
     system_user = models.ForeignKey('auth.User')
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     def __str__(self):
         return 'temp'
@@ -93,7 +93,7 @@ class PrelimInvoice(AddressMetadataStorageMixin, BaseModel):
     def __str__(self):
         return 'Invoice #: {0}'.format(self.id)
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
 
 class Invoice(AddressMetadataStorageMixin, BaseModel):
@@ -110,7 +110,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     def __str__(self):
         return 'Invoice # {0}'.format(self.id)
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     @cached_property
     def aggregate_predicted_salts(self):
@@ -194,7 +194,7 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     facility_manager = models.ForeignKey('auth.User', null=True, blank=True)
 
     objects = BuildingManager()
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     def __str__(self):
         if self.building_code:
@@ -240,7 +240,7 @@ class WorkOrder(BaseModel):
     last_service_date = models.DateField(help_text='Date of the last service', blank=True, null=True)
 
     tracker = FieldTracker()
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     def __str__(self):
         return '{0}'.format(self.work_order_code)
@@ -382,7 +382,7 @@ class WorkVisit(BaseModel):
     num_salts = models.IntegerField('# Salts', null=True, blank=True, default=0, choices=PLOW_COUNT)
     failed_service = models.BooleanField('Service Failed?', default=False)
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
     # aggregates = WorkVisitManager()
 
     def __str__(self):
@@ -393,21 +393,21 @@ class SafetyReport(BaseModel):
     invoice = models.ForeignKey('invoices.Invoice', null=True, blank=True)
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     def __str__(self):
         return 'Safety Report #{0} for'.format(self.id)
 
 class SafetyVisit(BaseModel):
     safety_report = models.ForeignKey('invoices.SafetyReport', null=True, blank=True)
-    inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True)
+    inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True, default='2017-12-08')
     site_serviced = models.BooleanField('Site Serviced?', default=True)
     safe_to_open = models.BooleanField('Safe to open site?', default=True)
     safety_concerns = models.CharField('Concerns/Extra Instructions', max_length=255, blank=True, null=True)
     haul_stack_status = models.IntegerField('Snow hauling or stacking required?', choices=SnowStatus.choices(), default=0, null=True, blank=True)
     haul_stack_estimate = DollarsField('Cost estimate for future snow hauling or stacking', default=0, null=True, blank=True)
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     def __str__(self):
         return 'Safety Report #{0} for'.format(self.id)
@@ -418,7 +418,7 @@ class DiscrepancyReport(BaseModel):
     author = models.CharField('author', max_length=100)
     message = models.TextField('Discrepancy communication')
 
-    audit = AuditTrailWatcher()
+    #audit = AuditTrailWatcher()
 
     def __str__(self):
         return 'Discrepancy Report #%s for %s' % (self.id, self.work_order)

@@ -382,7 +382,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
 @register(Building)
 class BuildingAdmin(SuperuserModelAdmin):
     list_display = ['building_code', 'address', 'service_provider', 'weather_station', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'type']
-    filter_list = ['service_provider', 'weather_station']
+    list_filter = ['service_provider', 'weather_station']
     search_fields = ['service_provider__name']
 
 

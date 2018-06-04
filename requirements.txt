@@ -26,6 +26,6 @@ redis
 django-jet
 django-favicon
 django-heroku-memcacheify
-whitenoise
+whitenoise>3.3.0
 gunicorn
 django-redis
