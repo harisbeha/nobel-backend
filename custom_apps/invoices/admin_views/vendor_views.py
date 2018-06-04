@@ -279,7 +279,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
 
             for l in locations:
-                initial.append({'building': str(l), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
+                initial.append({'building': str(l), 'safe_to_open': True})
         formset = super(SafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
