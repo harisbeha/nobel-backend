@@ -220,7 +220,7 @@ JET_DEFAULT_THEME = 'light-blue'
 DEMO_SNOWFALL_DATA_START = '2017-01-01'
 DEMO_SNOWFALL_DATA_END = '2019-01-01'
 
-DEBUG = True
+DEBUG = False 
 
 from django.utils import timezone
 
