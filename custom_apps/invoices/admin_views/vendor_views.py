@@ -342,7 +342,7 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
         return my_urls + urls
 
     def finalize_safety_report(self, request, queryset):
-        rows_updated = queryset.update(status='submitted')
+        rows_updated = queryset.update(status='preliminary_created')
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
 
