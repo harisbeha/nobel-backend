@@ -310,8 +310,6 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             content = Content("text/plain", "Closeout report generated: {0}{1}".format(
                 'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', 'temp'))
             mail = Mail(from_email, subject, to_email, content)
-            response = sg.client.mail.send.post(request_body=mail.get())
-
 
             for instance in instances:
                 # Do something with `instance`
@@ -320,7 +318,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
 
 
         except Exception as e:
-            print e
+            print(e)
 
 
 
