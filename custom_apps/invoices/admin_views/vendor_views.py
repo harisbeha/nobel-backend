@@ -257,8 +257,6 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
     # form = SafetyReportForm
     formset = SRFormSet
     inlines = [SafetyVisitProxyInline]
-    readonly_fields = ['status']
-
 
     def get_formset(self, request, obj=None, **kwargs):
         """
