@@ -28,3 +28,4 @@ django-favicon
 django-heroku-memcacheify
 whitenoise
 gunicorn
+django-redis
