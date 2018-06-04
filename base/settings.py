@@ -233,17 +233,24 @@ from django.utils import timezone
 TIME_ZONE = 'US/Eastern'
 SITE_NAME = 'Nobel Weather Associates'
 
-from memcacheify import memcacheify
+# from memcacheify import memcacheify
 
 BROKER_URL_WITH_DB = os.environ.get('BROKER_URL_WITH_DB', '')
 
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": BROKER_URL_WITH_DB,
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
+
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": BROKER_URL_WITH_DB, 
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
     }
 }
 
@@ -252,3 +259,5 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS=10000
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEBUG = False
+TEMPLATE_DEBUG = False
+
