@@ -359,7 +359,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        return qs.filter(status__in=['preliminary_created'])
+        return qs.filter(status__in=['preliminary_created', 'submitted', 'reviewed', 'dispute', 'finalized'])
 
     actions=['finalize_submit_invoice']
 
