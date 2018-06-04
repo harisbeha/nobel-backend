@@ -276,6 +276,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             else:
                 vend = Vendor.objects.get(system_user=request.user)
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
+
             for l in locations:
                 initial.append({'building': str(l), 'site_serviced': True, 'safe_to_open': True, 'service_time': '2017-12-09'})
         formset = super(SafetyReportInline, self).get_formset(request, obj, **kwargs)
@@ -289,7 +290,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
         if obj:
             # Don't add any extra forms if the related object already exists.
             return 0
-        return get_locations_by_system_user(request.user).count()
+        return 0
 
 
 @register(InvoiceProxyVendor)
