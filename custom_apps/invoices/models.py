@@ -507,7 +507,7 @@ class InvoiceProxyDiscrepancy(RegionalAdmin):
 class InvoiceProxyPrelim(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Preliminary Invoice'
+        verbose_name = 'Invoice'
 
     def __str__(self):
         return 'Invoice # {0}'.format(self.id)
@@ -597,7 +597,7 @@ class NWASafetyProxy(Invoice):
 class NWAInvoiceProxy(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Invoices'
+        verbose_name = 'Invoice'
 
     def __str__(self):
         return 'Invoice # {0}'.format(self.id)
@@ -669,7 +669,7 @@ class VendorSafetyProxy(Invoice):
 class VendorInvoiceProxy(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Preliminary Invoice'
+        verbose_name = 'Invoice'
 
     def __str__(self):
         return 'Invoice # {0}'.format(self.id)
