@@ -230,6 +230,7 @@ SITE_NAME = 'Nobel Weather Associates'
 
 from memcacheify import memcacheify
 
+BROKER_URL_WITH_DB = os.environ.get('BROKER_URL_WITH_DB', '')
 
 CACHES = {
     "default": {
