@@ -597,7 +597,7 @@ class NWASafetyProxy(Invoice):
 class NWAInvoiceProxy(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Preliminary Invoice'
+        verbose_name = 'Invoices'
 
     def __str__(self):
         return 'Invoice # {0}'.format(self.id)
