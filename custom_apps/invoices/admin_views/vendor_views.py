@@ -249,6 +249,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
     model = SafetyVisit
     extra = 1
+    readonly_fields = ['status']
     classes = ['collapse']
 
 class SafetyReportInline(nested_admin.NestedTabularInline):
@@ -256,6 +257,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
     # form = SafetyReportForm
     formset = SRFormSet
     inlines = [SafetyVisitProxyInline]
+    readonly_fields = ['status']
 
 
     def get_formset(self, request, obj=None, **kwargs):
