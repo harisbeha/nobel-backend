@@ -248,7 +248,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
     model = SafetyVisit
-    extra = 1
+    extra = 0
     classes = ['collapse']
 
 class SafetyReportInline(nested_admin.NestedTabularInline):
