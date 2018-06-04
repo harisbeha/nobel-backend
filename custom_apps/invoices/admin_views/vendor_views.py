@@ -244,7 +244,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
         already exists or the extra configuration otherwise."""
         if obj:
             return 0
-        return get_locations_by_system_user(request.user).count()
+        return len(get_locations_by_system_user(request.user).values_list('id', flat=True))
 
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
     model = SafetyVisit
@@ -290,13 +290,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
         if obj:
             # Don't add any extra forms if the related object already exists.
             return 0
-        if request.user.is_superuser:
-            count = Building.objects.filter(service_provider=obj.service_provider).count()
-            return count
-        else:
-            vend = Vendor.objects.get(system_user=request.user)
-            count = Building.objects.filter(service_provider=vend).count()
-            return count
+        return get_locations_by_system_user(request.user).count()
 
 
 @register(InvoiceProxyVendor)
