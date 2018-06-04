@@ -287,6 +287,42 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             return 0
         return get_locations_by_system_user(request.user).count()
 
+    def save_formset(self, request, form, formset, change):
+        try:
+            instances = formset.save(commit=False)
+            safe = []
+            for inst in instances:
+                if inst.safe_to_open:
+                    safe.append(inst)
+            not_safe = instances.exclude(safe).values_list('name', flat=True)
+            not_safe_count = not_safe.count()
+            send_to = instances[0].building.facility_manager.email
+            if not_safe == 0:
+                message_bit = "All buildings safe to open"
+            else:
+                message_bit = "%s buildings not safe to open" % not_safe_count
+            self.message_user(request, "%s successfully generated." % message_bit)
+
+            sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+            from_email = Email(settings.DEFAULT_FROM_EMAIL)
+            to_email = Email(send_to)
+            subject = "Closeout Report Generated"
+            content = Content("text/plain", "Closeout report generated: {0}{1}".format(
+                'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', 'temp'))
+            mail = Mail(from_email, subject, to_email, content)
+            response = sg.client.mail.send.post(request_body=mail.get())
+
+
+            for instance in instances:
+                # Do something with `instance`
+                instance.save()
+            formset.save_m2m()
+
+
+        except Exception as e:
+            print e
+
+
 
 @register(InvoiceProxyVendor)
 class InvoiceAdmin(nested_admin.NestedModelAdmin):
