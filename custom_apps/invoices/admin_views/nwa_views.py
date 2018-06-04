@@ -388,7 +388,7 @@ class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
 class DiscrepancyReview(admin.ModelAdmin):
     model = NWAServiceDiscrepancy
     list_filter = ('id', 'storm_name', 'storm_date')
-    list_display = ['id_url', service_provider, 'snowfall', storm_days, refreeze,
+    list_display = ['show_id_url', service_provider, 'snowfall', storm_days, refreeze,
                     'number_salts', 'number_salts_predicted', 'salt_delta', 'number_plows', 'number_plows_predicted',
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
@@ -396,6 +396,8 @@ class DiscrepancyReview(admin.ModelAdmin):
         return '<a href="https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
 
     show_id_url.allow_tags = True
+    show_id_url.short_description = 'Work Order'
+
 
     resource_class = NWAServiceDiscrepancy
 
@@ -403,7 +405,6 @@ class DiscrepancyReview(admin.ModelAdmin):
 
     change_list_template = "admin/provider/safety_report_changelist.html"
     # https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id=invoice__id
-    list_display_links = ['']
 
     def get_queryset(self, request):
         qs = super(DiscrepancyReview, self).get_queryset(request)
