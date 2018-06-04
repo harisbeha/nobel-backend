@@ -331,6 +331,11 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
 
     change_list_template = "admin/provider/safety_report_changelist.html"
 
+    def get_queryset(self, request):
+        qs = super(InvoiceAdmin, self).get_queryset(request)
+        vendor = Vendor.objects.filter(system_user=request.user)[0]
+        return qs.filter(status__in=['preliminary_created', 'submitted', 'reviewed', 'dispute', 'finalized'], service_provider=vendor)
+
     def reports(self, obj):
         return obj
 
@@ -359,7 +364,8 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        return qs.filter(status__in=['preliminary_created', 'submitted', 'reviewed', 'dispute', 'finalized'])
+        vendor = Vendor.objects.filter(system_user=request.user)[0]
+        return qs.filter(status__in=['preliminary_created', 'submitted', 'reviewed', 'dispute', 'finalized'], service_provider=vendor)
 
     actions=['finalize_submit_invoice']
 
