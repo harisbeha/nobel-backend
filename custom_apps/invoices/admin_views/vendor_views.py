@@ -291,7 +291,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             # Don't add any extra forms if the related object already exists.
             return 0
         if request.user.is_superuser:
-            count = locations = Building.objects.filter(service_provider=obj.service_provider).count()
+            count = Building.objects.filter(service_provider=obj.service_provider).count()
             return count
         else:
             vend = Vendor.objects.get(system_user=request.user)
