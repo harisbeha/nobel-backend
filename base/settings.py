@@ -234,7 +234,7 @@ from memcacheify import memcacheify
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": BROKER_URL_WITH_DB 
+        "LOCATION": BROKER_URL_WITH_DB, 
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
