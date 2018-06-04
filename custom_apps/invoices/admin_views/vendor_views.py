@@ -345,6 +345,9 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
         rows_updated = queryset.update(status='preliminary_created')
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
+    finalize_safety_report.short_description = "Generate Closeout Report"
+
+
 
 class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelAdmin):
     resource_class = VendorInvoiceProxyResource
