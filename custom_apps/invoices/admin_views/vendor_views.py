@@ -370,11 +370,9 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
     limited_manytomany_fields = {}
 
     def get_queryset(self, request):
-        qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        prelim = VendorInvoiceProxy.objects.filter(status__in=['preliminary_created', 'submitted',
-                                                               'reviewed', 'dispute', 'finalized'],
-                                                   service_provider__system_user=request.user)
-        client.captureMessage('{0}'.format(prelim.values_list('id', flat=True)))
+        qs = super(InvoiceAdmin, self).get_queryset(request)
+        prelim = VendorSafetyProxy.objects.filter(status__in=['not_created', 'safety_report'],
+                                          service_provider__system_user=request.user)
         return prelim
 
     actions=['finalize_submit_invoice']
