@@ -287,9 +287,8 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
         """Dynamically sets the number of extra forms. 0 if the related object
         already exists or the extra configuration otherwise."""
         if obj:
-            # Don't add any extra forms if the related object already exists.
             return 0
-        return get_locations_by_system_user(request.user).count()
+        return len(get_locations_by_system_user(request.user).values_list('id', flat=True))
 
     def save_formset(self, request, form, formset, change):
         try:
