@@ -350,6 +350,8 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
                     number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
+    generated_discrept_dict = {}
+
 
     def number_salts_predicted(self, obj):
         import random
