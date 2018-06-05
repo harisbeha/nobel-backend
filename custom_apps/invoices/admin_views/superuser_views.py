@@ -324,7 +324,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     list_filter = ('invoice__id',)
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
+                    number_salts, 'number_salts_predicted', 'salt_delta', number_plows, 'number_plows_predicted',
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
     generated_discrept_dict = {}

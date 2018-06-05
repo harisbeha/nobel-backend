@@ -516,7 +516,7 @@ class DiscrepancyReview(admin.ModelAdmin):
             plow_cost = self.generated_discrept_dict['plow_delta'] * obj.building.plow_rate
             plow_tax = obj.building.plow_tax
             delta = plow_cost + plow_tax
-            self.generated_discrept_dict['deice_cost_delta'] = delta
+            self.generated_discrept_dict['plow_cost_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
             else:
