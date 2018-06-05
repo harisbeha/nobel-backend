@@ -355,7 +355,7 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
         return my_urls + urls
 
     def finalize_safety_report(self, request, queryset):
-        rows_updated = queryset.update(status='safety_report')
+        rows_updated = queryset.update(status='preliminary_created')
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
     finalize_safety_report.short_description = "Generate Closeout Report"
@@ -371,7 +371,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        prelim = VendorSafetyProxy.objects.filter(status__in=['not_created', 'safety_report'],
+        prelim = VendorSafetyProxy.objects.filter(status__in=['preliminary_created', 'submitted'],
                                           service_provider__system_user=request.user)
         return prelim
 
