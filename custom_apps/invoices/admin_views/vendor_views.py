@@ -362,7 +362,6 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
     exclude=['remission_address', 'address_info_storage']
     list_display=['invoices', 'status']
     inlines = [WorkOrderInline]
-    readonly_fields = ['status']
     limited_manytomany_fields = {}
 
     def get_queryset(self, request):
