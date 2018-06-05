@@ -330,7 +330,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
 @register(InvoiceProxyVendor)
 class InvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
-    list_display=['reports']
+    list_display=['reports', 'status']
     inlines = [SafetyReportInline]
     readonly_fields = []
     limited_manytomany_fields = {}
