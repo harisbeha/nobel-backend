@@ -336,7 +336,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = int(obj.number_salts) - int(self.generated_discrept_dict['num_salts_pred'])
+            delta = int(obj.aggregate_invoiced_salts) - int(self.generated_discrept_dict['num_salts_pred'])
             self.generated_discrept_dict['salt_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
@@ -350,7 +350,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = int(obj.number_plows) - int(self.generated_discrept_dict['num_plows_pred'])
+            delta = int(obj.aggregate_invoiced_plows) - int(self.generated_discrept_dict['num_plows_pred'])
             self.generated_discrept_dict['push_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
