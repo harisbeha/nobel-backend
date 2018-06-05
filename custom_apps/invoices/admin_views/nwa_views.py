@@ -382,13 +382,13 @@ class DiscrepancyReview(admin.ModelAdmin):
                     'number_salts', 'number_salts_predicted', 'salt_delta', 'number_plows', 'number_plows_predicted',
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
+    generated_discrept_dict = {}
+
     def show_id_url(self, obj):
         return '<a href="https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
 
     show_id_url.allow_tags = True
     show_id_url.short_description = 'Invoice'
-
-    generated_discrept_dict = {}
 
     resource_class = NWAServiceDiscrepancy
 
