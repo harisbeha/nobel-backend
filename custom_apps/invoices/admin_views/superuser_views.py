@@ -71,7 +71,9 @@ def storm_total(self, obj=None):
     return total
 
 def snowfall(self, obj=None):
-    return self.snowfall
+    import random
+    snowfall = random.choice([1.2,1.4,1.5,2,2.1,3,3.4,1.8])
+    return snowfall
 
 def storm_days(self, obj=None):
     return 2
@@ -363,8 +365,9 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
         except Exception as e:
             return ''
 
@@ -373,8 +376,11 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
         except Exception as e:
             return ''
 

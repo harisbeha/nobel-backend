@@ -467,8 +467,9 @@ class DiscrepancyReview(admin.ModelAdmin):
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
         except Exception as e:
             return ''
 
@@ -477,8 +478,11 @@ class DiscrepancyReview(admin.ModelAdmin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
         except Exception as e:
             return ''
 
