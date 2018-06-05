@@ -70,3 +70,4 @@ cbre_site.register(CBREInvoiceProxy, cbre_views.PrelimInvoiceAdmin)
 
 vendor_site.register(VendorSafetyProxy, vendor_views.InvoiceAdmin)
 vendor_site.register(VendorInvoiceProxy, vendor_views.PrelimInvoiceAdmin)
+vendor_site.register(DiscrepancyReport, vendor_views.DiscrepancyReportAdmin)

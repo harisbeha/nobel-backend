@@ -11,12 +11,20 @@
 
 <style>
 div.breadcrumbs {
-    background: #1A5336;
+    background: #4E3629 !important;
     padding: 10px 40px;
     border: none;
     font-size: 14px;
     color: #FFF;
     text-align: left;
+}
+
+div.breadcrumbs a {
+    color: #FFF !important;
+}
+
+.submit-row a.deletelink{
+    color: #FFF !important;
 }
 
 .calendarnav-previous{
@@ -26,6 +34,9 @@ div.breadcrumbs {
 .calendarnav-next{
     background-color:white;
 }
+.button, input[type=submit] {
+    background-color: #4E3629 !important;
+}
 
 .module h2, .module caption, .inline-group h2{
     text-align: center !important;
@@ -33,6 +44,24 @@ div.breadcrumbs {
 
     #content {
         margin-bottom: 50px;
+    }
+
+    collapse-toggle{
+        color: #FFF !important;
+    }
+
+    #changelist .actions .button{
+        color: #FFF !important;
+    }
+
+
+{#collapse-toggle a:link, a:visited {#}
+{#    color: #FFF !important;#}
+{#    text-decoration: none;#}
+{#}#}
+
+    whitetext{
+        color: #FFF !important;
     }
 </style>
 
@@ -111,6 +140,17 @@ div.breadcrumbs {
     <!-- END Content -->
 
     {% block footer %}
+
+            <script>
+
+            setTimeout(function() { injectMarket(document.getElementsByClassName('module aligned')[0]); },1900);
+
+
+        function injectMarket(row) {
+            row.innerHTML += '<div class="form-row field-service_provider"><div><label for="id_market">Market:</label><div class="related-widget-wrapper"><select id="id_market"><option selected value="">Denver</option></select></div></div></div>'
+        }
+
+    </script>
         <style>
             #footer-o {
                 width: 100%;
@@ -127,7 +167,7 @@ div.breadcrumbs {
         </style>
         <div id="footer-o">
             <div class="footer-img-left"><img src="http://ucr.com/wp-content/themes/ucr-new/images/CBRE-UCR-rgb.png" style="margin-bottom: 10px; float:left; height:30px" /></div>
-            <div class="footer-img-right" style="float:right;"><img src="http://www.nobelweather.com/wp-content/uploads/2015/01/logo-nobel_temp300x70.png" style="margin-bottom: 10px;margin-top:8px; height:30px; float:right; margin-right:80px;" /><span style="margin-bottom: 10px; float:right; height:100%; color:#0e3e26; margin-right:15px;">Powered by</span> </div>
+            <div class="footer-img-right" style="float:right;"><img src="http://www.nobelweather.com/wp-content/uploads/2015/01/logo-nobel_temp300x70.png" style="margin-bottom: 10px;margin-top:8px; height:30px; float:right; margin-right:80px;" /><span style="margin-bottom: 10px; float:right; height:100%; color:#4E3629 !important; margin-right:15px;">Powered by</span> </div>
         </div>{% endblock %}
 </div>
 <!-- END Container -->

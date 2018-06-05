@@ -113,6 +113,13 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     #audit = AuditTrailWatcher()
 
     @cached_property
+    def aggregate_snowfall(self):
+        predicted_values = 0
+        for work_order in self.workorder_set.all():
+            predicted_values += int(work_order.snowfall)
+        return predicted_values
+
+    @cached_property
     def aggregate_predicted_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
@@ -185,6 +192,7 @@ class Building(AddressMetadataStorageMixin, BaseModel):
     short_name = models.CharField(max_length=255, null=True, blank=True)
     building_code = models.CharField(max_length=255, null=True, blank=True)
     weather_station = models.ForeignKey('invoices.WeatherStation', null=True, blank=True)
+    zip_code = models.CharField(max_length=10, null=True, blank=True)
 
     deice_rate = DollarsField('Cost per de-icing w/o tax', default=0)
     deice_tax = DollarsField('Tax per de-icing', default=0)
@@ -251,20 +259,20 @@ class WorkOrder(BaseModel):
     @property
     def has_ice(self):
         try:
-            has_ice = _query_accumulation_data(self.building.address_info_storage['postal_code'],
+            has_ice = _query_accumulation_data(self.building.zip_code,
                                                settings.DEMO_SNOWFALL_DATA_START,
                                                settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            return has_ice
+            return has_ice if has_ice else 0
         except Exception as e:
             return 0
 
     @cached_property
     def snowfall(self):
         try:
-            snowfall = _query_accumulation_data(self.building.address_info_storage['postal_code'],
+            snowfall = _query_accumulation_data(self.building.zip_code,
                                                 settings.DEMO_SNOWFALL_DATA_START,
                                                 settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-            return snowfall
+            return snowfall if snowfall else 0
         except Exception as e:
             return 0
 
@@ -272,23 +280,17 @@ class WorkOrder(BaseModel):
     def aggregate_predicted_plows(self):
         try:
             snowfall = int(self.snowfall)
-            if snowfall < 3:
-                return snowfall * self.building.deice_rate + self.building.deice_tax
-            else:
-                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
-                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
+            predicted = int(snowfall) / 2
+            return predicted
         except Exception as e:
             return 0
 
     @cached_property
     def aggregate_predicted_salts(self):
         try:
-            snowfall = int(self.snowfall)
-            if snowfall < 3:
-                return snowfall * self.building.deice_rate + self.building.deice_tax
-            else:
-                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
-                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
+            refreeze = self.has_ice
+            predicted = 2 if refreeze else 2
+            return predicted
         except Exception as e:
             return 0
 
@@ -296,23 +298,16 @@ class WorkOrder(BaseModel):
     def aggregate_predicted_plow_cost(self):
         try:
             snowfall = int(self.snowfall)
-            if snowfall < 3:
-                return snowfall * self.building.deice_rate + self.building.deice_tax
-            else:
-                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
-                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
+            return (int(self.aggregate_predicted_plows) * int(self.building.plow_rate)) + int(self.building.plow_tax)
         except Exception as e:
             return 0
 
     @cached_property
     def aggregate_predicted_salt_cost(self):
         try:
-            snowfall = int(self.snowfall)
-            if snowfall < 3:
-                return snowfall * self.building.deice_rate + self.building.deice_tax
-            else:
-                return ((3 * self.building.deice_rate) + self.building.deice_tax) + \
-                       (((snowfall - 3) * self.building.plow_rate) + self.building.plow_tax)
+            refreeze = int(self.has_ice)
+            if refreeze:
+                return (int(self.aggregate_predicted_salts) * int(self.building.deice_rate)) + int(self.building.deice_tax)
         except Exception as e:
             return 0
 
