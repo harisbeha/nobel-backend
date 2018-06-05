@@ -367,7 +367,7 @@ class ServiceForecast(admin.ModelAdmin):
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_plows, deicing_fee, plow_fee, storm_total]
+                    'number_salts', 'number_plows', deicing_fee, plow_fee, storm_total]
 
 
 class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
