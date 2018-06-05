@@ -84,9 +84,6 @@ def storm_days(self, obj=None):
 def refreeze(self, obj=None):
     return '0'
 
-def number_salts(self, obj=None):
-    return self.num_salts
-
 def number_salts_predicted(self, obj=None):
     try:
         pred = self.num_salts - 1
@@ -112,8 +109,6 @@ def number_plows_predicted(self, obj=None):
 def salts_delta(self, obj=None):
     return '3'
 
-def number_plows(self, obj=None):
-    return self.num_plows
 
 def push_delta(self, obj=None):
     return '4'
