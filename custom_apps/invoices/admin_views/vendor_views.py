@@ -314,16 +314,19 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             for instance in instances:
                 instance.save()
             formset.save_m2m()
+            invoice = instances.last().invoice
+            invoice.status = 'safety_report'
+            invoice.save()
 
         except Exception as e:
-            pass
+            print(e)
 
 
 
 @register(InvoiceProxyVendor)
 class InvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
-    list_display=['reports', 'status']
+    list_display=['reports']
     inlines = [SafetyReportInline]
     readonly_fields = []
     limited_manytomany_fields = {}
