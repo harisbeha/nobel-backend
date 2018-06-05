@@ -444,7 +444,6 @@ class DiscrepancyReview(admin.ModelAdmin):
 
 
     def number_salts(self, obj):
-        self.
         return obj.aggregate_invoiced_salts
 
     def number_plows(self, obj):
