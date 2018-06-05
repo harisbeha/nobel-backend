@@ -71,10 +71,6 @@ def plow_fee(self, obj=None):
     except:
         return ''
 
-def storm_total(self, obj=None):
-    total = str((self.building.plow_rate * self.num_plows) + (self.building.deice_rate * self.num_salts))
-    return total
-
 def snowfall(self, obj=None):
     return 1.4
 
@@ -355,7 +351,7 @@ class ServiceForecast(admin.ModelAdmin):
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
-                    'number_salts', 'number_plows', deicing_fee, plow_fee, storm_total]
+                    'number_salts', 'number_plows', deicing_fee, plow_fee, 'storm_total']
 
     def number_salts(self, obj):
         return obj.aggregate_invoiced_salts
