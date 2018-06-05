@@ -328,12 +328,20 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
         import random
         return self.generated_discrept_dict['num_plows_pred']
 
+    def snowfall(self, obj):
+        import random
+        snowfall = random.choice([0,1,1,3,2,1,2,1,2])
+        return snowfall
+
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            delta = obj.number_salts - self.generated_discrept_dict['num_salts_pred']
+            self.generated_discrept_dict['salt_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
         except Exception as e:
             return ''
 
@@ -342,7 +350,8 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            delta = obj.number_salts - self.generated_discrept_dict['num_plows_pred']
+            self.generated_discrept_dict['push_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
             else:
@@ -353,12 +362,34 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     push_delta.allow_tags = True
 
     def deice_cost_delta(self, obj):
-        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$129.10')
+        try:
+            # pred = self.num_plows - 1
+            deice_cost = self.generated_discrept_dict['salt_delta'] * obj.building.deice_rate
+            deice_tax = obj.building.deice_tax
+            delta = deice_cost + deice_tax
+            self.generated_discrept_dict['deice_cost_delta'] = delta
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
+        except Exception as e:
+            return ''
 
     deice_cost_delta.allow_tags = True
 
     def plow_cost_delta(self, obj):
-        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$199.10')
+        try:
+            # pred = self.num_plows - 1
+            plow_cost = self.generated_discrept_dict['plow_delta'] * obj.building.plow_rate
+            plow_tax = obj.building.plow_tax
+            delta = plow_cost + plow_tax
+            self.generated_discrept_dict['plow_cost_delta'] = delta
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
+        except Exception as e:
+            return ''
 
     plow_cost_delta.allow_tags = True
 
