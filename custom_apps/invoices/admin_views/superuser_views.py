@@ -289,9 +289,28 @@ class PrelimInvoiceAdmin(admin.ModelAdmin, ExportMixin):
 class ServiceForecast(admin.ModelAdmin):
     model = WorkProxyServiceForecast
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
-    list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
+    list_display = [work_order, invoice, service_provider, location, 'deicing_rate', 'deicing_tax', 'plow_rate',
                     plow_tax, snowfall, storm_days, refreeze,
-                    'number_salts', 'number_plows', deicing_fee, plow_fee, 'storm_total']
+                    'number_salts', 'number_plows', 'deice_cost', 'plow_cost', 'storm_total']
+
+    def deicing_rate(self, obj):
+        return obj.building.deice_rate
+
+    def plow_rate(self, obj):
+        return obj.building.plow_rate
+
+    def deicing_tax(self, obj):
+        return obj.building.deice_tax
+
+
+    def plow_tax(self, obj):
+        return obj.building.plow_tax
+
+    def plow_cost(self, obj):
+        return float(obj.aggregate_invoiced_plow_cost)
+
+    def deice_cost(self, obj):
+        return float(obj.aggregate_invoiced_salt_cost)
 
     def number_salts(self, obj):
         return obj.aggregate_invoiced_salts

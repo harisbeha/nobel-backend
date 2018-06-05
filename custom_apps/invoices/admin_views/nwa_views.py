@@ -353,10 +353,10 @@ class ServiceForecast(admin.ModelAdmin):
         return obj.building.plow_tax
 
     def plow_cost(self, obj):
-        return 1
+        return float(obj.aggregate_invoiced_plow_cost)
 
     def deice_cost(self, obj):
-        return 1
+        return float(obj.aggregate_invoiced_salt_cost)
 
     def number_salts(self, obj):
         return obj.aggregate_invoiced_salts
