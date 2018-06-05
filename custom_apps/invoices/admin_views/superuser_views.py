@@ -302,7 +302,7 @@ class ServiceForecast(admin.ModelAdmin):
     def storm_total(self, obj):
         total = float(obj.aggregate_invoiced_salt_cost) + float(obj.aggregate_invoiced_plow_cost)
         return total
-    
+
 
 class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     model = WorkProxyServiceDiscrepancy
@@ -318,8 +318,6 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
 
     def number_plows(self, obj):
         return obj.aggregate_invoiced_plows
-
-    def storm_total
 
     generated_discrept_dict = {}
 
