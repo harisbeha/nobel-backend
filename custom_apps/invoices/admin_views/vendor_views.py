@@ -366,9 +366,8 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        vendor = Vendor.objects.get(system_user=request.user)
         return qs.filter(status__in=['not_created', 'safety_report'],
-                         service_provider=vendor)
+                         service_provider__system_user=request.user)
 
     actions=['finalize_submit_invoice']
 
