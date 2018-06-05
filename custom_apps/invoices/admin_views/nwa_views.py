@@ -396,7 +396,7 @@ class DiscrepancyReview(admin.ModelAdmin):
         return '<a href="https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
 
     show_id_url.allow_tags = True
-    show_id_url.short_description = 'Work Order'
+    show_id_url.short_description = 'Invoice'
 
 
     resource_class = NWAServiceDiscrepancy
