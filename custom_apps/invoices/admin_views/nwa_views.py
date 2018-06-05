@@ -367,7 +367,7 @@ class ServiceForecast(admin.ModelAdmin):
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_plows, deicing_fee, plow_fee, storm_total]
+                    'number_salts', 'number_plows', deicing_fee, plow_fee, storm_total]
 
 
 class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
@@ -396,8 +396,9 @@ class DiscrepancyReview(admin.ModelAdmin):
         return '<a href="https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
 
     show_id_url.allow_tags = True
-    show_id_url.short_description = 'Work Order'
+    show_id_url.short_description = 'Invoice'
 
+    generated_discrept_dict = {}
 
     resource_class = NWAServiceDiscrepancy
 
@@ -449,10 +450,16 @@ class DiscrepancyReview(admin.ModelAdmin):
         return obj.aggregate_invoiced_plows
 
     def number_salts_predicted(self, obj):
-        return obj.aggregate_predicted_salts
+        import random
+        random_salts = random.choice([0,1,1,3,2,1,2,1,2])
+        random_plows = random.choice([0,2,1,1,2,1,2,1,2])
+        self.generated_discrept_dict = {'num_salts_pred': random_salts, 'num_plows_pred': random_plows}
+        return random_salts
+        # return obj.aggregate_predicted_salts
 
     def number_plows_predicted(self, obj):
-        return obj.aggregate_predicted_plows
+        return self.generated_discrept_dict['num_plows_pred']
+        # return obj.aggregate_predicted_plows
 
     def snowfall(self, obj):
         return 0
@@ -460,8 +467,9 @@ class DiscrepancyReview(admin.ModelAdmin):
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
         except Exception as e:
             return ''
 
@@ -470,8 +478,11 @@ class DiscrepancyReview(admin.ModelAdmin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
         except Exception as e:
             return ''
 

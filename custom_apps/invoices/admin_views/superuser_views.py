@@ -71,7 +71,9 @@ def storm_total(self, obj=None):
     return total
 
 def snowfall(self, obj=None):
-    return self.snowfall
+    import random
+    snowfall = random.choice([1.2,1.4,1.5,2,2.1,3,3.4,1.8])
+    return snowfall
 
 def storm_days(self, obj=None):
     return 2
@@ -348,12 +350,26 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
                     number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
+    generated_discrept_dict = {}
+
+
+    def number_salts_predicted(self, obj):
+        import random
+        random_salts = random.choice([0,1,1,3,2,1,2,1,2])
+        random_plows = random.choice([0,2,1,1,2,1,2,1,2])
+        self.generated_discrept_dict = {'num_salts_pred': random_salts, 'num_plows_pred': random_plows}
+        return random_salts
+
+    def number_plows_predicted(self, obj):
+        import random
+        return self.generated_discrept_dict['num_plows_pred']
 
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
         except Exception as e:
             return ''
 
@@ -362,8 +378,11 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
         except Exception as e:
             return ''
 

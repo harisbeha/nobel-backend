@@ -42,7 +42,7 @@ DJANGO_APPS = [
 
 # SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
 SUPPORT_APPS = ['rest_framework', 'django_extensions', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
-CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils']
+CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'raven.contrib.django.raven_compat',]
 
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
 
@@ -261,3 +261,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEBUG = False
 TEMPLATE_DEBUG = False
 
+
+RAVEN_CONFIG = {
+  'dsn': 'https://4d87c7cd417f4e14be43597f3ffac1b3@sentry.io/1219530',
+}

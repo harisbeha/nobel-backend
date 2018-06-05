@@ -287,9 +287,8 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
         """Dynamically sets the number of extra forms. 0 if the related object
         already exists or the extra configuration otherwise."""
         if obj:
-            # Don't add any extra forms if the related object already exists.
             return 0
-        return get_locations_by_system_user(request.user).count()
+        return len(get_locations_by_system_user(request.user).values_list('id', flat=True))
 
     def save_formset(self, request, form, formset, change):
         try:
@@ -355,7 +354,7 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
         return my_urls + urls
 
     def finalize_safety_report(self, request, queryset):
-        rows_updated = queryset.update(status='safety_report')
+        rows_updated = queryset.update(status='preliminary_created')
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
     finalize_safety_report.short_description = "Generate Closeout Report"
@@ -371,10 +370,8 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        prelim = VendorInvoiceProxy.objects.filter(status__in=['preliminary_created', 'submitted',
-                                                               'reviewed', 'dispute', 'finalized'],
-                                                   service_provider__system_user=request.user)
-        client.captureMessage('{0}'.format(prelim.values_list('id', flat=True)))
+        prelim = VendorInvoiceProxy.objects.filter(status__in=['preliminary_created', 'submitted'],
+                                          service_provider__system_user=request.user)
         return prelim
 
     actions=['finalize_submit_invoice']
