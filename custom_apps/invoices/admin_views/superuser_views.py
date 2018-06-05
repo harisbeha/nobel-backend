@@ -312,14 +312,14 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
                     plow_tax, snowfall, storm_days, refreeze,
                     'number_salts', 'number_salts_predicted', 'salt_delta', 'number_plows', 'number_plows_predicted',
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
+    
+    generated_discrept_dict = {}
 
     def number_salts(self, obj):
         return obj.aggregate_invoiced_salts
 
     def number_plows(self, obj):
         return obj.aggregate_invoiced_plows
-
-    generated_discrept_dict = {}
 
     def number_salts_predicted(self, obj):
         import random
