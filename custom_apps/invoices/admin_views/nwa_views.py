@@ -106,13 +106,6 @@ def number_plows_predicted(self, obj=None):
     except:
         return ''
 
-def salts_delta(self, obj=None):
-    return '3'
-
-
-def push_delta(self, obj=None):
-    return '4'
-
 def deicing_cost_delta(self, obj=None):
     return '$128.99'
 
