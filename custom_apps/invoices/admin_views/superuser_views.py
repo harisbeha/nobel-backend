@@ -336,7 +336,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = obj.number_salts - self.generated_discrept_dict['num_salts_pred']
+            delta = int(obj.number_salts) - int(self.generated_discrept_dict['num_salts_pred'])
             self.generated_discrept_dict['salt_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
@@ -350,7 +350,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = obj.number_salts - self.generated_discrept_dict['num_plows_pred']
+            delta = int(obj.number_plows) - int(self.generated_discrept_dict['num_plows_pred'])
             self.generated_discrept_dict['push_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
@@ -364,7 +364,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def deice_cost_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            deice_cost = self.generated_discrept_dict['salt_delta'] * obj.building.deice_rate
+            deice_cost = float(self.generated_discrept_dict['salt_delta']) * (obj.building.deice_rate)
             deice_tax = obj.building.deice_tax
             delta = deice_cost + deice_tax
             self.generated_discrept_dict['deice_cost_delta'] = delta
@@ -380,7 +380,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     def plow_cost_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            plow_cost = self.generated_discrept_dict['plow_delta'] * obj.building.plow_rate
+            plow_cost = float(self.generated_discrept_dict['plow_delta']) * float(obj.building.plow_rate)
             plow_tax = obj.building.plow_tax
             delta = plow_cost + plow_tax
             self.generated_discrept_dict['plow_cost_delta'] = delta
