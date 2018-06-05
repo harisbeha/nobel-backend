@@ -370,7 +370,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        prelim = VendorSafetyProxy.objects.filter(status__in=['preliminary_created', 'submitted'],
+        prelim = VendorInvoiceProxy.objects.filter(status__in=['preliminary_created', 'submitted'],
                                           service_provider__system_user=request.user)
         return prelim
 
