@@ -369,6 +369,12 @@ class ServiceForecast(admin.ModelAdmin):
                     plow_tax, snowfall, storm_days, refreeze,
                     'number_salts', 'number_plows', deicing_fee, plow_fee, storm_total]
 
+    def number_salts(self, obj):
+        return obj.aggregate_invoiced_salts
+
+    def number_plows(self, obj):
+        return obj.aggregate_invoiced_plows
+
 
 class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
