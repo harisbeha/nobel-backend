@@ -84,29 +84,6 @@ def refreeze(self, obj=None):
 def number_salts(self, obj=None):
     return self.aggregate_invoiced_salts
 
-def number_salts_predicted(self, obj=None):
-    try:
-        pred = self.num_salts - 1
-        if pred >= 0:
-            return pred
-        else:
-            return 0
-    except:
-        return ''
-    # print(self.__dict__)
-    # import random
-    # return random.randint(1,3)
-
-def number_plows_predicted(self, obj=None):
-    try:
-        pred = self.num_plows - 1
-        if pred >= 0:
-            return pred
-        else:
-            return 0
-    except:
-        return ''
-
 def salts_delta(self, obj=None):
     return '3'
 
