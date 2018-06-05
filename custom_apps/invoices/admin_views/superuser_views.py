@@ -291,7 +291,7 @@ class ServiceForecast(admin.ModelAdmin):
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
-                    'number_salts', 'number_plows', deicing_fee, plow_fee, storm_total]
+                    'number_salts', 'number_plows', deicing_fee, plow_fee, 'storm_total']
 
     def number_salts(self, obj):
         return obj.aggregate_invoiced_salts
@@ -299,6 +299,10 @@ class ServiceForecast(admin.ModelAdmin):
     def number_plows(self, obj):
         return obj.aggregate_invoiced_plows
 
+    def storm_total(self, obj):
+        total = float(obj.aggregate_invoiced_salt_cost) + float(obj.aggregate_invoiced_plow_cost)
+        return total
+    
 
 class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     model = WorkProxyServiceDiscrepancy
@@ -314,6 +318,8 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
 
     def number_plows(self, obj):
         return obj.aggregate_invoiced_plows
+
+    def storm_total
 
     generated_discrept_dict = {}
 
