@@ -18,13 +18,6 @@ class SuperuserModelAdmin(ImportExportActionModelAdmin):
             return True
         return False
 
-
-def total_plows(self, obj=None):
-    return 1
-
-def total_salts(self, obj=None):
-    return 2
-
 def invoice(self, obj=None):
     return self.invoice
 
@@ -81,23 +74,6 @@ def storm_days(self, obj=None):
 def refreeze(self, obj=None):
     return '0'
 
-def number_salts(self, obj=None):
-    return self.aggregate_invoiced_salts
-
-def salts_delta(self, obj=None):
-    return '3'
-
-def number_plows(self, obj=None):
-    return self.aggregate_invoiced_plows
-
-def push_delta(self, obj=None):
-    return '4'
-
-def deicing_cost_delta(self, obj=None):
-    return '$128.99'
-
-def plowing_cost_delta(self, obj=None):
-    return '$199.10'
 
 def get_locations_by_system_user(user=None):
     # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
@@ -328,7 +304,6 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
     generated_discrept_dict = {}
-
 
     def number_salts_predicted(self, obj):
         import random
