@@ -343,7 +343,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
             else:
                 return 0
         except Exception as e:
-            return ''
+            return 0
 
     salt_delta.allow_tags = True
 
@@ -357,7 +357,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
             else:
                 return 0
         except Exception as e:
-            return ''
+            return 0
 
     push_delta.allow_tags = True
 
@@ -373,7 +373,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
             else:
                 return 0
         except Exception as e:
-            return ''
+            return 0
 
     deice_cost_delta.allow_tags = True
 
@@ -389,7 +389,7 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
             else:
                 return 0
         except Exception as e:
-            return ''
+            return 0
 
     plow_cost_delta.allow_tags = True
 
