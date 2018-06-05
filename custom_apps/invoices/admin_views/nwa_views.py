@@ -398,6 +398,7 @@ class DiscrepancyReview(admin.ModelAdmin):
     show_id_url.allow_tags = True
     show_id_url.short_description = 'Invoice'
 
+    generated_discrept_dict = {}
 
     resource_class = NWAServiceDiscrepancy
 
@@ -443,16 +444,23 @@ class DiscrepancyReview(admin.ModelAdmin):
 
 
     def number_salts(self, obj):
+        self.
         return obj.aggregate_invoiced_salts
 
     def number_plows(self, obj):
         return obj.aggregate_invoiced_plows
 
     def number_salts_predicted(self, obj):
-        return obj.aggregate_predicted_salts
+        import random
+        random_salts = random.choice([0,1,1,3,2,1,2,1,2])
+        random_plows = random.choice([0,2,1,1,2,1,2,1,2])
+        self.generated_discrept_dict = {'num_salts_pred': random_salts, 'num_plows_pred': random_plows}
+        return random_salts
+        # return obj.aggregate_predicted_salts
 
     def number_plows_predicted(self, obj):
-        return obj.aggregate_predicted_plows
+        return self.generated_discrept_dict['num_plows_pred']
+        # return obj.aggregate_predicted_plows
 
     def snowfall(self, obj):
         return 0
