@@ -462,14 +462,18 @@ class DiscrepancyReview(admin.ModelAdmin):
         # return obj.aggregate_predicted_plows
 
     def snowfall(self, obj):
-        return 0
+        import random
+        snowfall = random.choice([0,1,1,3,2,1,2,1,2])
+        return snowfall
 
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_salts
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
         except Exception as e:
             return ''
 
@@ -478,7 +482,7 @@ class DiscrepancyReview(admin.ModelAdmin):
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            delta = self.generated_discrept_dict['num_plows_pred'] - obj.number_plows
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
             else:
