@@ -18,13 +18,6 @@ class SuperuserModelAdmin(ImportExportActionModelAdmin):
             return True
         return False
 
-
-def total_plows(self, obj=None):
-    return 1
-
-def total_salts(self, obj=None):
-    return 2
-
 def invoice(self, obj=None):
     return self.invoice
 
@@ -81,46 +74,6 @@ def storm_days(self, obj=None):
 def refreeze(self, obj=None):
     return '0'
 
-def number_salts(self, obj=None):
-    return self.aggregate_invoiced_salts
-
-def number_salts_predicted(self, obj=None):
-    try:
-        pred = self.num_salts - 1
-        if pred >= 0:
-            return pred
-        else:
-            return 0
-    except:
-        return ''
-    # print(self.__dict__)
-    # import random
-    # return random.randint(1,3)
-
-def number_plows_predicted(self, obj=None):
-    try:
-        pred = self.num_plows - 1
-        if pred >= 0:
-            return pred
-        else:
-            return 0
-    except:
-        return ''
-
-def salts_delta(self, obj=None):
-    return '3'
-
-def number_plows(self, obj=None):
-    return self.aggregate_invoiced_plows
-
-def push_delta(self, obj=None):
-    return '4'
-
-def deicing_cost_delta(self, obj=None):
-    return '$128.99'
-
-def plowing_cost_delta(self, obj=None):
-    return '$199.10'
 
 def get_locations_by_system_user(user=None):
     # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
@@ -338,7 +291,17 @@ class ServiceForecast(admin.ModelAdmin):
     list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_plows, deicing_fee, plow_fee, storm_total]
+                    'number_salts', 'number_plows', deicing_fee, plow_fee, 'storm_total']
+
+    def number_salts(self, obj):
+        return obj.aggregate_invoiced_salts
+
+    def number_plows(self, obj):
+        return obj.aggregate_invoiced_plows
+
+    def storm_total(self, obj):
+        total = float(obj.aggregate_invoiced_salt_cost) + float(obj.aggregate_invoiced_plow_cost)
+        return total
 
 
 class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
@@ -347,11 +310,16 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
     list_filter = ('invoice__id',)
     list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
                     plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
+                    'number_salts', 'number_salts_predicted', 'salt_delta', 'number_plows', 'number_plows_predicted',
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
-
+    
     generated_discrept_dict = {}
 
+    def number_salts(self, obj):
+        return obj.aggregate_invoiced_salts
+
+    def number_plows(self, obj):
+        return obj.aggregate_invoiced_plows
 
     def number_salts_predicted(self, obj):
         import random
@@ -364,37 +332,68 @@ class DiscrepancyReview(admin.ModelAdmin, ExportMixin):
         import random
         return self.generated_discrept_dict['num_plows_pred']
 
+    def snowfall(self, obj):
+        import random
+        snowfall = random.choice([0,1,1,3,2,1,2,1,2])
+        return snowfall
+
     def salt_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            delta = int(obj.aggregate_invoiced_salts) - int(self.generated_discrept_dict['num_salts_pred'])
+            self.generated_discrept_dict['salt_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
         except Exception as e:
-            return ''
+            return 0
 
     salt_delta.allow_tags = True
 
     def push_delta(self, obj):
         try:
             # pred = self.num_plows - 1
-            delta = self.generated_discrept_dict['num_salts_pred'] - obj.number_plows
+            delta = int(obj.aggregate_invoiced_plows) - int(self.generated_discrept_dict['num_plows_pred'])
+            self.generated_discrept_dict['push_delta'] = delta
             if delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
             else:
                 return 0
         except Exception as e:
-            return ''
+            return 0
 
     push_delta.allow_tags = True
 
     def deice_cost_delta(self, obj):
-        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$129.10')
+        try:
+            # pred = self.num_plows - 1
+            deice_cost = float(self.generated_discrept_dict['salt_delta']) * (obj.building.deice_rate)
+            deice_tax = obj.building.deice_tax
+            delta = deice_cost + deice_tax
+            self.generated_discrept_dict['deice_cost_delta'] = delta
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
+        except Exception as e:
+            return 0
 
     deice_cost_delta.allow_tags = True
 
     def plow_cost_delta(self, obj):
-        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$199.10')
+        try:
+            # pred = self.num_plows - 1
+            plow_cost = float(self.generated_discrept_dict['plow_delta']) * float(obj.building.plow_rate)
+            plow_tax = obj.building.plow_tax
+            delta = plow_cost + plow_tax
+            self.generated_discrept_dict['plow_cost_delta'] = delta
+            if delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
+            else:
+                return 0
+        except Exception as e:
+            return 0
 
     plow_cost_delta.allow_tags = True
 
