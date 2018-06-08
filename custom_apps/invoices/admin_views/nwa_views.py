@@ -401,10 +401,29 @@ class DiscrepancyReview(admin.ModelAdmin):
 
     resource_class = NWAServiceDiscrepancy
 
-    actions=['flag_discrepancy']
+    actions = ['override_discrepancy', 'flag_discrepant']
 
     change_list_template = "admin/provider/safety_report_changelist.html"
     # https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id=invoice__id
+
+    def get_urls(self):
+        urls = super(DiscrepancyReview, self).get_urls()
+        my_urls = [
+            url('override_discrepancy/', self.finalize_safety_report),
+            url('flag_discrepant/', self.finalize_safety_report),
+        ]
+        return my_urls + urls
+
+    def override_discrepancy(self, request, queryset):
+        rows_updated = queryset.update(status='dispute')
+        return HttpResponseRedirect("/nwa/")
+
+    def flag_discrepant(self, request, queryset):
+        rows_updated = queryset.update(status='reviewed')
+        return HttpResponseRedirect("/nwa/")
+
+    override_discrepancy.short_description = "Override Discrepancy"
+    flag_discrepant.short_description = "Generate Discrepancy Report"
 
     def get_queryset(self, request):
         qs = super(DiscrepancyReview, self).get_queryset(request)

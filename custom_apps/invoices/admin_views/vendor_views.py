@@ -224,7 +224,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             # Populate initial based on request
             #
             if request.user.is_superuser:
-                locations = locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
+                locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
             else:
                 vend = Vendor.objects.get(system_user=request.user)
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
@@ -323,7 +323,6 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
 
         except Exception as e:
             print(e)
-
 
 
 @register(InvoiceProxyVendor)
