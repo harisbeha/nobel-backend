@@ -550,9 +550,8 @@ def storm_name(obj):
 
 #
 #
-# @register(DiscrepancyReport)
-# class DiscrepancyReportAdmin(SuperuserModelAdmin):
-#     list_display = ['work_order', 'author', 'message']
+class DiscrepancyReportAdmin(SuperuserModelAdmin):
+    list_display = ['work_order', 'author', 'message']
 #
 #
 # @register(Invoice)
