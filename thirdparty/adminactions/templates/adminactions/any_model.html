@@ -23,9 +23,9 @@
 
 {% block breadcrumbs %}{% if not is_popup %}
     <div class="breadcrumbs">
-        <a href="../../../">{% trans "Home" %}</a> &rsaquo;
-        <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-        <a href="../">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+        <a href="../../../django-adminactions/src">{% trans "Home" %}</a> &rsaquo;
+        <a href="../..">{{ app_label|capfirst|escape }}</a> &rsaquo;
+        <a href="..">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
         Mass Update
     </div>
 {% endif %}{% endblock %}
@@ -40,7 +40,7 @@
     {% endif %}
 
     <div id='col1'>
-        <form action="../" method="post">
+        <form action=".." method="post">
             {% csrf_token %}
             <table>
                 {% for field in adminform.form.configured_fields %}

@@ -2,36 +2,106 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1b361cd4-e75e-48d4-936c-eda7bc530423" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/actions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/api.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/apps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/byrows_update.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/compat.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/exceptions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/export.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/graph.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/locale/en/LC_MESSAGES/django.po" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/locale/es/LC_MESSAGES/django.po" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/locale/fr/LC_MESSAGES/django.po" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/locale/it/LC_MESSAGES/django.po" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/locale/pl/LC_MESSAGES/django.po" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/mass_update.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/merge.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/signals.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/css/adminactions.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/css/adminactions.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/export.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/MIT-LICENSE.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/README.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/jquery.jqplot.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/jquery.jqplot.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/jquery.jqplot.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/plugins/jqplot.barRenderer.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/plugins/jqplot.barRenderer.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/plugins/jqplot.categoryAxisRenderer.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/plugins/jqplot.pieRenderer.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/jqplot/plugins/jqplot.pieRenderer.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/massupdate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/merge.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/static/adminactions/js/merge.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/500.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/any_model.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/byrows_update.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/charts.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/export_csv.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/export_fixture.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/export_xls.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/mass_update.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/merge.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templates/adminactions/merge_preview.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templatetags/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templatetags/aa_compat.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templatetags/actions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templatetags/massupdate.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/templatetags/merge.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/version.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thirdparty/adminactions/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/nobel-backend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/nobel-backend.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_apps/invoices/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_apps/invoices/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/apps.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/custom_apps/invoices/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_apps/invoices/signals.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_apps/invoices/signals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin/submit_line.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/submit_line.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/optimize/interim/gform" beforeDir="false" afterPath="$PROJECT_DIR$/templates/optimize/interim/gform" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/nobel_backend$superuser_views.coverage" NAME="superuser_views Coverage Results" MODIFIED="1527154788541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/custom_apps/invoices/admin_views" />
+    <SUITE FILE_PATH="coverage/nobel_backend$superuser_views.coverage" NAME="superuser_views Coverage Results" MODIFIED="1528933955765" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/custom_apps/invoices/admin_views" />
+    <SUITE FILE_PATH="coverage/nobel_backend$scratch.coverage" NAME="scratch Coverage Results" MODIFIED="1528964169170" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
+    <SUITE FILE_PATH="coverage/nobel_backend$vendor_views.coverage" NAME="vendor_views Coverage Results" MODIFIED="1528965956115" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/custom_apps/invoices/admin_views" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="admin.py" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="705">
-              <caret line="71" column="39" selection-start-line="71" selection-start-column="21" selection-end-line="71" selection-end-column="39" />
+            <state relative-caret-position="-529">
+              <caret line="23" column="31" selection-start-line="23" selection-end-line="24" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="superuser_views.py" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="275">
-              <caret line="342" column="39" selection-start-line="342" selection-start-column="12" selection-end-line="342" selection-end-column="39" />
+            <state relative-caret-position="15">
+              <caret line="293" column="32" selection-start-line="293" selection-start-column="32" selection-end-line="293" selection-end-column="32" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
               </folding>
@@ -39,56 +109,802 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
-        <entry file="file:///Library/Python/2.7/site-packages/django/conf/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="38" selection-start-line="38" selection-end-line="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="resources.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/custom_apps/invoices/resources.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="705">
-              <caret line="49" column="33" selection-start-line="49" selection-start-column="6" selection-end-line="49" selection-end-column="33" />
-              <folding>
-                <element signature="e#0#35#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="nwa_views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="430">
-              <caret line="445" lean-forward="true" selection-start-line="445" selection-end-line="445" />
-              <folding>
-                <element signature="e#0#53#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="vendor_views.py" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4665">
-              <caret line="326" selection-start-line="326" selection-end-line="328" selection-end-column="66" />
+            <state relative-caret-position="161">
+              <caret line="514" column="21" selection-start-line="514" selection-start-column="21" selection-end-line="514" selection-end-column="21" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
+                <marker date="1528986012556" expanded="true" signature="10137:10142" ph="..." />
+                <marker date="1528986012556" expanded="true" signature="15379:15443" ph="..." />
+                <marker date="1528986012556" expanded="true" signature="20330:20336" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="signals.py" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="false">
+        <entry file="uml://DjangoModelDependency/#nobel-backend">
+          <provider selected="true" editor-type-id="UmlEditorProvider">
+            <state>
+              <ID>DjangoModelDependency</ID>
+              <OriginalElement>#nobel-backend</OriginalElement>
+              <nodes>
+                <node x="709.9128787878781" y="1242.0">custom_apps.invoices.models.VendorSafetyReport</node>
+                <node x="1297.2878787878785" y="674.0">custom_apps.invoices.models.WorkOrderID</node>
+                <node x="6177.090783066966" y="435.0">custom_apps.invoices.models.InvoiceProxyDiscrepancy</node>
+                <node x="4648.8605570831205" y="1242.0">custom_apps.invoices.models.InvoiceForecastReportProxyNWA</node>
+                <node x="7778.180506816752" y="973.0">custom_apps.invoices.models.LineItem</node>
+                <node x="4677.825631551814" y="674.0">custom_apps.invoices.models.Invoice</node>
+                <node x="8331.008158331904" y="973.0">custom_apps.invoices.models.SafetyReport</node>
+                <node x="8765.575708598271" y="1242.0">custom_apps.invoices.models.WorkOrderProxyVendor</node>
+                <node x="9712.857793148884" y="674.0">custom_apps.invoices.models.WeatherStationSuperProxy</node>
+                <node x="6318.805506816752" y="973.0">custom_apps.invoices.models.NWAInvoiceProxy</node>
+                <node x="2061.1589648851486" y="0.0">django.contrib.contenttypes.models.ContentType</node>
+                <node x="298.75779314888314" y="336.0">custom_apps.invoices.models.RegionalAdmin</node>
+                <node x="1342.0378787878785" y="973.0">custom_apps.invoices.models.WorkOrderIDSuperProxy</node>
+                <node x="4221.8605570831205" y="1242.0">custom_apps.invoices.models.WorkProxyServiceDiscrepancy</node>
+                <node x="6950.748057083121" y="1242.0">custom_apps.invoices.models.ModifiablePrelimInvoice</node>
+                <node x="5092.8605570831205" y="1242.0">custom_apps.invoices.models.DiscrepancyReport</node>
+                <node x="3504.5756315518142" y="435.0">custom_apps.invoices.models.Vendor</node>
+                <node x="6573.748057083121" y="1242.0">custom_apps.invoices.models.WorkOrderProxyCBRE</node>
+                <node x="2113.6589648851473" y="237.0">django.contrib.auth.models.User</node>
+                <node x="7380.805506816752" y="973.0">custom_apps.invoices.models.CBREInvoiceProxy</node>
+                <node x="1802.5339648851473" y="435.0">custom_apps.invoices.models.RegionalAdminProxyNWA</node>
+                <node x="6011.998057083121" y="1242.0">custom_apps.invoices.models.WorkProxyServiceForecast</node>
+                <node x="6668.805506816752" y="973.0">custom_apps.invoices.models.InvoiceProxyVendor</node>
+                <node x="7032.805506816752" y="973.0">custom_apps.invoices.models.CBRESafetyProxy</node>
+                <node x="902.9128787878781" y="973.0">custom_apps.invoices.models.ExtendedInvoice</node>
+                <node x="2133.068181818182" y="973.0">custom_apps.invoices.models.InvoiceProxyForecast</node>
+                <node x="367.0" y="674.0">custom_apps.invoices.models.VendorProxyCBRE</node>
+                <node x="2933.8181818181824" y="973.0">custom_apps.invoices.models.InvoiceProxyPrelim</node>
+                <node x="4010.8181818181824" y="973.0">custom_apps.invoices.models.NWASafetyProxy</node>
+                <node x="8887.780934582117" y="674.0">custom_apps.invoices.models.Building</node>
+                <node x="3288.8181818181824" y="973.0">custom_apps.invoices.models.VendorInvoiceProxy</node>
+                <node x="2175.1589648851473" y="158.0">django.contrib.auth.models.Group</node>
+                <node x="5448.8605570831205" y="1242.0">custom_apps.invoices.models.WorkVisit</node>
+                <node x="5000.255506816753" y="973.0">custom_apps.invoices.models.WorkOrder</node>
+                <node x="2612.8181818181824" y="674.0">custom_apps.invoices.models.PrelimInvoice</node>
+                <node x="7333.748057083121" y="1242.0">custom_apps.invoices.models.WorkOrderProxyNWA</node>
+                <node x="8459.575708598271" y="1242.0">custom_apps.invoices.models.SafetyVisit</node>
+                <node x="1742.068181818182" y="973.0">custom_apps.invoices.models.NWAServiceDiscrepancy</node>
+                <node x="9748.357793148884" y="435.0">custom_apps.invoices.models.WeatherStation</node>
+                <node x="0.0" y="674.0">custom_apps.invoices.models.NWAServiceProvider</node>
+                <node x="3852.860557083121" y="1242.0">custom_apps.invoices.models.NWAServiceForecast</node>
+                <node x="2504.0681818181824" y="973.0">custom_apps.invoices.models.NWASubmittedInvoiceProxy</node>
+                <node x="1869.818181818182" y="674.0">custom_apps.invoices.models.VendorSettings</node>
+                <node x="1074.9128787878785" y="1242.0">custom_apps.invoices.models.VendorWorkOrder</node>
+                <node x="3651.8181818181824" y="973.0">custom_apps.invoices.models.VendorSafetyProxy</node>
+                <node x="9589.107793148884" y="973.0">custom_apps.invoices.models.NWABuilding</node>
+                <node x="2094.6589648851477" y="79.0">django.contrib.auth.models.Permission</node>
+              </nodes>
+              <notes />
+              <edges>
+                <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="53.0" y="-14.5" />
+                  <point x="4913.8605570831205" y="1142.0" />
+                  <point x="5072.255506816753" y="1142.0" />
+                  <point x="-72.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="-85.75" y="-14.5" />
+                  <point x="3374.5681818181824" y="654.0" />
+                  <point x="3637.0756315518142" y="654.0" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyPrelim" target="custom_apps.invoices.models.Vendor">
+                  <point x="-83.75" y="-14.5" />
+                  <point x="3017.5681818181824" y="644.0" />
+                  <point x="3629.0453285215112" y="644.0" />
+                  <point x="-8.030303030303003" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.Invoice">
+                  <point x="-45.375" y="-14.5" />
+                  <point x="7086.873057083121" y="1072.0" />
+                  <point x="5764.368006816752" y="1072.0" />
+                  <point x="5764.368006816752" y="803.0" />
+                  <point x="4843.629979377902" y="803.0" />
+                  <point x="34.304347826086996" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.Vendor">
+                  <point x="44.375" y="-14.5" />
+                  <point x="7555.623057083121" y="1142.0" />
+                  <point x="8252.695658331904" y="1142.0" />
+                  <point x="8252.695658331904" y="534.0" />
+                  <point x="3741.4695709457533" y="534.0" />
+                  <point x="104.39393939393904" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceProvider" target="custom_apps.invoices.models.RegionalAdmin">
+                  <point x="0.0" y="-14.5" />
+                  <point x="173.5" y="415.0" />
+                  <point x="329.8577931488835" y="415.0" />
+                  <point x="-124.39999999999964" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWASafetyProxy" target="custom_apps.invoices.models.Invoice">
+                  <point x="81.5" y="-14.5" />
+                  <point x="4255.318181818182" y="923.0" />
+                  <point x="4763.586501117032" y="923.0" />
+                  <point x="-45.739130434782965" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.Building">
+                  <point x="159.0" y="-14.5" />
+                  <point x="5019.8605570831205" y="1172.0" />
+                  <point x="8920.758158331904" y="1172.0" />
+                  <point x="8920.758158331904" y="953.0" />
+                  <point x="9011.530934582117" y="953.0" />
+                  <point x="-11.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.ExtendedInvoice" target="custom_apps.invoices.models.Vendor">
+                  <point x="-80.25" y="-14.5" />
+                  <point x="983.1628787878785" y="524.0" />
+                  <point x="3532.681692157875" y="524.0" />
+                  <point x="-104.39393939393904" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrder" target="custom_apps.invoices.models.Building">
+                  <point x="96.0" y="-14.5" />
+                  <point x="5240.255506816753" y="903.0" />
+                  <point x="8899.030934582117" y="903.0" />
+                  <point x="-123.75" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.Building" target="custom_apps.invoices.models.WeatherStation">
+                  <point x="90.0" y="-14.5" />
+                  <point x="9112.780934582117" y="654.0" />
+                  <point x="9801.024459815551" y="654.0" />
+                  <point x="-105.33333333333331" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.Building">
+                  <point x="133.125" y="-14.5" />
+                  <point x="7644.373057083121" y="1212.0" />
+                  <point x="9567.107793148884" y="1212.0" />
+                  <point x="9567.107793148884" y="933.0" />
+                  <point x="9101.530934582117" y="933.0" />
+                  <point x="78.75" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.Vendor">
+                  <point x="-159.0" y="-14.5" />
+                  <point x="4701.8605570831205" y="1092.0" />
+                  <point x="2923.3181818181824" y="1092.0" />
+                  <point x="2923.3181818181824" y="634.0" />
+                  <point x="3621.0150254912082" y="634.0" />
+                  <point x="-16.060606060606005" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrder" target="custom_apps.invoices.models.Vendor">
+                  <point x="-96.0" y="-14.5" />
+                  <point x="5048.255506816753" y="843.0" />
+                  <point x="4667.325631551814" y="843.0" />
+                  <point x="4667.325631551814" y="634.0" />
+                  <point x="3661.1665406427232" y="634.0" />
+                  <point x="24.09090909090901" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.Invoice">
+                  <point x="-50.875" y="-14.5" />
+                  <point x="4374.4855570831205" y="1112.0" />
+                  <point x="4548.193181818182" y="1112.0" />
+                  <point x="4548.193181818182" y="943.0" />
+                  <point x="4786.456066334424" y="943.0" />
+                  <point x="-22.869565217391028" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceDiscrepancy" target="custom_apps.invoices.models.Invoice">
+                  <point x="92.75" y="-14.5" />
+                  <point x="2020.318181818182" y="863.0" />
+                  <point x="4694.977805464858" y="863.0" />
+                  <point x="-114.34782608695696" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.RegionalAdminProxyNWA" target="django.contrib.auth.models.User">
+                  <point x="94.5" y="-14.5" />
+                  <point x="2086.0339648851473" y="415.0" />
+                  <point x="2074.5339648851473" y="415.0" />
+                  <point x="2074.5339648851473" y="316.0" />
+                  <point x="2216.4714648851473" y="316.0" />
+                  <point x="-14.6875" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.Building" target="django.contrib.auth.models.User">
+                  <point x="0.0" y="-14.5" />
+                  <point x="9022.780934582117" y="644.0" />
+                  <point x="9179.76573408948" y="644.0" />
+                  <point x="9179.76573408948" y="296.0" />
+                  <point x="2304.5964648851473" y="296.0" />
+                  <point x="73.4375" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="-133.875" y="-14.5" />
+                  <point x="6618.373057083121" y="1102.0" />
+                  <point x="5187.455506816752" y="1102.0" />
+                  <point x="43.19999999999982" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="-133.125" y="-14.5" />
+                  <point x="7378.123057083121" y="1062.0" />
+                  <point x="5245.055506816752" y="1062.0" />
+                  <point x="100.80000000000018" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.Invoice">
+                  <point x="-46.0" y="-14.5" />
+                  <point x="8903.575708598271" y="1032.0" />
+                  <point x="6308.305506816752" y="1032.0" />
+                  <point x="6308.305506816752" y="783.0" />
+                  <point x="4866.499544595292" y="783.0" />
+                  <point x="57.173913043478024" y="14.5" />
+                </edge>
+                <edge source="django.contrib.auth.models.Group" target="django.contrib.auth.models.Permission">
+                  <point x="9.094947017729282E-13" y="-14.5" />
+                  <point x="2297.658964885148" y="133.0" />
+                  <point x="2299.4089648851477" y="133.0" />
+                  <point x="68.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWASubmittedInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+                  <point x="98.25" y="-14.5" />
+                  <point x="2798.8181818181824" y="883.0" />
+                  <point x="4717.84737068225" y="883.0" />
+                  <point x="-91.47826086956502" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.Invoice">
+                  <point x="-44.625" y="-14.5" />
+                  <point x="6707.623057083121" y="1092.0" />
+                  <point x="5569.243006816752" y="1092.0" />
+                  <point x="5569.243006816752" y="813.0" />
+                  <point x="4832.195196769206" y="813.0" />
+                  <point x="22.869565217391028" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceProvider" target="custom_apps.invoices.models.Vendor">
+                  <point x="115.66666666666606" y="-14.5" />
+                  <point x="289.16666666666606" y="494.0" />
+                  <point x="3508.590783066966" y="494.0" />
+                  <point x="-128.48484848484804" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorProxyCBRE" target="custom_apps.invoices.models.Vendor">
+                  <point x="111.33333333333394" y="-14.5" />
+                  <point x="645.3333333333339" y="504.0" />
+                  <point x="3516.621086097269" y="504.0" />
+                  <point x="-120.45454545454504" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="-144.375" y="-14.5" />
+                  <point x="6060.123057083121" y="1122.0" />
+                  <point x="5158.655506816753" y="1122.0" />
+                  <point x="14.400000000000091" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorWorkOrder" target="custom_apps.invoices.models.ExtendedInvoice">
+                  <point x="-83.25" y="-14.5" />
+                  <point x="1158.1628787878785" y="1222.0" />
+                  <point x="1143.662878787878" y="1222.0" />
+                  <point x="80.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.PrelimInvoice" target="custom_apps.invoices.models.Vendor">
+                  <point x="0.0" y="-14.5" />
+                  <point x="2762.8181818181824" y="624.0" />
+                  <point x="3612.9847224609052" y="624.0" />
+                  <point x="-24.09090909090901" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.Building">
+                  <point x="130.875" y="-14.5" />
+                  <point x="4158.2355570831205" y="1152.0" />
+                  <point x="8848.133158331904" y="1152.0" />
+                  <point x="8848.133158331904" y="933.0" />
+                  <point x="8966.530934582117" y="933.0" />
+                  <point x="-56.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorWorkOrder" target="custom_apps.invoices.models.Vendor">
+                  <point x="83.25" y="-14.5" />
+                  <point x="1324.6628787878785" y="1222.0" />
+                  <point x="1286.7878787878785" y="1222.0" />
+                  <point x="1286.7878787878785" y="534.0" />
+                  <point x="3540.711995188178" y="534.0" />
+                  <point x="-96.36363636363603" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyDiscrepancy" target="django.contrib.auth.models.User">
+                  <point x="93.25" y="-14.5" />
+                  <point x="6456.840783066966" y="306.0" />
+                  <point x="2275.2214648851473" y="306.0" />
+                  <point x="44.0625" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.Vendor">
+                  <point x="-152.625" y="-14.5" />
+                  <point x="4272.7355570831205" y="1102.0" />
+                  <point x="1731.568181818182" y="1102.0" />
+                  <point x="1731.568181818182" y="574.0" />
+                  <point x="3572.83320730939" y="574.0" />
+                  <point x="-64.24242424242402" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.Vendor" target="custom_apps.invoices.models.RegionalAdmin">
+                  <point x="-66.25" y="-14.5" />
+                  <point x="3570.8256315518142" y="395.0" />
+                  <point x="516.4577931488839" y="395.0" />
+                  <point x="62.20000000000073" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderID" target="custom_apps.invoices.models.Vendor">
+                  <point x="0.0" y="-14.5" />
+                  <point x="1447.2878787878785" y="544.0" />
+                  <point x="3548.742298218481" y="544.0" />
+                  <point x="-88.33333333333303" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.DiscrepancyReport" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="0.0" y="-14.5" />
+                  <point x="5260.8605570831205" y="1142.0" />
+                  <point x="5101.055506816752" y="1142.0" />
+                  <point x="-43.19999999999982" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWABuilding" target="custom_apps.invoices.models.WeatherStation">
+                  <point x="37.75" y="-14.5" />
+                  <point x="9777.857793148884" y="943.0" />
+                  <point x="10110.357793148884" y="943.0" />
+                  <point x="10110.357793148884" y="654.0" />
+                  <point x="10011.691126482216" y="654.0" />
+                  <point x="105.33333333333303" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.Building">
+                  <point x="152.625" y="-14.5" />
+                  <point x="4577.9855570831205" y="1162.0" />
+                  <point x="8859.133158331904" y="1162.0" />
+                  <point x="8859.133158331904" y="943.0" />
+                  <point x="8989.030934582117" y="943.0" />
+                  <point x="-33.75" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.CBREInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="83.0" y="-14.5" />
+                  <point x="7629.805506816752" y="574.0" />
+                  <point x="3709.3483588245413" y="574.0" />
+                  <point x="72.27272727272702" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWASubmittedInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="-98.25" y="-14.5" />
+                  <point x="2602.3181818181824" y="614.0" />
+                  <point x="3604.9544194306022" y="614.0" />
+                  <point x="-32.12121212121201" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyForecast" target="custom_apps.invoices.models.Invoice">
+                  <point x="87.75" y="-14.5" />
+                  <point x="2396.318181818182" y="873.0" />
+                  <point x="4706.412588073554" y="873.0" />
+                  <point x="-102.91304347826099" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderIDSuperProxy" target="custom_apps.invoices.models.WorkOrderID">
+                  <point x="-92.75" y="-14.5" />
+                  <point x="1434.7878787878785" y="843.0" />
+                  <point x="1447.2878787878785" y="843.0" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyDiscrepancy" target="custom_apps.invoices.models.RegionalAdmin">
+                  <point x="-93.25" y="-14.5" />
+                  <point x="6270.340783066966" y="385.0" />
+                  <point x="578.6577931488828" y="385.0" />
+                  <point x="124.39999999999964" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.SafetyReport" target="custom_apps.invoices.models.Invoice">
+                  <point x="-75.0" y="-14.5" />
+                  <point x="8406.008158331904" y="723.0" />
+                  <point x="4935.108240247466" y="723.0" />
+                  <point x="125.78260869565202" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.Invoice">
+                  <point x="-43.625" y="-14.5" />
+                  <point x="3983.735557083121" y="1112.0" />
+                  <point x="4347.318181818182" y="1112.0" />
+                  <point x="4347.318181818182" y="933.0" />
+                  <point x="4775.021283725728" y="933.0" />
+                  <point x="-34.304347826086996" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.SafetyVisit" target="custom_apps.invoices.models.SafetyReport">
+                  <point x="0.0" y="-14.5" />
+                  <point x="8602.575708598271" y="1142.0" />
+                  <point x="8481.008158331904" y="1142.0" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorSafetyProxy" target="custom_apps.invoices.models.Invoice">
+                  <point x="84.75" y="-14.5" />
+                  <point x="3906.0681818181824" y="913.0" />
+                  <point x="4752.151718508336" y="913.0" />
+                  <point x="-57.173913043478024" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.RegionalAdmin" target="django.contrib.auth.models.User">
+                  <point x="0.0" y="-14.5" />
+                  <point x="454.25779314888314" y="306.0" />
+                  <point x="2187.0964648851473" y="306.0" />
+                  <point x="-44.0625" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.CBREInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+                  <point x="-83.0" y="-14.5" />
+                  <point x="7463.805506816752" y="743.0" />
+                  <point x="4912.238675030076" y="743.0" />
+                  <point x="102.91304347826099" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.Building">
+                  <point x="136.125" y="-14.5" />
+                  <point x="7268.373057083121" y="1202.0" />
+                  <point x="9420.655934582117" y="1202.0" />
+                  <point x="9420.655934582117" y="943.0" />
+                  <point x="9079.030934582117" y="943.0" />
+                  <point x="56.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrder" target="custom_apps.invoices.models.Invoice">
+                  <point x="0.0" y="-14.5" />
+                  <point x="5144.255506816753" y="833.0" />
+                  <point x="4809.325631551814" y="833.0" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorSafetyReport" target="custom_apps.invoices.models.ExtendedInvoice">
+                  <point x="86.25" y="-14.5" />
+                  <point x="968.6628787878781" y="1222.0" />
+                  <point x="983.1628787878781" y="1222.0" />
+                  <point x="-80.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorProxyCBRE" target="custom_apps.invoices.models.RegionalAdmin">
+                  <point x="0.0" y="-14.5" />
+                  <point x="534.0" y="484.0" />
+                  <point x="500.30779314888423" y="484.0" />
+                  <point x="500.30779314888423" y="415.0" />
+                  <point x="392.0577931488824" y="415.0" />
+                  <point x="-62.20000000000073" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWABuilding" target="custom_apps.invoices.models.Vendor">
+                  <point x="-37.75" y="-14.5" />
+                  <point x="9702.357793148884" y="504.0" />
+                  <point x="3765.5604800366623" y="504.0" />
+                  <point x="128.48484848484804" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.Building" target="custom_apps.invoices.models.Vendor">
+                  <point x="-90.0" y="-14.5" />
+                  <point x="8932.780934582117" y="514.0" />
+                  <point x="3757.5301770063593" y="514.0" />
+                  <point x="120.45454545454504" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceProvider" target="django.contrib.auth.models.User">
+                  <point x="-115.66666666666606" y="-14.5" />
+                  <point x="57.83333333333394" y="654.0" />
+                  <point x="100.34112648221708" y="654.0" />
+                  <point x="100.34112648221708" y="286.0" />
+                  <point x="2128.3464648851473" y="286.0" />
+                  <point x="-102.8125" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.SafetyReport" target="custom_apps.invoices.models.Building">
+                  <point x="75.0" y="-14.5" />
+                  <point x="8556.008158331904" y="923.0" />
+                  <point x="8944.030934582117" y="923.0" />
+                  <point x="-78.75" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.Building">
+                  <point x="138.0" y="-14.5" />
+                  <point x="9087.575708598271" y="1222.0" />
+                  <point x="9578.107793148884" y="1222.0" />
+                  <point x="9578.107793148884" y="923.0" />
+                  <point x="9124.030934582117" y="923.0" />
+                  <point x="101.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWASafetyProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="-81.5" y="-14.5" />
+                  <point x="4092.3181818181824" y="644.0" />
+                  <point x="3653.1362376124202" y="644.0" />
+                  <point x="16.060606060606005" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.RegionalAdminProxyNWA" target="custom_apps.invoices.models.RegionalAdmin">
+                  <point x="-94.5" y="-14.5" />
+                  <point x="1897.0339648851473" y="405.0" />
+                  <point x="454.25779314888314" y="405.0" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.Invoice" target="custom_apps.invoices.models.Vendor">
+                  <point x="0.0" y="-14.5" />
+                  <point x="4809.325631551814" y="624.0" />
+                  <point x="3669.1968436730263" y="624.0" />
+                  <point x="32.12121212121201" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.Invoice">
+                  <point x="-53.0" y="-14.5" />
+                  <point x="4807.8605570831205" y="1082.0" />
+                  <point x="4669.305506816752" y="1082.0" />
+                  <point x="4669.305506816752" y="953.0" />
+                  <point x="4797.890848943118" y="953.0" />
+                  <point x="-11.434782608695969" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorSafetyProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="-84.75" y="-14.5" />
+                  <point x="3736.5681818181824" y="654.0" />
+                  <point x="3645.1059345821172" y="654.0" />
+                  <point x="8.030303030303003" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.Vendor">
+                  <point x="45.375" y="-14.5" />
+                  <point x="7177.623057083121" y="1132.0" />
+                  <point x="8059.680506816752" y="1132.0" />
+                  <point x="8059.680506816752" y="544.0" />
+                  <point x="3733.4392679154503" y="544.0" />
+                  <point x="96.36363636363603" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.Invoice">
+                  <point x="-44.375" y="-14.5" />
+                  <point x="7466.873057083121" y="1052.0" />
+                  <point x="5959.868006816752" y="1052.0" />
+                  <point x="5959.868006816752" y="793.0" />
+                  <point x="4855.064761986598" y="793.0" />
+                  <point x="45.739130434782965" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyForecast" target="custom_apps.invoices.models.Vendor">
+                  <point x="-87.75" y="-14.5" />
+                  <point x="2220.818181818182" y="604.0" />
+                  <point x="3596.924116400299" y="604.0" />
+                  <point x="-40.151515151515014" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.Vendor">
+                  <point x="-130.875" y="-14.5" />
+                  <point x="3896.485557083121" y="1222.0" />
+                  <point x="1723.5378787878785" y="1222.0" />
+                  <point x="1723.5378787878785" y="564.0" />
+                  <point x="3564.802904279087" y="564.0" />
+                  <point x="-72.27272727272702" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.LineItem" target="custom_apps.invoices.models.Vendor">
+                  <point x="0.0" y="-14.5" />
+                  <point x="7913.680506816752" y="554.0" />
+                  <point x="3725.4089648851473" y="554.0" />
+                  <point x="88.33333333333303" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="82.5" y="-14.5" />
+                  <point x="6566.305506816752" y="614.0" />
+                  <point x="3677.2271467033293" y="614.0" />
+                  <point x="40.151515151515014" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="-138.0" y="-14.5" />
+                  <point x="8811.575708598271" y="1042.0" />
+                  <point x="5273.8555068167525" y="1042.0" />
+                  <point x="129.5999999999999" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+                  <point x="85.75" y="-14.5" />
+                  <point x="3546.0681818181824" y="903.0" />
+                  <point x="4740.71693589964" y="903.0" />
+                  <point x="-68.60869565217399" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.Vendor">
+                  <point x="48.125" y="-14.5" />
+                  <point x="6252.623057083121" y="1112.0" />
+                  <point x="7022.305506816752" y="1112.0" />
+                  <point x="7022.305506816752" y="594.0" />
+                  <point x="3693.2877527639353" y="594.0" />
+                  <point x="56.21212121212102" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceDiscrepancy" target="custom_apps.invoices.models.Vendor">
+                  <point x="-92.75" y="-14.5" />
+                  <point x="1834.818181818182" y="584.0" />
+                  <point x="3580.863510339693" y="584.0" />
+                  <point x="-56.21212121212102" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.CBRESafetyProxy" target="custom_apps.invoices.models.Invoice">
+                  <point x="-82.0" y="-14.5" />
+                  <point x="7114.805506816752" y="753.0" />
+                  <point x="4900.80389242138" y="753.0" />
+                  <point x="91.47826086956502" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWABuilding" target="django.contrib.auth.models.User">
+                  <point x="113.25" y="-14.5" />
+                  <point x="9853.357793148884" y="953.0" />
+                  <point x="10121.357793148884" y="953.0" />
+                  <point x="10121.357793148884" y="286.0" />
+                  <point x="2333.9714648851473" y="286.0" />
+                  <point x="102.8125" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkVisit" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="0.0" y="-14.5" />
+                  <point x="5588.8605570831205" y="1132.0" />
+                  <point x="5129.8555068167525" y="1132.0" />
+                  <point x="-14.400000000000091" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderIDSuperProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="92.75" y="-14.5" />
+                  <point x="1620.2878787878785" y="843.0" />
+                  <point x="1607.7878787878785" y="843.0" />
+                  <point x="1607.7878787878785" y="554.0" />
+                  <point x="3556.772601248784" y="554.0" />
+                  <point x="-80.30303030303003" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.Vendor" target="django.contrib.auth.models.User">
+                  <point x="66.25" y="-14.5" />
+                  <point x="3703.3256315518142" y="316.0" />
+                  <point x="2245.8464648851473" y="316.0" />
+                  <point x="14.6875" y="14.5" />
+                </edge>
+                <edge source="django.contrib.auth.models.Permission" target="django.contrib.contenttypes.models.ContentType">
+                  <point x="9.094947017729282E-13" y="-14.5" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyVendor" target="custom_apps.invoices.models.Invoice">
+                  <point x="-85.75" y="-14.5" />
+                  <point x="6754.555506816752" y="763.0" />
+                  <point x="4889.369109812684" y="763.0" />
+                  <point x="80.04347826086996" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="50.875" y="-14.5" />
+                  <point x="4476.2355570831205" y="1132.0" />
+                  <point x="5043.455506816752" y="1132.0" />
+                  <point x="-100.80000000000018" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.Building">
+                  <point x="144.375" y="-14.5" />
+                  <point x="6348.873057083121" y="1182.0" />
+                  <point x="9028.280934582117" y="1182.0" />
+                  <point x="9028.280934582117" y="953.0" />
+                  <point x="9034.030934582117" y="953.0" />
+                  <point x="11.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.Building">
+                  <point x="133.875" y="-14.5" />
+                  <point x="6886.123057083121" y="1192.0" />
+                  <point x="9224.030934582117" y="1192.0" />
+                  <point x="9224.030934582117" y="953.0" />
+                  <point x="9056.530934582117" y="953.0" />
+                  <point x="33.75" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.LineItem" target="custom_apps.invoices.models.Building">
+                  <point x="90.33333333333348" y="-14.5" />
+                  <point x="8004.013840150086" y="913.0" />
+                  <point x="8921.530934582117" y="913.0" />
+                  <point x="-101.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="43.625" y="-14.5" />
+                  <point x="4070.985557083121" y="1122.0" />
+                  <point x="5014.655506816753" y="1122.0" />
+                  <point x="-129.5999999999999" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.ExtendedInvoice" target="custom_apps.invoices.models.Invoice">
+                  <point x="80.25" y="-14.5" />
+                  <point x="1143.662878787878" y="853.0" />
+                  <point x="4683.543022856162" y="853.0" />
+                  <point x="-125.78260869565202" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.Vendor">
+                  <point x="44.625" y="-14.5" />
+                  <point x="6796.873057083121" y="1122.0" />
+                  <point x="7723.305506816752" y="1122.0" />
+                  <point x="7723.305506816752" y="564.0" />
+                  <point x="3717.3786618548443" y="564.0" />
+                  <point x="80.30303030303003" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorSafetyReport" target="custom_apps.invoices.models.Vendor">
+                  <point x="-86.25" y="-14.5" />
+                  <point x="796.1628787878781" y="1222.0" />
+                  <point x="837.0378787878781" y="1222.0" />
+                  <point x="837.0378787878781" y="514.0" />
+                  <point x="3524.651389127572" y="514.0" />
+                  <point x="-112.42424242424204" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyPrelim" target="custom_apps.invoices.models.Invoice">
+                  <point x="83.75" y="-14.5" />
+                  <point x="3185.0681818181824" y="893.0" />
+                  <point x="4729.282153290944" y="893.0" />
+                  <point x="-80.04347826086996" y="14.5" />
+                </edge>
+                <edge source="django.contrib.auth.models.User" target="django.contrib.auth.models.Permission">
+                  <point x="-58.75" y="-14.5" />
+                  <point x="2172.4089648851473" y="212.0" />
+                  <point x="2164.6589648851473" y="212.0" />
+                  <point x="2164.6589648851473" y="133.0" />
+                  <point x="2162.9089648851477" y="133.0" />
+                  <point x="-68.25" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.CBRESafetyProxy" target="custom_apps.invoices.models.Vendor">
+                  <point x="82.0" y="-14.5" />
+                  <point x="7278.805506816752" y="584.0" />
+                  <point x="3701.3180557942383" y="584.0" />
+                  <point x="64.24242424242402" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWAInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+                  <point x="-82.5" y="-14.5" />
+                  <point x="6401.305506816752" y="773.0" />
+                  <point x="4877.934327203988" y="773.0" />
+                  <point x="68.60869565217399" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.NWABuilding" target="custom_apps.invoices.models.Building">
+                  <point x="-113.25" y="-14.5" />
+                  <point x="9626.857793148884" y="913.0" />
+                  <point x="9146.530934582117" y="913.0" />
+                  <point x="123.75" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.Vendor">
+                  <point x="46.0" y="-14.5" />
+                  <point x="8995.575708598271" y="1022.0" />
+                  <point x="8757.758158331904" y="1022.0" />
+                  <point x="8757.758158331904" y="524.0" />
+                  <point x="3749.4998739760563" y="524.0" />
+                  <point x="112.42424242424204" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorSettings" target="custom_apps.invoices.models.Vendor">
+                  <point x="0.0" y="-14.5" />
+                  <point x="2027.818181818182" y="594.0" />
+                  <point x="3588.893813369996" y="594.0" />
+                  <point x="-48.18181818181802" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.Invoice">
+                  <point x="-48.125" y="-14.5" />
+                  <point x="6156.373057083121" y="1112.0" />
+                  <point x="5366.493006816752" y="1112.0" />
+                  <point x="5366.493006816752" y="823.0" />
+                  <point x="4820.76041416051" y="823.0" />
+                  <point x="11.434782608695969" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.WeatherStationSuperProxy" target="custom_apps.invoices.models.WeatherStation">
+                  <point x="0.0" y="-14.5" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.WorkOrder">
+                  <point x="-136.125" y="-14.5" />
+                  <point x="6996.123057083121" y="1082.0" />
+                  <point x="5216.255506816753" y="1082.0" />
+                  <point x="72.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.InvoiceProxyVendor" target="custom_apps.invoices.models.Vendor">
+                  <point x="85.75" y="-14.5" />
+                  <point x="6926.055506816752" y="604.0" />
+                  <point x="3685.2574497336323" y="604.0" />
+                  <point x="48.18181818181802" y="14.5" />
+                </edge>
+                <edge source="django.contrib.auth.models.User" target="django.contrib.auth.models.Group">
+                  <point x="58.75" y="-14.5" />
+                  <point x="2289.9089648851473" y="212.0" />
+                  <point x="2297.6589648851473" y="212.0" />
+                  <point x="0.0" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.VendorProxyCBRE" target="django.contrib.auth.models.User">
+                  <point x="-111.33333333333394" y="-14.5" />
+                  <point x="422.66666666666606" y="484.0" />
+                  <point x="147.1999999999989" y="484.0" />
+                  <point x="147.1999999999989" y="296.0" />
+                  <point x="2157.7214648851473" y="296.0" />
+                  <point x="-73.4375" y="14.5" />
+                </edge>
+                <edge source="custom_apps.invoices.models.LineItem" target="custom_apps.invoices.models.Invoice">
+                  <point x="-90.33333333333348" y="-14.5" />
+                  <point x="7823.347173483419" y="733.0" />
+                  <point x="4923.673457638772" y="733.0" />
+                  <point x="114.34782608695696" y="14.5" />
+                </edge>
+              </edges>
+              <settings layout="Hierarchic Group" zoom="0.8132939779622281" x="2147.0962462569055" y="1292.0962462569055" />
+              <SelectedNodes />
+              <Categories />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/admin/submit_line.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="15" selection-start-line="2" selection-start-column="15" selection-end-line="2" selection-end-column="15" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="229">
+              <caret line="1067" selection-start-line="1067" selection-end-line="1067" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="343">
+              <caret line="780" column="49" selection-start-line="780" selection-start-column="49" selection-end-line="780" selection-end-column="49" />
+              <folding>
+                <element signature="e#24#63#0" expanded="true" />
+                <marker date="1528985109429" expanded="true" signature="6313:6316" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/custom_apps/invoices/signals.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="28" column="34" selection-start-line="28" selection-start-column="34" selection-end-line="28" selection-end-column="34" />
+            <state relative-caret-position="225">
+              <caret line="15" selection-start-line="15" selection-start-column="1" selection-end-line="23" selection-end-column="70" />
               <folding>
                 <element signature="e#0#56#0" expanded="true" />
               </folding>
@@ -96,32 +912,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="cbre_views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/cbre_views.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="43" selection-start-line="7" selection-start-column="43" selection-end-line="7" selection-end-column="43" />
+            <state relative-caret-position="387">
+              <caret line="304" column="12" selection-start-line="304" selection-start-column="12" selection-end-line="304" selection-end-column="12" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/custom_apps/invoices/apps.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
-              <caret line="255" column="20" selection-start-line="255" selection-start-column="20" selection-end-line="255" selection-end-column="20" />
+            <state relative-caret-position="960">
+              <caret line="64" column="75" selection-start-line="64" selection-start-column="75" selection-end-line="64" selection-end-column="75" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
+                <marker date="1528945312202" expanded="true" signature="241:249" ph="..." />
+                <marker date="1528945312202" expanded="true" signature="1993:1998" ph="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/admin/base.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="31" column="1" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -132,41 +941,42 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>'vendor'</find>
-      <find>vendor</find>
-      <find>work_order_id</find>
-      <find>work_order</find>
-      <find>1A5336</find>
-      <find>deicing_fee</find>
-      <find>Inv admin</find>
-      <find>Safety</find>
-      <find>storm_date</find>
-      <find>work</find>
-      <find>Draft</find>
-      <find>return</find>
-      <find>@register</find>
-      <find>Prelim</find>
-      <find>\&quot;</find>
-      <find>provided_deicing</find>
-      <find>cost_delta</find>
-      <find>template</find>
-      <find>NWASubmittedInvoiceProxySub</find>
-      <find>@register(B</find>
+      <find>Discrepanc</find>
+      <find>not_created</find>
+      <find>Discrepan</find>
       <find>preliminary_created</find>
-      <find>Submi</find>
-      <find>sg =</find>
-      <find>Discrep</find>
-      <find>Building</find>
+      <find>extra</find>
+      <find>VendorInvoiceProxyResource</find>
+      <find>get_extra</find>
+      <find>work_order</find>
       <find>num_salts</find>
+      <find>number_salts</find>
+      <find>Discrep</find>
+      <find>total_plows</find>
+      <find>WorkProxyS</find>
+      <find>WorkOrder</find>
+      <find>def storm</find>
       <find>snowfall</find>
-      <find>work_order_set</find>
-      <find>invoice_id</find>
-      <find>location</find>
+      <find>agg</find>
+      <find>aggregate_s</find>
+      <find>storm_total</find>
+      <find>TEMPLATE_DE</find>
+      <find>VendorInvoiceProxy</find>
+      <find>Form</find>
+      <find>status__</find>
+      <find>Extended</find>
+      <find>merge</find>
+      <find>VendorWorkOrderInlineForm</find>
+      <find>initial</find>
+      <find>LineI</find>
+      <find>fields</find>
+      <find>WorkOrderInline</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -174,6 +984,8 @@
     <dirStrings>
       <dir>$PROJECT_DIR$/custom_apps/v2/core</dir>
       <dir>$PROJECT_DIR$/custom_apps/invoices</dir>
+      <dir>$PROJECT_DIR$</dir>
+      <dir>$PROJECT_DIR$/custom_apps</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -182,17 +994,24 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/base/settings.py" />
         <option value="$PROJECT_DIR$/templates/admin/provider/safety_report_changelist.html" />
-        <option value="$PROJECT_DIR$/custom_apps/invoices/signals.py" />
         <option value="$PROJECT_DIR$/templates/admin/base.html" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/cbre_views.py" />
-        <option value="$PROJECT_DIR$/custom_apps/invoices/admin.py" />
-        <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/resources.py" />
+        <option value="$PROJECT_DIR$/templates/optimize/interim/gform/demo/src/index.tsx" />
+        <option value="$PROJECT_DIR$/custom_apps/data_ingestion/bq.py" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py" />
+        <option value="$PROJECT_DIR$/custom_apps/invoices/signals.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
+        <option value="$PROJECT_DIR$/custom_apps/invoices/apps.py" />
+        <option value="$PROJECT_DIR$/custom_apps/invoices/admin.py" />
+        <option value="$PROJECT_DIR$/thirdparty/__init__.py" />
+        <option value="$PROJECT_DIR$/base/urls.py" />
+        <option value="$PROJECT_DIR$/base/settings.py" />
+        <option value="$PROJECT_DIR$/templates/admin/submit_line.html" />
         <option value="$PROJECT_DIR$/custom_apps/invoices/models.py" />
+        <option value="$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py" />
       </list>
     </option>
   </component>
@@ -202,13 +1021,19 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="NodePackageJsonFileManager">
-    <packageJsonPaths />
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/templates/optimize/interim/gform/node_modules" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/templates/optimize/interim/gform/package.json" />
+    </packageJsonPaths>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-12" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="842" />
+    <option name="height" value="848" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -227,47 +1052,13 @@
             <path>
               <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
               <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
-              <item name="base" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
               <item name="custom_apps" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
-              <item name="custom_apps" type="462c0819:PsiDirectoryNode" />
-              <item name="data_ingestion" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
               <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
               <item name="custom_apps" type="462c0819:PsiDirectoryNode" />
               <item name="invoices" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
-              <item name="custom_apps" type="462c0819:PsiDirectoryNode" />
-              <item name="invoices" type="462c0819:PsiDirectoryNode" />
-              <item name="admin_views" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
-              <item name="custom_apps" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
-              <item name="scripts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
-              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
@@ -280,6 +1071,26 @@
               <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="admin" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
+              <item name="thirdparty" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nobel-backend" type="462c0819:PsiDirectoryNode" />
+              <item name="thirdparty" type="462c0819:PsiDirectoryNode" />
+              <item name="adminactions" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
+            </path>
+            <path>
+              <item name="nobel-backend" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
+              <item name="Scratches" type="d62648e6:ScratchProjectViewPane$MyRootNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -289,6 +1100,14 @@
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/templates/optimize/interim/gform/node_modules/typescript/lib" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/thirdparty" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -302,7 +1121,27 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.superuser_views">
+  <component name="RunManager" selected="Django server.nobel-backend">
+    <configuration name="scratch" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="nobel-backend" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="superuser_views" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="nobel-backend" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -321,6 +1160,27 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="vendor_views" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="nobel-backend" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/custom_apps/invoices/admin_views" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <method v="2" />
     </configuration>
     <configuration name="nobel-backend" type="Python.DjangoServer" factoryName="Django server">
       <module name="nobel-backend" />
@@ -328,6 +1188,7 @@
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="DJANGO_SETTINGS_MODULE" value="base.settings" />
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="" />
@@ -343,13 +1204,18 @@
       <option name="runNoReload" value="false" />
       <option name="useCustomRunCommand" value="false" />
       <option name="customRunCommand" value="" />
+      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Django server.nobel-backend" />
       <item itemvalue="Python.superuser_views" />
+      <item itemvalue="Python.scratch" />
+      <item itemvalue="Python.vendor_views" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.vendor_views" />
+        <item itemvalue="Python.scratch" />
         <item itemvalue="Python.superuser_views" />
       </list>
     </recent_temporary>
@@ -368,32 +1234,34 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="842" extended-state="6" />
+    <frame x="-12" y="23" width="1440" height="848" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="13" side_tool="true" />
-      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Python Console" order="12" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32774192" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
-      <window_info anchor="right" id="LuaJ" order="3" />
-      <window_info anchor="right" id="Database" order="5" />
-      <window_info anchor="right" id="SciView" order="4" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="manage.py@nobel-backend" order="11" visible="true" weight="0.32901555" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3294271" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32804233" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3994709" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32671958" />
+      <window_info anchor="bottom" id="manage.py@nobel-backend" order="11" visible="true" weight="0.32901555" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32936507" />
+      <window_info anchor="bottom" id="Event Log" order="13" side_tool="true" />
+      <window_info anchor="bottom" id="TypeScript" order="14" />
+      <window_info anchor="bottom" id="Concurrent Activities Diagram" order="15" weight="0.33068782" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3294271" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="LuaJ" order="3" />
+      <window_info anchor="right" id="SciView" order="4" />
+      <window_info anchor="right" id="Database" order="5" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -408,154 +1276,21 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/custom_apps/invoices/resources.py</url>
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/custom_apps/invoices/admin.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="1" />
+      <breakpoints-defaults>
+        <breakpoint type="python-line" />
+      </breakpoints-defaults>
+      <breakpoints-dialog>
+        <breakpoints-dialog />
+      </breakpoints-dialog>
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/admin/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" column="1" lean-forward="true" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5520">
-          <caret line="382" column="25" selection-start-line="382" selection-start-column="25" selection-end-line="382" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" column="1" lean-forward="true" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Library/Python/2.7/site-packages/django/conf/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="38" selection-start-line="38" selection-end-line="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4860">
-          <caret line="335" column="45" selection-start-line="335" selection-start-column="45" selection-end-line="336" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3285">
-          <caret line="223" column="13" lean-forward="true" selection-start-line="223" selection-start-column="13" selection-end-line="223" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="52" column="8" lean-forward="true" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="30" lean-forward="true" selection-start-line="3" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1080">
-          <caret line="84" selection-start-line="84" selection-end-line="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/cbre_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/invoice_admin.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2670">
-          <caret line="178" column="28" selection-start-line="178" selection-start-column="28" selection-end-line="178" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6720">
-          <caret line="467" column="34" selection-start-line="467" selection-start-column="34" selection-end-line="467" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3210">
-          <caret line="218" column="12" selection-start-line="218" selection-start-column="12" selection-end-line="218" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/resources.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/signals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/utils/maps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="4" column="21" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="28" column="8" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1080">
-          <caret line="84" lean-forward="true" selection-start-line="84" selection-end-line="84" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/custom_apps/utils/logutils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2016" />
@@ -569,24 +1304,10 @@
     <entry file="file://$PROJECT_DIR$/custom_apps/v2/core/urls.py" />
     <entry file="file://$PROJECT_DIR$/custom_apps/v2/core/models.py" />
     <entry file="file://$PROJECT_DIR$/custom_apps/v2/core/admin.py" />
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="14" lean-forward="true" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/admin/invoice_admin.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2670">
           <caret line="178" column="28" selection-start-line="178" selection-start-column="28" selection-end-line="178" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/apps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
         </state>
       </provider>
     </entry>
@@ -625,13 +1346,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/upl.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="682">
@@ -653,42 +1367,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/data_ingestion/bq.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="444">
-          <caret line="55" column="27" selection-start-line="55" selection-start-column="27" selection-end-line="55" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/django/conf/urls/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <folding>
             <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/provider/safety_report_changelist.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="4" lean-forward="true" selection-start-line="1" selection-start-column="4" selection-end-line="1" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/base/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="68" column="50" selection-start-line="68" selection-start-column="50" selection-end-line="68" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/signals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="28" column="34" selection-start-line="28" selection-start-column="34" selection-end-line="28" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#56#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -717,23 +1400,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4665">
-          <caret line="326" selection-start-line="326" selection-end-line="328" selection-end-column="66" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="705">
-          <caret line="71" column="39" selection-start-line="71" selection-start-column="21" selection-end-line="71" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/django/conf/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="480">
@@ -741,32 +1407,931 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py">
+    <entry file="file://$PROJECT_DIR$/templates/admin/provider/safety_report_changelist.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="342" column="39" selection-start-line="342" selection-start-column="12" selection-end-line="342" selection-end-column="39" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="287">
+          <caret line="28" column="31" selection-start-line="28" selection-start-column="31" selection-end-line="28" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/wsgi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="325">
+          <caret line="28" column="10" selection-start-line="28" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/optimize/interim/gform/demo/src/Untitled-1">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_apps/data_ingestion/bq.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="43" column="67" selection-start-line="43" selection-start-column="67" selection-end-line="43" selection-end-column="67" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/nwa_views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="445" lean-forward="true" selection-start-line="445" selection-end-line="445" />
+        <state relative-caret-position="5895">
+          <caret line="407" selection-start-line="407" selection-end-line="407" />
           <folding>
             <element signature="e#0#53#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
+    <entry file="file://$PROJECT_DIR$/templates/optimize/interim/gform/demo/src/sample.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/optimize/interim/gform/demo/src/index.tsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="255" column="20" selection-start-line="255" selection-start-column="20" selection-end-line="255" selection-end-column="20" />
+        <state relative-caret-position="1455">
+          <caret line="101" column="66" selection-start-line="101" selection-start-column="66" selection-end-line="101" selection-end-column="66" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/thirdparty/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-11">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
+          <folding>
+            <element signature="e#638#670#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/thirdparty/adminactions/apps.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="304" column="12" selection-start-line="304" selection-start-column="12" selection-end-line="304" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/superuser_views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="293" column="32" selection-start-line="293" selection-start-column="32" selection-end-line="293" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/signals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" selection-start-line="15" selection-start-column="1" selection-end-line="23" selection-end-column="70" />
+          <folding>
+            <element signature="e#0#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/bnw/bnw/lib/python3.6/site-packages/django/forms/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="452" column="8" selection-start-line="452" selection-start-column="8" selection-end-line="452" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-529">
+          <caret line="23" column="31" selection-start-line="23" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/apps.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="960">
+          <caret line="64" column="75" selection-start-line="64" selection-start-column="75" selection-end-line="64" selection-end-column="75" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
+            <marker date="1528945312202" expanded="true" signature="241:249" ph="..." />
+            <marker date="1528945312202" expanded="true" signature="1993:1998" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="1067" selection-start-line="1067" selection-end-line="1067" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.virtualenvs/bnw/bnw/lib/python3.6/site-packages/django/conf/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-785">
+          <caret line="38" selection-start-line="38" selection-end-line="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/submit_line.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="15" selection-start-line="2" selection-start-column="15" selection-end-line="2" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="uml://DjangoModelDependency/#nobel-backend">
+      <provider selected="true" editor-type-id="UmlEditorProvider">
+        <state>
+          <ID>DjangoModelDependency</ID>
+          <OriginalElement>#nobel-backend</OriginalElement>
+          <nodes>
+            <node x="709.9128787878781" y="1242.0">custom_apps.invoices.models.VendorSafetyReport</node>
+            <node x="1297.2878787878785" y="674.0">custom_apps.invoices.models.WorkOrderID</node>
+            <node x="6177.090783066966" y="435.0">custom_apps.invoices.models.InvoiceProxyDiscrepancy</node>
+            <node x="4648.8605570831205" y="1242.0">custom_apps.invoices.models.InvoiceForecastReportProxyNWA</node>
+            <node x="7778.180506816752" y="973.0">custom_apps.invoices.models.LineItem</node>
+            <node x="4677.825631551814" y="674.0">custom_apps.invoices.models.Invoice</node>
+            <node x="8331.008158331904" y="973.0">custom_apps.invoices.models.SafetyReport</node>
+            <node x="8765.575708598271" y="1242.0">custom_apps.invoices.models.WorkOrderProxyVendor</node>
+            <node x="9712.857793148884" y="674.0">custom_apps.invoices.models.WeatherStationSuperProxy</node>
+            <node x="6318.805506816752" y="973.0">custom_apps.invoices.models.NWAInvoiceProxy</node>
+            <node x="2061.1589648851486" y="0.0">django.contrib.contenttypes.models.ContentType</node>
+            <node x="298.75779314888314" y="336.0">custom_apps.invoices.models.RegionalAdmin</node>
+            <node x="1342.0378787878785" y="973.0">custom_apps.invoices.models.WorkOrderIDSuperProxy</node>
+            <node x="4221.8605570831205" y="1242.0">custom_apps.invoices.models.WorkProxyServiceDiscrepancy</node>
+            <node x="6950.748057083121" y="1242.0">custom_apps.invoices.models.ModifiablePrelimInvoice</node>
+            <node x="5092.8605570831205" y="1242.0">custom_apps.invoices.models.DiscrepancyReport</node>
+            <node x="3504.5756315518142" y="435.0">custom_apps.invoices.models.Vendor</node>
+            <node x="6573.748057083121" y="1242.0">custom_apps.invoices.models.WorkOrderProxyCBRE</node>
+            <node x="2113.6589648851473" y="237.0">django.contrib.auth.models.User</node>
+            <node x="7380.805506816752" y="973.0">custom_apps.invoices.models.CBREInvoiceProxy</node>
+            <node x="1802.5339648851473" y="435.0">custom_apps.invoices.models.RegionalAdminProxyNWA</node>
+            <node x="6011.998057083121" y="1242.0">custom_apps.invoices.models.WorkProxyServiceForecast</node>
+            <node x="6668.805506816752" y="973.0">custom_apps.invoices.models.InvoiceProxyVendor</node>
+            <node x="7032.805506816752" y="973.0">custom_apps.invoices.models.CBRESafetyProxy</node>
+            <node x="902.9128787878781" y="973.0">custom_apps.invoices.models.ExtendedInvoice</node>
+            <node x="2133.068181818182" y="973.0">custom_apps.invoices.models.InvoiceProxyForecast</node>
+            <node x="367.0" y="674.0">custom_apps.invoices.models.VendorProxyCBRE</node>
+            <node x="2933.8181818181824" y="973.0">custom_apps.invoices.models.InvoiceProxyPrelim</node>
+            <node x="4010.8181818181824" y="973.0">custom_apps.invoices.models.NWASafetyProxy</node>
+            <node x="8887.780934582117" y="674.0">custom_apps.invoices.models.Building</node>
+            <node x="3288.8181818181824" y="973.0">custom_apps.invoices.models.VendorInvoiceProxy</node>
+            <node x="2175.1589648851473" y="158.0">django.contrib.auth.models.Group</node>
+            <node x="5448.8605570831205" y="1242.0">custom_apps.invoices.models.WorkVisit</node>
+            <node x="5000.255506816753" y="973.0">custom_apps.invoices.models.WorkOrder</node>
+            <node x="2612.8181818181824" y="674.0">custom_apps.invoices.models.PrelimInvoice</node>
+            <node x="7333.748057083121" y="1242.0">custom_apps.invoices.models.WorkOrderProxyNWA</node>
+            <node x="8459.575708598271" y="1242.0">custom_apps.invoices.models.SafetyVisit</node>
+            <node x="1742.068181818182" y="973.0">custom_apps.invoices.models.NWAServiceDiscrepancy</node>
+            <node x="9748.357793148884" y="435.0">custom_apps.invoices.models.WeatherStation</node>
+            <node x="0.0" y="674.0">custom_apps.invoices.models.NWAServiceProvider</node>
+            <node x="3852.860557083121" y="1242.0">custom_apps.invoices.models.NWAServiceForecast</node>
+            <node x="2504.0681818181824" y="973.0">custom_apps.invoices.models.NWASubmittedInvoiceProxy</node>
+            <node x="1869.818181818182" y="674.0">custom_apps.invoices.models.VendorSettings</node>
+            <node x="1074.9128787878785" y="1242.0">custom_apps.invoices.models.VendorWorkOrder</node>
+            <node x="3651.8181818181824" y="973.0">custom_apps.invoices.models.VendorSafetyProxy</node>
+            <node x="9589.107793148884" y="973.0">custom_apps.invoices.models.NWABuilding</node>
+            <node x="2094.6589648851477" y="79.0">django.contrib.auth.models.Permission</node>
+          </nodes>
+          <notes />
+          <edges>
+            <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.WorkOrder">
+              <point x="53.0" y="-14.5" />
+              <point x="4913.8605570831205" y="1142.0" />
+              <point x="5072.255506816753" y="1142.0" />
+              <point x="-72.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="-85.75" y="-14.5" />
+              <point x="3374.5681818181824" y="654.0" />
+              <point x="3637.0756315518142" y="654.0" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyPrelim" target="custom_apps.invoices.models.Vendor">
+              <point x="-83.75" y="-14.5" />
+              <point x="3017.5681818181824" y="644.0" />
+              <point x="3629.0453285215112" y="644.0" />
+              <point x="-8.030303030303003" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.Invoice">
+              <point x="-45.375" y="-14.5" />
+              <point x="7086.873057083121" y="1072.0" />
+              <point x="5764.368006816752" y="1072.0" />
+              <point x="5764.368006816752" y="803.0" />
+              <point x="4843.629979377902" y="803.0" />
+              <point x="34.304347826086996" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.Vendor">
+              <point x="44.375" y="-14.5" />
+              <point x="7555.623057083121" y="1142.0" />
+              <point x="8252.695658331904" y="1142.0" />
+              <point x="8252.695658331904" y="534.0" />
+              <point x="3741.4695709457533" y="534.0" />
+              <point x="104.39393939393904" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceProvider" target="custom_apps.invoices.models.RegionalAdmin">
+              <point x="0.0" y="-14.5" />
+              <point x="173.5" y="415.0" />
+              <point x="329.8577931488835" y="415.0" />
+              <point x="-124.39999999999964" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWASafetyProxy" target="custom_apps.invoices.models.Invoice">
+              <point x="81.5" y="-14.5" />
+              <point x="4255.318181818182" y="923.0" />
+              <point x="4763.586501117032" y="923.0" />
+              <point x="-45.739130434782965" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.Building">
+              <point x="159.0" y="-14.5" />
+              <point x="5019.8605570831205" y="1172.0" />
+              <point x="8920.758158331904" y="1172.0" />
+              <point x="8920.758158331904" y="953.0" />
+              <point x="9011.530934582117" y="953.0" />
+              <point x="-11.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.ExtendedInvoice" target="custom_apps.invoices.models.Vendor">
+              <point x="-80.25" y="-14.5" />
+              <point x="983.1628787878785" y="524.0" />
+              <point x="3532.681692157875" y="524.0" />
+              <point x="-104.39393939393904" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrder" target="custom_apps.invoices.models.Building">
+              <point x="96.0" y="-14.5" />
+              <point x="5240.255506816753" y="903.0" />
+              <point x="8899.030934582117" y="903.0" />
+              <point x="-123.75" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.Building" target="custom_apps.invoices.models.WeatherStation">
+              <point x="90.0" y="-14.5" />
+              <point x="9112.780934582117" y="654.0" />
+              <point x="9801.024459815551" y="654.0" />
+              <point x="-105.33333333333331" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.Building">
+              <point x="133.125" y="-14.5" />
+              <point x="7644.373057083121" y="1212.0" />
+              <point x="9567.107793148884" y="1212.0" />
+              <point x="9567.107793148884" y="933.0" />
+              <point x="9101.530934582117" y="933.0" />
+              <point x="78.75" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.Vendor">
+              <point x="-159.0" y="-14.5" />
+              <point x="4701.8605570831205" y="1092.0" />
+              <point x="2923.3181818181824" y="1092.0" />
+              <point x="2923.3181818181824" y="634.0" />
+              <point x="3621.0150254912082" y="634.0" />
+              <point x="-16.060606060606005" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrder" target="custom_apps.invoices.models.Vendor">
+              <point x="-96.0" y="-14.5" />
+              <point x="5048.255506816753" y="843.0" />
+              <point x="4667.325631551814" y="843.0" />
+              <point x="4667.325631551814" y="634.0" />
+              <point x="3661.1665406427232" y="634.0" />
+              <point x="24.09090909090901" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.Invoice">
+              <point x="-50.875" y="-14.5" />
+              <point x="4374.4855570831205" y="1112.0" />
+              <point x="4548.193181818182" y="1112.0" />
+              <point x="4548.193181818182" y="943.0" />
+              <point x="4786.456066334424" y="943.0" />
+              <point x="-22.869565217391028" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceDiscrepancy" target="custom_apps.invoices.models.Invoice">
+              <point x="92.75" y="-14.5" />
+              <point x="2020.318181818182" y="863.0" />
+              <point x="4694.977805464858" y="863.0" />
+              <point x="-114.34782608695696" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.RegionalAdminProxyNWA" target="django.contrib.auth.models.User">
+              <point x="94.5" y="-14.5" />
+              <point x="2086.0339648851473" y="415.0" />
+              <point x="2074.5339648851473" y="415.0" />
+              <point x="2074.5339648851473" y="316.0" />
+              <point x="2216.4714648851473" y="316.0" />
+              <point x="-14.6875" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.Building" target="django.contrib.auth.models.User">
+              <point x="0.0" y="-14.5" />
+              <point x="9022.780934582117" y="644.0" />
+              <point x="9179.76573408948" y="644.0" />
+              <point x="9179.76573408948" y="296.0" />
+              <point x="2304.5964648851473" y="296.0" />
+              <point x="73.4375" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.WorkOrder">
+              <point x="-133.875" y="-14.5" />
+              <point x="6618.373057083121" y="1102.0" />
+              <point x="5187.455506816752" y="1102.0" />
+              <point x="43.19999999999982" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.WorkOrder">
+              <point x="-133.125" y="-14.5" />
+              <point x="7378.123057083121" y="1062.0" />
+              <point x="5245.055506816752" y="1062.0" />
+              <point x="100.80000000000018" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.Invoice">
+              <point x="-46.0" y="-14.5" />
+              <point x="8903.575708598271" y="1032.0" />
+              <point x="6308.305506816752" y="1032.0" />
+              <point x="6308.305506816752" y="783.0" />
+              <point x="4866.499544595292" y="783.0" />
+              <point x="57.173913043478024" y="14.5" />
+            </edge>
+            <edge source="django.contrib.auth.models.Group" target="django.contrib.auth.models.Permission">
+              <point x="9.094947017729282E-13" y="-14.5" />
+              <point x="2297.658964885148" y="133.0" />
+              <point x="2299.4089648851477" y="133.0" />
+              <point x="68.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWASubmittedInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+              <point x="98.25" y="-14.5" />
+              <point x="2798.8181818181824" y="883.0" />
+              <point x="4717.84737068225" y="883.0" />
+              <point x="-91.47826086956502" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.Invoice">
+              <point x="-44.625" y="-14.5" />
+              <point x="6707.623057083121" y="1092.0" />
+              <point x="5569.243006816752" y="1092.0" />
+              <point x="5569.243006816752" y="813.0" />
+              <point x="4832.195196769206" y="813.0" />
+              <point x="22.869565217391028" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceProvider" target="custom_apps.invoices.models.Vendor">
+              <point x="115.66666666666606" y="-14.5" />
+              <point x="289.16666666666606" y="494.0" />
+              <point x="3508.590783066966" y="494.0" />
+              <point x="-128.48484848484804" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorProxyCBRE" target="custom_apps.invoices.models.Vendor">
+              <point x="111.33333333333394" y="-14.5" />
+              <point x="645.3333333333339" y="504.0" />
+              <point x="3516.621086097269" y="504.0" />
+              <point x="-120.45454545454504" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.WorkOrder">
+              <point x="-144.375" y="-14.5" />
+              <point x="6060.123057083121" y="1122.0" />
+              <point x="5158.655506816753" y="1122.0" />
+              <point x="14.400000000000091" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorWorkOrder" target="custom_apps.invoices.models.ExtendedInvoice">
+              <point x="-83.25" y="-14.5" />
+              <point x="1158.1628787878785" y="1222.0" />
+              <point x="1143.662878787878" y="1222.0" />
+              <point x="80.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.PrelimInvoice" target="custom_apps.invoices.models.Vendor">
+              <point x="0.0" y="-14.5" />
+              <point x="2762.8181818181824" y="624.0" />
+              <point x="3612.9847224609052" y="624.0" />
+              <point x="-24.09090909090901" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.Building">
+              <point x="130.875" y="-14.5" />
+              <point x="4158.2355570831205" y="1152.0" />
+              <point x="8848.133158331904" y="1152.0" />
+              <point x="8848.133158331904" y="933.0" />
+              <point x="8966.530934582117" y="933.0" />
+              <point x="-56.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorWorkOrder" target="custom_apps.invoices.models.Vendor">
+              <point x="83.25" y="-14.5" />
+              <point x="1324.6628787878785" y="1222.0" />
+              <point x="1286.7878787878785" y="1222.0" />
+              <point x="1286.7878787878785" y="534.0" />
+              <point x="3540.711995188178" y="534.0" />
+              <point x="-96.36363636363603" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyDiscrepancy" target="django.contrib.auth.models.User">
+              <point x="93.25" y="-14.5" />
+              <point x="6456.840783066966" y="306.0" />
+              <point x="2275.2214648851473" y="306.0" />
+              <point x="44.0625" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.Vendor">
+              <point x="-152.625" y="-14.5" />
+              <point x="4272.7355570831205" y="1102.0" />
+              <point x="1731.568181818182" y="1102.0" />
+              <point x="1731.568181818182" y="574.0" />
+              <point x="3572.83320730939" y="574.0" />
+              <point x="-64.24242424242402" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.Vendor" target="custom_apps.invoices.models.RegionalAdmin">
+              <point x="-66.25" y="-14.5" />
+              <point x="3570.8256315518142" y="395.0" />
+              <point x="516.4577931488839" y="395.0" />
+              <point x="62.20000000000073" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderID" target="custom_apps.invoices.models.Vendor">
+              <point x="0.0" y="-14.5" />
+              <point x="1447.2878787878785" y="544.0" />
+              <point x="3548.742298218481" y="544.0" />
+              <point x="-88.33333333333303" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.DiscrepancyReport" target="custom_apps.invoices.models.WorkOrder">
+              <point x="0.0" y="-14.5" />
+              <point x="5260.8605570831205" y="1142.0" />
+              <point x="5101.055506816752" y="1142.0" />
+              <point x="-43.19999999999982" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWABuilding" target="custom_apps.invoices.models.WeatherStation">
+              <point x="37.75" y="-14.5" />
+              <point x="9777.857793148884" y="943.0" />
+              <point x="10110.357793148884" y="943.0" />
+              <point x="10110.357793148884" y="654.0" />
+              <point x="10011.691126482216" y="654.0" />
+              <point x="105.33333333333303" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.Building">
+              <point x="152.625" y="-14.5" />
+              <point x="4577.9855570831205" y="1162.0" />
+              <point x="8859.133158331904" y="1162.0" />
+              <point x="8859.133158331904" y="943.0" />
+              <point x="8989.030934582117" y="943.0" />
+              <point x="-33.75" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.CBREInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="83.0" y="-14.5" />
+              <point x="7629.805506816752" y="574.0" />
+              <point x="3709.3483588245413" y="574.0" />
+              <point x="72.27272727272702" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWASubmittedInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="-98.25" y="-14.5" />
+              <point x="2602.3181818181824" y="614.0" />
+              <point x="3604.9544194306022" y="614.0" />
+              <point x="-32.12121212121201" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyForecast" target="custom_apps.invoices.models.Invoice">
+              <point x="87.75" y="-14.5" />
+              <point x="2396.318181818182" y="873.0" />
+              <point x="4706.412588073554" y="873.0" />
+              <point x="-102.91304347826099" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderIDSuperProxy" target="custom_apps.invoices.models.WorkOrderID">
+              <point x="-92.75" y="-14.5" />
+              <point x="1434.7878787878785" y="843.0" />
+              <point x="1447.2878787878785" y="843.0" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyDiscrepancy" target="custom_apps.invoices.models.RegionalAdmin">
+              <point x="-93.25" y="-14.5" />
+              <point x="6270.340783066966" y="385.0" />
+              <point x="578.6577931488828" y="385.0" />
+              <point x="124.39999999999964" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.SafetyReport" target="custom_apps.invoices.models.Invoice">
+              <point x="-75.0" y="-14.5" />
+              <point x="8406.008158331904" y="723.0" />
+              <point x="4935.108240247466" y="723.0" />
+              <point x="125.78260869565202" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.Invoice">
+              <point x="-43.625" y="-14.5" />
+              <point x="3983.735557083121" y="1112.0" />
+              <point x="4347.318181818182" y="1112.0" />
+              <point x="4347.318181818182" y="933.0" />
+              <point x="4775.021283725728" y="933.0" />
+              <point x="-34.304347826086996" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.SafetyVisit" target="custom_apps.invoices.models.SafetyReport">
+              <point x="0.0" y="-14.5" />
+              <point x="8602.575708598271" y="1142.0" />
+              <point x="8481.008158331904" y="1142.0" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorSafetyProxy" target="custom_apps.invoices.models.Invoice">
+              <point x="84.75" y="-14.5" />
+              <point x="3906.0681818181824" y="913.0" />
+              <point x="4752.151718508336" y="913.0" />
+              <point x="-57.173913043478024" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.RegionalAdmin" target="django.contrib.auth.models.User">
+              <point x="0.0" y="-14.5" />
+              <point x="454.25779314888314" y="306.0" />
+              <point x="2187.0964648851473" y="306.0" />
+              <point x="-44.0625" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.CBREInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+              <point x="-83.0" y="-14.5" />
+              <point x="7463.805506816752" y="743.0" />
+              <point x="4912.238675030076" y="743.0" />
+              <point x="102.91304347826099" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.Building">
+              <point x="136.125" y="-14.5" />
+              <point x="7268.373057083121" y="1202.0" />
+              <point x="9420.655934582117" y="1202.0" />
+              <point x="9420.655934582117" y="943.0" />
+              <point x="9079.030934582117" y="943.0" />
+              <point x="56.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrder" target="custom_apps.invoices.models.Invoice">
+              <point x="0.0" y="-14.5" />
+              <point x="5144.255506816753" y="833.0" />
+              <point x="4809.325631551814" y="833.0" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorSafetyReport" target="custom_apps.invoices.models.ExtendedInvoice">
+              <point x="86.25" y="-14.5" />
+              <point x="968.6628787878781" y="1222.0" />
+              <point x="983.1628787878781" y="1222.0" />
+              <point x="-80.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorProxyCBRE" target="custom_apps.invoices.models.RegionalAdmin">
+              <point x="0.0" y="-14.5" />
+              <point x="534.0" y="484.0" />
+              <point x="500.30779314888423" y="484.0" />
+              <point x="500.30779314888423" y="415.0" />
+              <point x="392.0577931488824" y="415.0" />
+              <point x="-62.20000000000073" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWABuilding" target="custom_apps.invoices.models.Vendor">
+              <point x="-37.75" y="-14.5" />
+              <point x="9702.357793148884" y="504.0" />
+              <point x="3765.5604800366623" y="504.0" />
+              <point x="128.48484848484804" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.Building" target="custom_apps.invoices.models.Vendor">
+              <point x="-90.0" y="-14.5" />
+              <point x="8932.780934582117" y="514.0" />
+              <point x="3757.5301770063593" y="514.0" />
+              <point x="120.45454545454504" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceProvider" target="django.contrib.auth.models.User">
+              <point x="-115.66666666666606" y="-14.5" />
+              <point x="57.83333333333394" y="654.0" />
+              <point x="100.34112648221708" y="654.0" />
+              <point x="100.34112648221708" y="286.0" />
+              <point x="2128.3464648851473" y="286.0" />
+              <point x="-102.8125" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.SafetyReport" target="custom_apps.invoices.models.Building">
+              <point x="75.0" y="-14.5" />
+              <point x="8556.008158331904" y="923.0" />
+              <point x="8944.030934582117" y="923.0" />
+              <point x="-78.75" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.Building">
+              <point x="138.0" y="-14.5" />
+              <point x="9087.575708598271" y="1222.0" />
+              <point x="9578.107793148884" y="1222.0" />
+              <point x="9578.107793148884" y="923.0" />
+              <point x="9124.030934582117" y="923.0" />
+              <point x="101.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWASafetyProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="-81.5" y="-14.5" />
+              <point x="4092.3181818181824" y="644.0" />
+              <point x="3653.1362376124202" y="644.0" />
+              <point x="16.060606060606005" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.RegionalAdminProxyNWA" target="custom_apps.invoices.models.RegionalAdmin">
+              <point x="-94.5" y="-14.5" />
+              <point x="1897.0339648851473" y="405.0" />
+              <point x="454.25779314888314" y="405.0" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.Invoice" target="custom_apps.invoices.models.Vendor">
+              <point x="0.0" y="-14.5" />
+              <point x="4809.325631551814" y="624.0" />
+              <point x="3669.1968436730263" y="624.0" />
+              <point x="32.12121212121201" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceForecastReportProxyNWA" target="custom_apps.invoices.models.Invoice">
+              <point x="-53.0" y="-14.5" />
+              <point x="4807.8605570831205" y="1082.0" />
+              <point x="4669.305506816752" y="1082.0" />
+              <point x="4669.305506816752" y="953.0" />
+              <point x="4797.890848943118" y="953.0" />
+              <point x="-11.434782608695969" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorSafetyProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="-84.75" y="-14.5" />
+              <point x="3736.5681818181824" y="654.0" />
+              <point x="3645.1059345821172" y="654.0" />
+              <point x="8.030303030303003" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.Vendor">
+              <point x="45.375" y="-14.5" />
+              <point x="7177.623057083121" y="1132.0" />
+              <point x="8059.680506816752" y="1132.0" />
+              <point x="8059.680506816752" y="544.0" />
+              <point x="3733.4392679154503" y="544.0" />
+              <point x="96.36363636363603" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyNWA" target="custom_apps.invoices.models.Invoice">
+              <point x="-44.375" y="-14.5" />
+              <point x="7466.873057083121" y="1052.0" />
+              <point x="5959.868006816752" y="1052.0" />
+              <point x="5959.868006816752" y="793.0" />
+              <point x="4855.064761986598" y="793.0" />
+              <point x="45.739130434782965" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyForecast" target="custom_apps.invoices.models.Vendor">
+              <point x="-87.75" y="-14.5" />
+              <point x="2220.818181818182" y="604.0" />
+              <point x="3596.924116400299" y="604.0" />
+              <point x="-40.151515151515014" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.Vendor">
+              <point x="-130.875" y="-14.5" />
+              <point x="3896.485557083121" y="1222.0" />
+              <point x="1723.5378787878785" y="1222.0" />
+              <point x="1723.5378787878785" y="564.0" />
+              <point x="3564.802904279087" y="564.0" />
+              <point x="-72.27272727272702" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.LineItem" target="custom_apps.invoices.models.Vendor">
+              <point x="0.0" y="-14.5" />
+              <point x="7913.680506816752" y="554.0" />
+              <point x="3725.4089648851473" y="554.0" />
+              <point x="88.33333333333303" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAInvoiceProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="82.5" y="-14.5" />
+              <point x="6566.305506816752" y="614.0" />
+              <point x="3677.2271467033293" y="614.0" />
+              <point x="40.151515151515014" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.WorkOrder">
+              <point x="-138.0" y="-14.5" />
+              <point x="8811.575708598271" y="1042.0" />
+              <point x="5273.8555068167525" y="1042.0" />
+              <point x="129.5999999999999" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+              <point x="85.75" y="-14.5" />
+              <point x="3546.0681818181824" y="903.0" />
+              <point x="4740.71693589964" y="903.0" />
+              <point x="-68.60869565217399" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.Vendor">
+              <point x="48.125" y="-14.5" />
+              <point x="6252.623057083121" y="1112.0" />
+              <point x="7022.305506816752" y="1112.0" />
+              <point x="7022.305506816752" y="594.0" />
+              <point x="3693.2877527639353" y="594.0" />
+              <point x="56.21212121212102" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceDiscrepancy" target="custom_apps.invoices.models.Vendor">
+              <point x="-92.75" y="-14.5" />
+              <point x="1834.818181818182" y="584.0" />
+              <point x="3580.863510339693" y="584.0" />
+              <point x="-56.21212121212102" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.CBRESafetyProxy" target="custom_apps.invoices.models.Invoice">
+              <point x="-82.0" y="-14.5" />
+              <point x="7114.805506816752" y="753.0" />
+              <point x="4900.80389242138" y="753.0" />
+              <point x="91.47826086956502" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWABuilding" target="django.contrib.auth.models.User">
+              <point x="113.25" y="-14.5" />
+              <point x="9853.357793148884" y="953.0" />
+              <point x="10121.357793148884" y="953.0" />
+              <point x="10121.357793148884" y="286.0" />
+              <point x="2333.9714648851473" y="286.0" />
+              <point x="102.8125" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkVisit" target="custom_apps.invoices.models.WorkOrder">
+              <point x="0.0" y="-14.5" />
+              <point x="5588.8605570831205" y="1132.0" />
+              <point x="5129.8555068167525" y="1132.0" />
+              <point x="-14.400000000000091" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderIDSuperProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="92.75" y="-14.5" />
+              <point x="1620.2878787878785" y="843.0" />
+              <point x="1607.7878787878785" y="843.0" />
+              <point x="1607.7878787878785" y="554.0" />
+              <point x="3556.772601248784" y="554.0" />
+              <point x="-80.30303030303003" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.Vendor" target="django.contrib.auth.models.User">
+              <point x="66.25" y="-14.5" />
+              <point x="3703.3256315518142" y="316.0" />
+              <point x="2245.8464648851473" y="316.0" />
+              <point x="14.6875" y="14.5" />
+            </edge>
+            <edge source="django.contrib.auth.models.Permission" target="django.contrib.contenttypes.models.ContentType">
+              <point x="9.094947017729282E-13" y="-14.5" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyVendor" target="custom_apps.invoices.models.Invoice">
+              <point x="-85.75" y="-14.5" />
+              <point x="6754.555506816752" y="763.0" />
+              <point x="4889.369109812684" y="763.0" />
+              <point x="80.04347826086996" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceDiscrepancy" target="custom_apps.invoices.models.WorkOrder">
+              <point x="50.875" y="-14.5" />
+              <point x="4476.2355570831205" y="1132.0" />
+              <point x="5043.455506816752" y="1132.0" />
+              <point x="-100.80000000000018" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.Building">
+              <point x="144.375" y="-14.5" />
+              <point x="6348.873057083121" y="1182.0" />
+              <point x="9028.280934582117" y="1182.0" />
+              <point x="9028.280934582117" y="953.0" />
+              <point x="9034.030934582117" y="953.0" />
+              <point x="11.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.Building">
+              <point x="133.875" y="-14.5" />
+              <point x="6886.123057083121" y="1192.0" />
+              <point x="9224.030934582117" y="1192.0" />
+              <point x="9224.030934582117" y="953.0" />
+              <point x="9056.530934582117" y="953.0" />
+              <point x="33.75" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.LineItem" target="custom_apps.invoices.models.Building">
+              <point x="90.33333333333348" y="-14.5" />
+              <point x="8004.013840150086" y="913.0" />
+              <point x="8921.530934582117" y="913.0" />
+              <point x="-101.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAServiceForecast" target="custom_apps.invoices.models.WorkOrder">
+              <point x="43.625" y="-14.5" />
+              <point x="4070.985557083121" y="1122.0" />
+              <point x="5014.655506816753" y="1122.0" />
+              <point x="-129.5999999999999" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.ExtendedInvoice" target="custom_apps.invoices.models.Invoice">
+              <point x="80.25" y="-14.5" />
+              <point x="1143.662878787878" y="853.0" />
+              <point x="4683.543022856162" y="853.0" />
+              <point x="-125.78260869565202" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyCBRE" target="custom_apps.invoices.models.Vendor">
+              <point x="44.625" y="-14.5" />
+              <point x="6796.873057083121" y="1122.0" />
+              <point x="7723.305506816752" y="1122.0" />
+              <point x="7723.305506816752" y="564.0" />
+              <point x="3717.3786618548443" y="564.0" />
+              <point x="80.30303030303003" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorSafetyReport" target="custom_apps.invoices.models.Vendor">
+              <point x="-86.25" y="-14.5" />
+              <point x="796.1628787878781" y="1222.0" />
+              <point x="837.0378787878781" y="1222.0" />
+              <point x="837.0378787878781" y="514.0" />
+              <point x="3524.651389127572" y="514.0" />
+              <point x="-112.42424242424204" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyPrelim" target="custom_apps.invoices.models.Invoice">
+              <point x="83.75" y="-14.5" />
+              <point x="3185.0681818181824" y="893.0" />
+              <point x="4729.282153290944" y="893.0" />
+              <point x="-80.04347826086996" y="14.5" />
+            </edge>
+            <edge source="django.contrib.auth.models.User" target="django.contrib.auth.models.Permission">
+              <point x="-58.75" y="-14.5" />
+              <point x="2172.4089648851473" y="212.0" />
+              <point x="2164.6589648851473" y="212.0" />
+              <point x="2164.6589648851473" y="133.0" />
+              <point x="2162.9089648851477" y="133.0" />
+              <point x="-68.25" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.CBRESafetyProxy" target="custom_apps.invoices.models.Vendor">
+              <point x="82.0" y="-14.5" />
+              <point x="7278.805506816752" y="584.0" />
+              <point x="3701.3180557942383" y="584.0" />
+              <point x="64.24242424242402" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWAInvoiceProxy" target="custom_apps.invoices.models.Invoice">
+              <point x="-82.5" y="-14.5" />
+              <point x="6401.305506816752" y="773.0" />
+              <point x="4877.934327203988" y="773.0" />
+              <point x="68.60869565217399" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.NWABuilding" target="custom_apps.invoices.models.Building">
+              <point x="-113.25" y="-14.5" />
+              <point x="9626.857793148884" y="913.0" />
+              <point x="9146.530934582117" y="913.0" />
+              <point x="123.75" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkOrderProxyVendor" target="custom_apps.invoices.models.Vendor">
+              <point x="46.0" y="-14.5" />
+              <point x="8995.575708598271" y="1022.0" />
+              <point x="8757.758158331904" y="1022.0" />
+              <point x="8757.758158331904" y="524.0" />
+              <point x="3749.4998739760563" y="524.0" />
+              <point x="112.42424242424204" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorSettings" target="custom_apps.invoices.models.Vendor">
+              <point x="0.0" y="-14.5" />
+              <point x="2027.818181818182" y="594.0" />
+              <point x="3588.893813369996" y="594.0" />
+              <point x="-48.18181818181802" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WorkProxyServiceForecast" target="custom_apps.invoices.models.Invoice">
+              <point x="-48.125" y="-14.5" />
+              <point x="6156.373057083121" y="1112.0" />
+              <point x="5366.493006816752" y="1112.0" />
+              <point x="5366.493006816752" y="823.0" />
+              <point x="4820.76041416051" y="823.0" />
+              <point x="11.434782608695969" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.WeatherStationSuperProxy" target="custom_apps.invoices.models.WeatherStation">
+              <point x="0.0" y="-14.5" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.ModifiablePrelimInvoice" target="custom_apps.invoices.models.WorkOrder">
+              <point x="-136.125" y="-14.5" />
+              <point x="6996.123057083121" y="1082.0" />
+              <point x="5216.255506816753" y="1082.0" />
+              <point x="72.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.InvoiceProxyVendor" target="custom_apps.invoices.models.Vendor">
+              <point x="85.75" y="-14.5" />
+              <point x="6926.055506816752" y="604.0" />
+              <point x="3685.2574497336323" y="604.0" />
+              <point x="48.18181818181802" y="14.5" />
+            </edge>
+            <edge source="django.contrib.auth.models.User" target="django.contrib.auth.models.Group">
+              <point x="58.75" y="-14.5" />
+              <point x="2289.9089648851473" y="212.0" />
+              <point x="2297.6589648851473" y="212.0" />
+              <point x="0.0" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.VendorProxyCBRE" target="django.contrib.auth.models.User">
+              <point x="-111.33333333333394" y="-14.5" />
+              <point x="422.66666666666606" y="484.0" />
+              <point x="147.1999999999989" y="484.0" />
+              <point x="147.1999999999989" y="296.0" />
+              <point x="2157.7214648851473" y="296.0" />
+              <point x="-73.4375" y="14.5" />
+            </edge>
+            <edge source="custom_apps.invoices.models.LineItem" target="custom_apps.invoices.models.Invoice">
+              <point x="-90.33333333333348" y="-14.5" />
+              <point x="7823.347173483419" y="733.0" />
+              <point x="4923.673457638772" y="733.0" />
+              <point x="114.34782608695696" y="14.5" />
+            </edge>
+          </edges>
+          <settings layout="Hierarchic Group" zoom="0.8132939779622281" x="2147.0962462569055" y="1292.0962462569055" />
+          <SelectedNodes />
+          <Categories />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="343">
+          <caret line="780" column="49" selection-start-line="780" selection-start-column="49" selection-end-line="780" selection-end-column="49" />
+          <folding>
+            <element signature="e#24#63#0" expanded="true" />
+            <marker date="1528985109429" expanded="true" signature="6313:6316" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_apps/invoices/admin_views/vendor_views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="514" column="21" selection-start-line="514" selection-start-column="21" selection-end-line="514" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#53#0" expanded="true" />
+            <marker date="1528986012556" expanded="true" signature="10137:10142" ph="..." />
+            <marker date="1528986012556" expanded="true" signature="15379:15443" ph="..." />
+            <marker date="1528986012556" expanded="true" signature="20330:20336" ph="..." />
           </folding>
         </state>
       </provider>

@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 DJANGO_APPS = [
+    'adminactions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,9 +43,13 @@ DJANGO_APPS = [
 
 # SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
 SUPPORT_APPS = ['rest_framework', 'django_extensions', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
-CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'raven.contrib.django.raven_compat',]
+CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'raven.contrib.django.raven_compat', 'hijack', 'hijack_admin']
 
-INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
+#GRAPHQL_APPS = ['crudl-admin-rest', 'crudl-admin-graphql', 'django_graphiql', 'graphene.contrib.django']
+
+
+INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS 
+
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -265,3 +270,36 @@ TEMPLATE_DEBUG = False
 RAVEN_CONFIG = {
   'dsn': 'https://4d87c7cd417f4e14be43597f3ffac1b3@sentry.io/1219530',
 }
+
+
+REST_FRAMEWORK = {
+    'UNICODE_JSON': True,
+    'DEFAULT_PAGINATION_CLASS': 'api.pagination.StandardResultsSetPagination',
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_MODEL_SERIALIZER_CLASS':
+        'rest_framework.serializers.HyperlinkedModelSerializer',
+
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.UserRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '10000/day'
+    },
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'api.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+HIJACK_ALLOW_GET_REQUESTS = True
+HIJACK_USE_BOOTSTRAP = True
+DEBUG = True

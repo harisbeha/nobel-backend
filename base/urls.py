@@ -35,6 +35,8 @@ urlpatterns = [
     url(r'^provider/', vendor_site.urls),
     url(r'^admin/', include("massadmin.urls")),
     url(r'^nested_admin/', include('nested_admin.urls')),
+    url(r'^hijack/', include('hijack.urls', namespace='hijack')),
+    url(r'^adminactions/', include('adminactions.urls')),
     url(r'^', include('favicon.urls')),
 ]
 
