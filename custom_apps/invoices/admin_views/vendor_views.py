@@ -380,14 +380,15 @@ class VendorSafetyReportInline(nested_admin.NestedTabularInline):
             #
             # Populate initial based on request
             #
-            if request.user.is_superuser and obj:
+            if request.user and obj:
                 locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
+                vend = obj.service_provider
             else:
                 vend = Vendor.objects.get(system_user=request.user)
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
 
             for l in locations:
-                initial.append({'service_provider': 1, 'building': str(l), 'safe_to_open': True})
+                initial.append({'service_provider': vend.id, 'building': str(l), 'safe_to_open': True})
         formset = super(VendorSafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
@@ -659,7 +660,6 @@ class VendorWorkOrderManager(nested_admin.NestedModelAdmin):
         return my_urls + urls
 
     def rollup_invoices(self, request, queryset):
-        import pdb; pdb.set_trace()
         from itertools import chain
         combined_list = []
         for inv in queryset:
@@ -671,7 +671,7 @@ class VendorWorkOrderManager(nested_admin.NestedModelAdmin):
         rows_updated = queryset.update(status='preliminary_created')
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
-    rollup_invoices.short_description = "Generate Closeout Report"
+    rollup_invoices.short_description = "Roll Up Invoices"
 
     def submit_invoices(self, request, queryset):
         rows_updated = queryset.update(status='submitted')
