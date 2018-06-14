@@ -39,4 +39,4 @@ graphql-django-view==1.3
 Pillow==3.1.0
 singledispatch==3.4.0.3
 hijack
-django-hiack-admin
+django-hijack-admin
