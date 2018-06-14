@@ -18,9 +18,11 @@ from custom_apps.utils.admin_utils import generate_field_getter
 from custom_apps.utils.fields import AddressMetadataStorageMixin
 from custom_apps.utils.forecast import forecast
 from .enums import ReportState
-from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings
+from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings, VendorSafetyReport, VendorWorkOrder
 from django.contrib.admin import AdminSite
 from .models import *
+from thirdparty.adminactions import actions as actions
+
 
 
 from .admin_views.superuser_views import ServiceForecast, DiscrepancyReview, WorkProxyServiceForecast, WorkProxyServiceDiscrepancy
@@ -68,6 +70,14 @@ nwa_site.register(NWASubmittedInvoiceProxy, nwa_views.NWASubmittedInvoiceAdmin)
 cbre_site.register(CBRESafetyProxy, cbre_views.InvoiceAdmin)
 cbre_site.register(CBREInvoiceProxy, cbre_views.PrelimInvoiceAdmin)
 
-vendor_site.register(VendorSafetyProxy, vendor_views.InvoiceAdmin)
-vendor_site.register(VendorInvoiceProxy, vendor_views.PrelimInvoiceAdmin)
-vendor_site.register(DiscrepancyReport, vendor_views.DiscrepancyReportAdmin)
+# vendor_site.register(VendorSafetyProxy, vendor_views.InvoiceAdmin)
+# vendor_site.register(VendorInvoiceProxy, vendor_views.PrelimInvoiceAdmin)
+# vendor_site.register(DiscrepancyReport, vendor_views.DiscrepancyReportAdmin)
+
+vendor_site.register(VendorSafetyReport, vendor_views.VendorSafetyReportManager)
+vendor_site.register(VendorWorkOrder, vendor_views.VendorWorkOrderManager)
+
+actions.add_to_site(admin.site)
+actions.add_to_site(nwa_site)
+actions.add_to_site(cbre_site)
+actions.add_to_site(vendor_site)

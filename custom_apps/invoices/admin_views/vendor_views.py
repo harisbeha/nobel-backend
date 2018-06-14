@@ -15,14 +15,16 @@ from django.forms.models import BaseModelFormSet
 from django.forms.models import BaseInlineFormSet, BaseFormSet
 import nested_admin
 from raven import Client
+from django.forms import TextInput, ChoiceField, CharField
+from adminactions import merge
 
 client = Client('https://4d87c7cd417f4e14be43597f3ffac1b3:d46f2a1776a54a8a80d3d8ab57717c71@sentry.io/1219530')
-
 
 
 # all the views in this file should be visible only to the superuser
 class SuperuserModelAdmin(ImportExportActionModelAdmin):
     exclude = ['address_info_storage']
+
     def has_module_permission(self, request):
         if request.user.is_superuser:
             return True
@@ -32,35 +34,46 @@ class SuperuserModelAdmin(ImportExportActionModelAdmin):
 def total_plows(self, obj=None):
     return 1
 
+
 def total_salts(self, obj=None):
     return 2
+
 
 def invoice(self, obj=None):
     return self.invoice
 
+
 def vendor(self, obj=None):
     return self.service_provider
+
 
 def service_provider(self, obj=None):
     return self.service_provider
 
+
 def location(self, obj=None):
     return self.building
+
 
 def deicing_rate(self, obj=None):
     return self.building.deice_rate
 
+
 def deicing_tax(self, obj=None):
     return self.building.deice_tax
+
 
 def plow_rate(self, obj=None):
     return self.building.plow_rate
 
+
 def plow_tax(self, obj=None):
     return self.building.plow_tax
 
+
 def work_order(self, obj=None):
     return self.work_order_code
+
 
 def deicing_fee(self, obj=None):
     try:
@@ -69,6 +82,7 @@ def deicing_fee(self, obj=None):
     except:
         return ''
 
+
 def plow_fee(self, obj=None):
     try:
         cost = self.building.plow_rate * self.num_plows
@@ -76,21 +90,27 @@ def plow_fee(self, obj=None):
     except:
         return ''
 
+
 def storm_total(self, obj=None):
     total = str((self.building.plow_rate * self.num_plows) + (self.building.deice_rate * self.num_salts))
     return total
 
+
 def snowfall(self, obj=None):
     return 1.4
+
 
 def storm_days(self, obj=None):
     return 2
 
+
 def refreeze(self, obj=None):
     return '0'
 
+
 def number_salts(self, obj=None):
     return self.num_salts
+
 
 def number_salts_predicted(self, obj=None):
     try:
@@ -105,6 +125,7 @@ def number_salts_predicted(self, obj=None):
     # import random
     # return random.randint(1,3)
 
+
 def number_plows_predicted(self, obj=None):
     try:
         pred = self.num_plows - 1
@@ -115,24 +136,30 @@ def number_plows_predicted(self, obj=None):
     except:
         return ''
 
+
 def salts_delta(self, obj=None):
     return '3'
+
 
 def number_plows(self, obj=None):
     return self.num_plows
 
+
 def push_delta(self, obj=None):
     return '4'
+
 
 def deicing_cost_delta(self, obj=None):
     return '$128.99'
 
+
 def plowing_cost_delta(self, obj=None):
     return '$199.10'
 
+
 def get_locations_by_system_user(user=None, provider=None):
     # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
-    #print(provider)
+    # print(provider)
     if provider:
         locations = Building.objects.filter(service_provider=provider)
     else:
@@ -146,33 +173,36 @@ class SRFormSet(BaseInlineFormSet):
 
     def __init__(self, *args, **kwargs):
         super(SRFormSet, self).__init__(*args, **kwargs)
-        if self.request.user.is_superuser:
-            #print('yes')
-            self.locations = get_locations_by_system_user(None, self.instance.service_provider)
-        else:
-            self.locations = get_locations_by_system_user(self.request.user, None)
+
+        # if self.request.user.is_superuser:
+        #     #print('yes')
+        #     self.locations = get_locations_by_system_user(None, self.instance.service_provider)
+        # else:
+        #     self.locations = get_locations_by_system_user(self.request.user, None)
 
 
 from django.forms import ModelForm
+
+
 # class WOrderForm(ModelForm):
 #     fields = ['vendor', 'building', 'number_plows', 'number_salts']
 
 
 class WOFormSet(BaseInlineFormSet):
-    model = WorkOrder
+    model = LineItem
 
     def __init__(self, *args, **kwargs):
         super(WOFormSet, self).__init__(*args, **kwargs)
-        if self.request.user.is_superuser:
-            #print('yes')
-            self.locations = get_locations_by_system_user(None, self.instance.service_provider)
-        else:
-            self.locations = get_locations_by_system_user(self.request.user, None)
+        self.queryset = self.queryset.filter(safe_to_open=True)
+
+        # if self.request.user.is_superuser:
+        #     #print('yes')
+        #     self.locations = get_locations_by_system_user(None, self.instance.service_provider)
+        # else:
+        #     self.locations = get_locations_by_system_user(self.request.user, None)
 
 
 from django.utils.functional import curry
-
-
 
 
 class WorkVisitProxyInline(nested_admin.NestedTabularInline):
@@ -187,7 +217,6 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
     formset = WOFormSet
     inlines = [WorkVisitProxyInline]
     readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
-
 
     def get_fields(self, request, obj=None):
         fields = super(WorkOrderInline, self).get_fields(request, obj)
@@ -233,10 +262,10 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             s_provider = None if not obj else obj.service_provider
 
             for l in locations:
-                #print({'building': str(l['id']), 'service_provider': s_provider,
-                                # 'storm_name': s_name,'report_date': s_date,
-                                # 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
-                                # 'failed_service':False, 'work_order_code':'Td1290'})
+                # print({'building': str(l['id']), 'service_provider': s_provider,
+                # 'storm_name': s_name,'report_date': s_date,
+                # 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
+                # 'failed_service':False, 'work_order_code':'Td1290'})
                 initial.append({})
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
@@ -250,10 +279,12 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             return 0
         return len(get_locations_by_system_user(request.user).values_list('id', flat=True))
 
+
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
     model = SafetyVisit
     extra = 1
     classes = ['collapse']
+
 
 class SafetyReportInline(nested_admin.NestedTabularInline):
     model = SafetyReport
@@ -277,8 +308,87 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
 
             for l in locations:
-                initial.append({'building': str(l), 'safe_to_open': True})
+                initial.append({'service_provider': 1, 'building': str(l), 'safe_to_open': True})
         formset = super(SafetyReportInline, self).get_formset(request, obj, **kwargs)
+        formset.__init__ = curry(formset.__init__, initial=initial)
+        formset.request = request
+        return formset
+
+
+# @register(SafetyReport)
+# class SafetyReportAdmin(admin.ModelAdmin):
+#     # list_filter = (report_date, report_date)
+#     list_display = ['building', storm_name, report_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
+#
+#     def existing_work_order(self, obj):
+#         existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
+#         return existing_work_order
+#     existing_work_order.boolean = True
+
+
+# @register(ModifiablePrelimInvoice)
+# class ModifyPrelimInvoiceAdmin(admin.ModelAdmin):
+#     # list_filter = (report_date, report_date)
+#     list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__report_date', 'failed_service']
+#     list_editable = ['building', 'last_service_date', 'num_plows', 'num_salts', 'failed_service']
+#     list_display = ['id', 'building', service_provider, storm_name, report_date, 'last_service_date',
+#                     'num_plows', 'num_salts', 'failed_service']
+
+
+#
+#
+class DiscrepancyReportAdmin(SuperuserModelAdmin):
+    list_display = ['work_order', 'author', 'message']
+
+
+#
+#
+# @register(Invoice)
+# class InvoiceAdmin(SuperuserModelAdmin):
+#     list_display = ['vendor', 'remission_address']
+
+
+class VendorSafetyLineItemForm(ModelForm):
+    class Meta:
+        model = LineItem
+        fields = ['building', 'inspection_date', 'safe_to_open', 'service_provided', 'safety_concerns',
+                  'haul_stack_status', 'haul_stack_estimate']
+
+    def save(self, commit=True):
+        m = super(VendorSafetyLineItemForm, self).save(commit=False)
+        v = Vendor.objects.get(id=1)
+        m.service_provider = v
+        commit = True
+        if commit:
+            m.save()
+        return m
+
+
+class VendorSafetyReportInline(nested_admin.NestedTabularInline):
+    model = LineItem
+    form = VendorSafetyLineItemForm
+    formset = SRFormSet
+
+    # inlines = [SafetyVisitProxyInline]
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Pre-populating formset using GET params
+        """
+        initial = []
+        if request.method == "GET":
+            #
+            # Populate initial based on request
+            #
+            if request.user.is_superuser and obj:
+                locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
+            else:
+                vend = Vendor.objects.get(system_user=request.user)
+                locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
+
+            for l in locations:
+                initial.append({'service_provider': 1, 'building': str(l), 'safe_to_open': True})
+        formset = super(VendorSafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
         return formset
@@ -325,235 +435,246 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             print(e)
 
 
-@register(InvoiceProxyVendor)
-class InvoiceAdmin(nested_admin.NestedModelAdmin):
-    exclude=['remission_address', 'address_info_storage']
-    list_display=['reports', 'status']
-    inlines = [SafetyReportInline]
-    readonly_fields = []
+class VendorSafetyReportForm(ModelForm):
+    class Meta:
+        model = VendorSafetyReport
+        fields = ['service_provider', 'storm_name', 'storm_date', 'status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['service_provider'].initial = 2
+        self.fields['service_provider'].disabled = True
+        # self.fields['status'].widget.attrs.update({'disabled': 'disabled'})
+
+    def save(self, commit=True):
+        m = super(VendorSafetyReportForm, self).save(commit=False)
+        print(self)
+        print(m)
+        m.status = 'safety_report_initial'
+        if commit:
+            m.save()
+        return m
+
+
+class VendorSafetyReportManager(nested_admin.NestedModelAdmin):
+    exclude = ['remission_address', 'address_info_storage']
+    list_display = ['reports', 'status', 'marked_safe']
+    inlines = [VendorSafetyReportInline]
+    readonly_fields = ['status']
     limited_manytomany_fields = {}
-    actions=['finalize_safety_report']
+    actions = ['finalize_safety_report']
+    form = VendorSafetyReportForm
 
     change_list_template = "admin/provider/safety_report_changelist.html"
 
+    def save_model(self, request, obj, form, change):
+        obj.service_provider = Vendor.objects.get(id=2)
+        super(VendorSafetyReportManager, self).save_model(request, obj, form, change)
+
     def get_queryset(self, request):
-        qs = super(InvoiceAdmin, self).get_queryset(request)
-        prelim = VendorSafetyProxy.objects.filter(status__in=['not_created', 'safety_report'],
-                                          service_provider__system_user=request.user)
+        qs = super(VendorSafetyReportManager, self).get_queryset(request)
+        prelim = VendorSafetyReport.objects.filter(status__in=['not_created', 'safety_report_initial', 'safety_report'],
+                                                   service_provider__system_user=request.user)
         return prelim
+
+    def marked_safe(self, obj):
+        lines = obj.lineitem_set.all()
+        total_lines = lines.count()
+        marked_safe = lines.filter(safe_to_open=True).count()
+        return "{0}/{1}".format(marked_safe, total_lines)
+
+    def get_changeform_initial_data(self, request):
+        return {'service_provider': '2'}
 
     def reports(self, obj):
         return obj
 
     def get_urls(self):
-        urls = super(InvoiceAdmin, self).get_urls()
+        urls = super(VendorSafetyReportManager, self).get_urls()
         my_urls = [
             url('finalize_safety_report/', self.finalize_safety_report),
         ]
         return my_urls + urls
 
     def finalize_safety_report(self, request, queryset):
-        rows_updated = queryset.update(status='preliminary_created')
-        return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
+        rows_updated = queryset.update(status='safety_report_complete')
+        return HttpResponseRedirect("/provider/invoices/vendorworkorder/")
 
     finalize_safety_report.short_description = "Generate Closeout Report"
 
 
+class VendorWorkOrderInlineForm(ModelForm):
+    class Meta:
+        model = LineItem
+        fields = ['work_order_code', 'building', 'work_visit_date', 'service_time', 'num_plows', 'num_salts']
+        readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
 
-class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelAdmin):
-    resource_class = VendorInvoiceProxyResource
-    exclude=['remission_address', 'address_info_storage']
-    list_display=['invoices', 'status']
-    inlines = [WorkOrderInline]
-    limited_manytomany_fields = {}
+    def get_fields(self, request, obj=None):
+        fields = super(WorkOrderInline, self).get_fields(request, obj)
+        # rate_fields = fields[11:16]
+        new_fields = fields[5:11]
+        return new_fields
 
-    def get_queryset(self, request):
-        qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        prelim = VendorInvoiceProxy.objects.filter(status__in=['preliminary_created', 'submitted'],
-                                          service_provider__system_user=request.user)
-        return prelim
+    def deice_rate(self, obj):
+        return obj.building.deice_rate
 
-    actions=['finalize_submit_invoice']
+    def deice_tax(self, obj):
+        return obj.building.deice_tax
+
+    def plow_rate(self, obj):
+        return obj.building.plow_rate
+
+    def plow_tax(self, obj):
+        return obj.building.plow_tax
+
+    def subtotal(self, obj):
+        return '${0}'.format(float(obj.aggregate_invoiced_plow_cost) + float(obj.aggregate_invoiced_salt_cost))
+
+    def save(self, commit=True):
+        m = super(VendorWorkOrderInlineForm, self).save(commit=False)
+        v = Vendor.objects.get(id=2)
+        m.service_provider = v
+        commit = True
+        if commit:
+            m.save()
+        return m
+
+
+class VendorWorkOrderInline(nested_admin.NestedTabularInline):
+    model = LineItem
+    form = VendorWorkOrderInlineForm
+    formset = WOFormSet
+
+    # inlines = [SafetyVisitProxyInline]
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Pre-populating formset using GET params
+        """
+        if request.method == "GET":
+
+            if request.user.is_superuser and obj:
+                locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
+            else:
+                vend = Vendor.objects.get(system_user=request.user)
+                locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
+
+            pass
+        if request.method == "POST":
+            pass
+        formset = super(VendorWorkOrderInline, self).get_formset(request, obj, **kwargs)
+        # formset.__init__ = curry(formset.__init__, initial=initial)
+        formset.request = request
+        return formset
+
+    def get_extra(self, request, obj=None, **kwargs):
+        """Dynamically sets the number of extra forms. 0 if the related object
+        already exists or the extra configuration otherwise."""
+        if obj:
+            return 0
+        # return len(get_locations_by_system_user(request.user).values_list('id', flat=True))
+        return 0
+
+    def save_formset(self, request, form, formset, change):
+        try:
+            instances = formset.save(commit=False)
+            print(formset.errors)
+            print(form.errors)
+            safe = []
+            for inst in instances:
+                if inst.safe_to_open:
+                    safe.append(inst)
+            not_safe = instances.exclude(safe).values_list('name', flat=True)
+            not_safe_count = not_safe.count()
+            send_to = instances[0].building.facility_manager.email
+            if not_safe == 0:
+                message_bit = "All buildings safe to open"
+            else:
+                message_bit = "%s buildings not safe to open" % not_safe_count
+            self.message_user(request, "%s successfully generated." % message_bit)
+
+            sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
+            from_email = Email(settings.DEFAULT_FROM_EMAIL)
+            to_email = Email(send_to)
+            subject = "Closeout Report Generated"
+            content = Content("text/plain", "Closeout report generated: {0}".format(
+                'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', 'temp'))
+            mail = Mail(from_email, subject, to_email, content)
+
+            for instance in instances:
+                instance.save()
+            formset.save_m2m()
+
+        except Exception as e:
+            print(e)
+
+
+class VendorWorkOrderForm(ModelForm):
+    class Meta:
+        model = VendorWorkOrder
+        fields = ['service_provider', 'storm_name', 'storm_date', 'status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['service_provider'].disabled = True
+
+    def save(self, commit=True):
+        m = super(VendorWorkOrderForm, self).save(commit=False)
+        v = Vendor.objects.get(id=2)
+        m.service_provider = v
+        m.save()
+        return m
+
+
+class VendorWorkOrderManager(nested_admin.NestedModelAdmin):
+    exclude = ['remission_address', 'address_info_storage']
+    list_display = ['reports', 'status']
+    inlines = [VendorWorkOrderInline]
+    readonly_fields = ['status']
+    actions = ['rollup_invoices', 'submit_invoices']
+    form = VendorWorkOrderForm
 
     change_list_template = "admin/provider/safety_report_changelist.html"
 
-    def invoices(self, obj):
+    def get_queryset(self, request):
+        qs = super(VendorWorkOrderManager, self).get_queryset(request)
+        prelim = VendorWorkOrder.objects.filter(status__in=['safety_report_complete',
+                                                            'preliminary_created',
+                                                            'submitted',
+                                                            'reviewed',
+                                                            'dispute',
+                                                            'finalized'],
+                                                service_provider__system_user=request.user)
+        return prelim
+
+    def reports(self, obj):
         return obj
 
     def get_urls(self):
-        urls = super(PrelimInvoiceAdmin, self).get_urls()
+        urls = super(VendorWorkOrderManager, self).get_urls()
         my_urls = [
-            url('finalize_submit_invoice/', self.finalize_submit_invoice),
+            url('merge_invoices/', self.rollup_invoices),
+            url('submit_invoices/', self.submit_invoices),
         ]
         return my_urls + urls
 
-    def finalize_submit_invoice(self, request, queryset):
-        rows_updated = queryset.update(status='submitted')
-        if rows_updated == 1:
-            message_bit = "1 invoice was"
-        else:
-            message_bit = "%s invoices were" % rows_updated
-        self.message_user(request, "%s submitted successfully." % message_bit)
-
-        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
-        from_email = Email(settings.DEFAULT_FROM_EMAIL)
-        to_email = Email("harisbeha@gmail.com")
-        subject = "Invoice Submitted"
-        invoice_id = queryset[0].id
-        content = Content("text/plain", "Invoice #{0} submitted: {1}{2}".format(invoice_id, 'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
-        mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body=mail.get())
-        # #print(response)
+    def rollup_invoices(self, request, queryset):
+        import pdb; pdb.set_trace()
+        from itertools import chain
+        combined_list = []
+        for inv in queryset:
+            combined_list = list(chain(combined_list, inv.lineitem_set.all()))
+        first = queryset.first()
+        remove = queryset.exclude(id=first.id)
+        first.lineitem_set.set(combined_list)
+        remove.delete()
+        rows_updated = queryset.update(status='preliminary_created')
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
-    finalize_submit_invoice.short_description = "Finalize and submit invoice"
+    rollup_invoices.short_description = "Generate Closeout Report"
 
+    def submit_invoices(self, request, queryset):
+        rows_updated = queryset.update(status='submitted')
+        return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
 
-# @register(Invoice)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = Invoice
-#     list_display = ['storm_name','report_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [SafetyReportInline]
-
-
-# @register(InvoiceProxyVendor)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = InvoiceProxyVendor
-#     list_display = ['storm_name','report_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [SafetyReportInline]
-#     # change_form_template = 'admin/invoice_admin.html'
-
-
-# @register(InvoiceProxyPrelim)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = InvoiceProxyPrelim
-#     list_display = ['storm_name','report_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [WorkOrderInline]
-#     change_form_template = 'admin/invoice_admin.html'
-
-
-# @register(InvoiceProxyForecast)
-# class InvoiceForecastAdmin(admin.ModelAdmin):
-#
-#     pass
-
-class ServiceForecast(admin.ModelAdmin):
-    model = WorkProxyServiceForecast
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__report_date')
-    list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
-                    plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_plows, deicing_fee, plow_fee, storm_total]
-
-
-class DiscrepancyReview(admin.ModelAdmin):
-    model = WorkProxyServiceDiscrepancy
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__report_date')
-    list_display = [work_order, invoice, service_provider, location, deicing_rate, deicing_tax, plow_rate,
-                    plow_tax, snowfall, storm_days, refreeze,
-                    number_salts, number_salts_predicted, 'salt_delta', number_plows, number_plows_predicted,
-                    'push_delta', 'deice_cost_delta', 'plow_cost_delta']
-
-
-    def salt_delta(self, obj):
-        try:
-            # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
-        except Exception as e:
-            return ''
-
-    salt_delta.allow_tags = True
-
-    def push_delta(self, obj):
-        try:
-            # pred = self.num_plows - 1
-            pred = 1
-            return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(pred)
-        except Exception as e:
-            return ''
-
-    push_delta.allow_tags = True
-
-    def deice_cost_delta(self, obj):
-        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$129.10')
-
-    deice_cost_delta.allow_tags = True
-
-    def plow_cost_delta(self, obj):
-        return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format('$199.10')
-
-    plow_cost_delta.allow_tags = True
-
-
-class BuildingAdmin(SuperuserModelAdmin):
-    list_display = ['address', 'type']
-
-#
-#
-@register(RegionalAdmin)
-class RegionalManagerAdmin(SuperuserModelAdmin):
-    list_display = ['name', 'system_user']
-#
-#
-# @register(VendorSettings)
-# class VendorSettingsAdmin(SuperuserModelAdmin):
-#     list_display = ['const_a', 'const_b', 'vendor']
-#
-#
-@register(Vendor)
-class VendorAdmin(SuperuserModelAdmin):
-    list_display = ['name', 'address', 'system_user']
-#
-#
-# @register(WorkOrder)
-# class WorkOrderAdmin(SuperuserModelAdmin):
-#     list_display = ['vendor', 'invoice', 'building', 'storm_name']
-#     raw_id_fields = ("building",)
-#
-#
-# @register(WorkVisit)
-# class WorkVisitAdmin(SuperuserModelAdmin):
-#     list_display = ['work_order', 'response_time_start', 'response_time_end']
-#
-#
-
-
-def report_date(obj):
-    return obj.invoice.storm_date
-
-
-def storm_name(obj):
-    return obj.invoice.storm_name
-
-# @register(SafetyReport)
-# class SafetyReportAdmin(admin.ModelAdmin):
-#     # list_filter = (report_date, report_date)
-#     list_display = ['building', storm_name, report_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
-#
-#     def existing_work_order(self, obj):
-#         existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
-#         return existing_work_order
-#     existing_work_order.boolean = True
-
-
-# @register(ModifiablePrelimInvoice)
-# class ModifyPrelimInvoiceAdmin(admin.ModelAdmin):
-#     # list_filter = (report_date, report_date)
-#     list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__report_date', 'failed_service']
-#     list_editable = ['building', 'last_service_date', 'num_plows', 'num_salts', 'failed_service']
-#     list_display = ['id', 'building', service_provider, storm_name, report_date, 'last_service_date',
-#                     'num_plows', 'num_salts', 'failed_service']
-
-
-#
-#
-class DiscrepancyReportAdmin(SuperuserModelAdmin):
-    list_display = ['work_order', 'author', 'message']
-#
-#
-# @register(Invoice)
-# class InvoiceAdmin(SuperuserModelAdmin):
-#     list_display = ['vendor', 'remission_address']
+    submit_invoices.short_description = "Submit Invoices"
