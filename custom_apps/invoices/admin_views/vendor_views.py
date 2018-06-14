@@ -386,8 +386,8 @@ class VendorSafetyReportInline(nested_admin.NestedTabularInline):
                 vend = Vendor.objects.get(system_user=request.user)
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
 
-            for l in locations:
-                initial.append({'service_provider': 1, 'building': str(l), 'safe_to_open': True})
+            # for l in locations:
+            #     initial.append({'service_provider': 1, 'building': str(l), 'safe_to_open': True})
         formset = super(VendorSafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
@@ -441,7 +441,7 @@ class VendorSafetyReportForm(ModelForm):
         fields = ['service_provider', 'storm_name', 'storm_date', 'status']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(VendorSafetyReportForm, self).__init__(*args, **kwargs)
         self.fields['service_provider'].initial = 2
         self.fields['service_provider'].disabled = True
         # self.fields['status'].widget.attrs.update({'disabled': 'disabled'})
@@ -615,7 +615,7 @@ class VendorWorkOrderForm(ModelForm):
         fields = ['service_provider', 'storm_name', 'storm_date', 'status']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(VendorWorkOrderForm, self).__init__(*args, **kwargs)
         self.fields['service_provider'].disabled = True
 
     def save(self, commit=True):
