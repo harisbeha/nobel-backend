@@ -388,13 +388,23 @@ class LineItem(BaseModel):
     discrepancy_status = models.CharField('Discrepancy Status', max_length=255, blank=True, null=True)
 
 
-    @property
+    @cached_property
     def has_ice(self):
         try:
             has_ice = _query_accumulation_data(self.building.zip_code,
                                                settings.DEMO_SNOWFALL_DATA_START,
                                                settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            return has_ice if has_ice else 0
+            return 1 if has_ice else 0
+        except Exception as e:
+            return 0
+
+    @cached_property
+    def refreeze(self):
+        try:
+            has_ice = _query_accumulation_data(self.building.zip_code,
+                                               settings.DEMO_SNOWFALL_DATA_START,
+                                               settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+            return 1 if has_ice else 0
         except Exception as e:
             return 0
 
@@ -409,7 +419,7 @@ class LineItem(BaseModel):
             return 0
 
     @cached_property
-    def predicted_plows(self):
+    def predicted_number_plows(self):
         try:
             snowfall = int(self.snowfall)
             predicted = int(snowfall) / 2
@@ -418,14 +428,37 @@ class LineItem(BaseModel):
             return 0
 
     @cached_property
-    def predicted_salts(self):
+    def predicted_number_salts(self):
         try:
             refreeze = self.has_ice
-            predicted = 2 if refreeze else 2
+            predicted = 2 if refreeze else 0
             return predicted
         except Exception as e:
             return 0
 
+    @cached_property
+    def predicted_salt_cost(self):
+        try:
+            return (int(self.predicted_number_salts) * int(self.building.deice_rate)) + \
+                   int(self.building.deice_tax * self.predicted_number_salts)
+        except Exception as e:
+            return 0
+
+    @cached_property
+    def predicted_plow_cost(self):
+        try:
+            return (int(self.predicted_number_plows) * int(self.building.plow_rate)) + \
+                   int(self.building.plow_tax * self.predicted_number_plows)
+        except Exception as e:
+            print(e)
+            return 0
+
+    @cached_property
+    def storm_total(self):
+        try:
+            return float(self.predicted_salt_cost) + float(self.predicted_plow_cost)
+        except Exception as e:
+            return 0
 
 
 
@@ -779,3 +812,36 @@ class VendorWorkOrder(ExtendedInvoice):
             return str_repr
         except:
             return 'Invoice #{0}'.format(self.id)
+
+
+class NWAForecast(ExtendedInvoice):
+    class Meta(ExtendedInvoice.Meta):
+        proxy = True
+        verbose_name = 'Service Forecast'
+
+    def __str__(self):
+        try:
+            if self.status not in ['not_created', 'safety_report_initial', 'safety_report_complete']:
+                str_repr = 'Preliminary invoice for {1} to {2}'.format(self.id, self.lineitem_set.first().last_service_date, self.lineitem_set.last().last_service_date)
+            else:
+                str_repr = 'Invoice for {1} to {2}'.format(self.id, self.lineitem_set.first().last_service_date, self.lineitem_set.last().last_service_date)
+            return str_repr
+        except:
+            return 'Invoice #{0}'.format(self.id)
+
+
+class NWAForecastItem(LineItem):
+    class Meta(LineItem.Meta):
+        proxy = True
+        verbose_name = 'Invoice Line Item'
+
+        def __str__(self):
+            return 'ID:{0} for Invoice {1}'.format(self.id, self.invoice_id)
+
+class NWADiscrepancyItem(LineItem):
+    class Meta(LineItem.Meta):
+        proxy = True
+        verbose_name = 'Invoice Line Item'
+
+        def __str__(self):
+            return 'ID:{0} for Invoice {1}'.format(self.id, self.invoice_id)

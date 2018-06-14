@@ -31,7 +31,7 @@ def total_salts(self, obj=None):
     return 2
 
 def invoice(self, obj=None):
-    return self.invoice
+    return self
 
 def vendor(self, obj=None):
     return self.service_provider
@@ -333,11 +333,19 @@ class PrelimInvoiceAdmin(admin.ModelAdmin):
 #     pass
 
 class ServiceForecast(admin.ModelAdmin):
-    model = WorkProxyServiceForecast
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
-    list_display = [work_order, invoice, service_provider, location, 'deicing_rate', 'deicing_tax', 'plow_rate',
-                    plow_tax, snowfall, storm_days, refreeze,
+    model = NWAForecast
+    list_filter = ('id', 'storm_name', 'storm_date')
+    list_display = ['show_id_url', service_provider, 'snowfall', 'storm_days', 'refreeze',
                     'number_salts', 'number_plows', 'deice_cost', 'plow_cost', 'storm_total']
+
+    def show_id_url(self, obj):
+        return '<a href="/nwa/invoices/nwaforecastitem/?invoice__id=44?invoice__id={0}">View #{1}</a>'.format(obj.id, obj.id)
+
+    show_id_url.allow_tags = True
+    show_id_url.short_description = 'View'
+
+    def obj_id(self, obj):
+        return str(obj.id)
 
     def deicing_rate(self, obj):
         return obj.building.deice_rate
@@ -348,6 +356,14 @@ class ServiceForecast(admin.ModelAdmin):
     def deicing_tax(self, obj):
         return obj.building.deice_tax
 
+    def snowfall(self, obj):
+        return 999
+
+    def refreeze(self, obj):
+        return 999
+
+    def storm_days(self, obj):
+        return 999
 
     def plow_tax(self, obj):
         return obj.building.plow_tax
@@ -614,3 +630,31 @@ def storm_name(obj):
 # @register(Invoice)
 # class InvoiceAdmin(SuperuserModelAdmin):
 #     list_display = ['vendor', 'remission_address']
+
+
+
+
+class NWAForecastItemManager(admin.ModelAdmin):
+    model = NWAForecastItem
+    list_filter = ('invoice__id', 'invoice__storm_name', 'inspection_date')
+    list_display = [invoice, service_provider, 'snowfall', 'refreeze',
+                    'predicted_number_salts', 'predicted_number_plows', 'predicted_salt_cost', 'predicted_plow_cost', 'storm_total']
+
+
+    def get_queryset(self, request):
+        qs = super(NWAForecastItemManager, self).get_queryset(request)
+        return qs.filter(service_provided=True)
+
+
+class NWADiscrepancyItemManager(admin.ModelAdmin):
+    model = NWADiscrepancyItem
+    list_filter = ('invoice__id', 'invoice__storm_name', 'inspection_date')
+    list_display = [invoice, service_provider, 'snowfall', 'refreeze',
+                    'predicted_number_salts', 'predicted_number_plows', 'predicted_salt_cost',
+                    'predicted_plow_cost', 'storm_total']
+
+    def get_queryset(self, request):
+        qs = super(NWADiscrepancyItemManager, self).get_queryset(request)
+        filtered = qs.exclude(number_plows=0,number_salts=0)
+        return filtered
+

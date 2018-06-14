@@ -18,7 +18,7 @@ from custom_apps.utils.admin_utils import generate_field_getter
 from custom_apps.utils.fields import AddressMetadataStorageMixin
 from custom_apps.utils.forecast import forecast
 from .enums import ReportState
-from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings, VendorSafetyReport, VendorWorkOrder, Vendor
+from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings, VendorSafetyReport, VendorWorkOrder, Vendor, NWAForecast, NWADiscrepancyItem
 from django.contrib.admin import AdminSite
 from .models import *
 from thirdparty.adminactions import actions as actions
@@ -64,9 +64,13 @@ from custom_apps.invoices.admin_views import nwa_views, vendor_views, cbre_views
 
 
 nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)
-nwa_site.register(NWAServiceForecast, nwa_views.ServiceForecast)
+nwa_site.register(NWAForecast, nwa_views.ServiceForecast)
 nwa_site.register(NWAServiceDiscrepancy, nwa_views.DiscrepancyReview)
 nwa_site.register(NWASubmittedInvoiceProxy, nwa_views.NWASubmittedInvoiceAdmin)
+
+
+nwa_site.register(NWAForecastItem, nwa_views.NWAForecastItemManager)
+nwa_site.register(NWADiscrepancyItem, nwa_views.NWADiscrepancyItemManager)
 
 cbre_site.register(CBRESafetyProxy, cbre_views.InvoiceAdmin)
 cbre_site.register(CBREInvoiceProxy, cbre_views.PrelimInvoiceAdmin)
