@@ -357,13 +357,13 @@ class ServiceForecast(admin.ModelAdmin):
         return obj.building.deice_tax
 
     def snowfall(self, obj):
-        return 999
+        return obj.aggregate_snowfall
 
     def refreeze(self, obj):
-        return 999
+        return 0
 
     def storm_days(self, obj):
-        return 999
+        return len(set(obj.lineitem_set.filter(service_provided=True).values_list('safe_to_open', flat=True)))
 
     def plow_tax(self, obj):
         return obj.building.plow_tax

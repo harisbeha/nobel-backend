@@ -833,7 +833,7 @@ class NWAForecast(ExtendedInvoice):
 class NWAForecastItem(LineItem):
     class Meta(LineItem.Meta):
         proxy = True
-        verbose_name = 'Invoice Line Item'
+        verbose_name = 'Forecast Line Item (HIDE ME)'
 
         def __str__(self):
             return 'ID:{0} for Invoice {1}'.format(self.id, self.invoice_id)
@@ -841,7 +841,7 @@ class NWAForecastItem(LineItem):
 class NWADiscrepancyItem(LineItem):
     class Meta(LineItem.Meta):
         proxy = True
-        verbose_name = 'Invoice Line Item'
+        verbose_name = 'Discrepancy Line Item (HIDE ME)'
 
         def __str__(self):
             return 'ID:{0} for Invoice {1}'.format(self.id, self.invoice_id)
