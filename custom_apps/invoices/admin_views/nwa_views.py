@@ -404,7 +404,7 @@ class DiscrepancyReview(admin.ModelAdmin):
     model = NWAServiceDiscrepancy
     list_filter = ('id', 'storm_name', 'storm_date')
     list_display = ['show_id_url', service_provider, 'snowfall', storm_days, refreeze,
-                    'number_salts', 'number_salts_predicted', 'salt_delta', 'number_plows', 'number_plows_predicted',
+                    'number_salts', 'number_salts', 'salt_delta', 'number_plows', 'number_plows',
                     'push_delta', 'deice_cost_delta', 'plow_cost_delta']
 
     generated_discrept_dict = {}
@@ -483,21 +483,9 @@ class DiscrepancyReview(admin.ModelAdmin):
     def number_plows(self, obj):
         return obj.aggregate_invoiced_plows
 
-    def number_salts_predicted(self, obj):
-        import random
-        random_salts = random.choice([0,1,1,3,2,1,2,1,2])
-        random_plows = random.choice([0,2,1,1,2,1,2,1,2])
-        self.generated_discrept_dict = {'num_salts_pred': random_salts, 'num_plows_pred': random_plows}
-        return random_salts
-        # return obj.aggregate_predicted_salts
-
-    def number_plows_predicted(self, obj):
-        return self.generated_discrept_dict['num_plows_pred']
-        # return obj.aggregate_predicted_plows
-
     def snowfall(self, obj):
         import random
-        snowfall = random.choice([0,1,1,3,2,1,2,1,2])
+        snowfall = obj.aggregate_snowfall
         return snowfall
 
     def salt_delta(self, obj):
@@ -559,6 +547,53 @@ class DiscrepancyReview(admin.ModelAdmin):
             return 0
 
     plow_cost_delta.allow_tags = True
+
+
+    def show_id_url(self, obj):
+        return '<a href="/nwa/invoices/nwaforecastitem/?invoice__id=44?invoice__id={0}">View #{1}</a>'.format(obj.id, obj.id)
+
+    show_id_url.allow_tags = True
+    show_id_url.short_description = 'View'
+
+    def obj_id(self, obj):
+        return str(obj.id)
+
+    def deicing_rate(self, obj):
+        return obj.building.deice_rate
+
+    def plow_rate(self, obj):
+        return obj.building.plow_rate
+
+    def deicing_tax(self, obj):
+        return obj.building.deice_tax
+
+    def snowfall(self, obj):
+        return obj.aggregate_snowfall
+
+    def refreeze(self, obj):
+        return 0
+
+    def storm_days(self, obj):
+        return len(set(obj.lineitem_set.filter(service_provided=True).values_list('safe_to_open', flat=True)))
+
+    def plow_tax(self, obj):
+        return obj.building.plow_tax
+
+    def plow_cost(self, obj):
+        return float(obj.aggregate_invoiced_plow_cost)
+
+    def deice_cost(self, obj):
+        return float(obj.aggregate_invoiced_salt_cost)
+
+    def number_salts(self, obj):
+        return obj.aggregate_invoiced_salts
+
+    def number_plows(self, obj):
+        return obj.aggregate_invoiced_plows
+
+    def storm_total(self, obj):
+        total = float(obj.aggregate_invoiced_salt_cost) + float(obj.aggregate_invoiced_plow_cost)
+        return total
 
 
 class NWABuildingAdmin(SuperuserModelAdmin):
@@ -655,6 +690,6 @@ class NWADiscrepancyItemManager(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(NWADiscrepancyItemManager, self).get_queryset(request)
-        filtered = qs.exclude(number_plows=0,number_salts=0)
+        filtered = qs.exclude(num_plows=0,num_salts=0)
         return filtered
 
