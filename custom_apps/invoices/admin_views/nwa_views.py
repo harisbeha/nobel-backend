@@ -339,7 +339,7 @@ class ServiceForecast(admin.ModelAdmin):
                     'number_salts', 'number_plows', 'deice_cost', 'plow_cost', 'storm_total']
 
     def show_id_url(self, obj):
-        return '<a href="/nwa/invoices/nwaforecastitem/?invoice__id=44?invoice__id={0}">View #{1}</a>'.format(obj.id, obj.id)
+        return '<a href="/nwa/invoices/nwaforecastitem/?invoice__id={0}">View #{1}</a>'.format(obj.id, obj.id)
 
     show_id_url.allow_tags = True
     show_id_url.short_description = 'View'
@@ -550,7 +550,7 @@ class DiscrepancyReview(admin.ModelAdmin):
 
 
     def show_id_url(self, obj):
-        return '<a href="/nwa/invoices/nwaforecastitem/?invoice__id=44?invoice__id={0}">View #{1}</a>'.format(obj.id, obj.id)
+        return '<a href="/nwa/invoices/nwaforecastitem/?invoice__id=44?">View #{1}</a>'.format(obj.id, obj.id)
 
     show_id_url.allow_tags = True
     show_id_url.short_description = 'View'
