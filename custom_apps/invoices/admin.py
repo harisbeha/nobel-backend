@@ -18,7 +18,7 @@ from custom_apps.utils.admin_utils import generate_field_getter
 from custom_apps.utils.fields import AddressMetadataStorageMixin
 from custom_apps.utils.forecast import forecast
 from .enums import ReportState
-from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings, VendorSafetyReport, VendorWorkOrder
+from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorSettings, VendorSafetyReport, VendorWorkOrder, Vendor
 from django.contrib.admin import AdminSite
 from .models import *
 from thirdparty.adminactions import actions as actions
@@ -27,6 +27,7 @@ from thirdparty.adminactions import actions as actions
 
 from .admin_views.superuser_views import ServiceForecast, DiscrepancyReview, WorkProxyServiceForecast, WorkProxyServiceDiscrepancy
 
+admin.site.register(Vendor)
 admin.site.register(WorkProxyServiceForecast, ServiceForecast)
 admin.site.register(WorkProxyServiceDiscrepancy, DiscrepancyReview)
 
