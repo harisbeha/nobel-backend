@@ -303,3 +303,16 @@ REST_FRAMEWORK = {
 HIJACK_ALLOW_GET_REQUESTS = True
 HIJACK_USE_BOOTSTRAP = True
 DEBUG = False
+PROD = True
+if PROD:
+    DATABASES = { 'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'nwadb',
+        'USER': 'nwadbadmin',
+        'PASSWORD': 'popsicles123',
+        'HOST': '/opt/bitnami/postgresql',
+        'PORT': '5432',
+        }
+    }
+
+    ALLOWED_HOSTS = ['*']
