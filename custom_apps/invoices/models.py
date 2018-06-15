@@ -8,7 +8,7 @@ from model_utils import FieldTracker
 from custom_apps.invoices.enums import *
 from custom_apps.utils.fields import AddressField, DollarsField, AddressMetadataStorageMixin
 from ..utils.models import BaseModel
-from custom_apps.data_ingestion.bq import query_for_accumulation_zip, fetch_for_accumulation_zip
+from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_accumulation_data
 from django.conf import settings
 from django.contrib import admin
 from django.utils.functional import cached_property
@@ -260,7 +260,7 @@ class WorkOrder(BaseModel):
     @property
     def has_ice(self):
         try:
-            has_ice = fetch_for_accumulation_zip(self.building.zip_code,
+            has_ice = _query_accumulation_data(self.building.zip_code,
                                                settings.DEMO_SNOWFALL_DATA_START,
                                                settings.DEMO_SNOWFALL_DATA_END)['has_ice']
             return has_ice if has_ice else 0
@@ -270,7 +270,7 @@ class WorkOrder(BaseModel):
     @cached_property
     def snowfall(self):
         try:
-            snowfall = fetch_for_accumulation_zip(self.building.zip_code,
+            snowfall = _query_accumulation_data(self.building.zip_code,
                                                 settings.DEMO_SNOWFALL_DATA_START,
                                                 settings.DEMO_SNOWFALL_DATA_END)['snowfall']
             return snowfall if snowfall else 0
@@ -391,7 +391,7 @@ class LineItem(BaseModel):
     @cached_property
     def has_ice(self):
         try:
-            has_ice = fetch_for_accumulation_zip(self.building.zip_code,
+            has_ice = _query_accumulation_data(self.building.zip_code,
                                                settings.DEMO_SNOWFALL_DATA_START,
                                                settings.DEMO_SNOWFALL_DATA_END)['has_ice']
             return 1 if has_ice else 0
@@ -401,7 +401,7 @@ class LineItem(BaseModel):
     @cached_property
     def refreeze(self):
         try:
-            has_ice = fetch_for_accumulation_zip(self.building.zip_code,
+            has_ice = _query_accumulation_data(self.building.zip_code,
                                                settings.DEMO_SNOWFALL_DATA_START,
                                                settings.DEMO_SNOWFALL_DATA_END)['has_ice']
             return 1 if has_ice else 0
@@ -411,7 +411,7 @@ class LineItem(BaseModel):
     @cached_property
     def snowfall(self):
         try:
-            snowfall = fetch_for_accumulation_zip(self.building.zip_code,
+            snowfall = _query_accumulation_data(self.building.zip_code,
                                                 settings.DEMO_SNOWFALL_DATA_START,
                                                 settings.DEMO_SNOWFALL_DATA_END)['snowfall']
             return snowfall if snowfall else 0
