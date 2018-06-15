@@ -300,38 +300,6 @@ class PrelimInvoiceAdmin(admin.ModelAdmin):
                 if isinstance(f, models.ManyToManyField):
                     initial[k] = initial[k].split(",")
 
-
-# @register(Invoice)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = Invoice
-#     list_display = ['storm_name','storm_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [SafetyReportInline]
-
-
-# @register(InvoiceProxyVendor)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = InvoiceProxyVendor
-#     list_display = ['storm_name','storm_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [SafetyReportInline]
-#     # change_form_template = 'admin/invoice_admin.html'
-
-
-# @register(InvoiceProxyPrelim)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = InvoiceProxyPrelim
-#     list_display = ['storm_name','storm_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [WorkOrderInline]
-#     change_form_template = 'admin/invoice_admin.html'
-
-
-# @register(InvoiceProxyForecast)
-# class InvoiceForecastAdmin(admin.ModelAdmin):
-#
-#     pass
-
 class ServiceForecast(admin.ModelAdmin):
     model = NWAForecast
     list_filter = ('id', 'storm_name', 'storm_date')
