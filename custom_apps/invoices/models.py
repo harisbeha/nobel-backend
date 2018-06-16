@@ -391,9 +391,9 @@ class LineItem(BaseModel):
     @cached_property
     def has_ice(self):
         try:
-            has_ice = _query_accumulation_data(self.building.zip_code,
-                                               settings.DEMO_SNOWFALL_DATA_START,
-                                               settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+            start = self.invoice.lineitem_set().order_by('-created').first()
+            end = self.invoice.lineitem_set().order_by('-created').last()
+            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end)['has_ice']
             return 1 if has_ice else 0
         except Exception as e:
             return 0
@@ -401,9 +401,9 @@ class LineItem(BaseModel):
     @cached_property
     def refreeze(self):
         try:
-            has_ice = _query_accumulation_data(self.building.zip_code,
-                                               settings.DEMO_SNOWFALL_DATA_START,
-                                               settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+            start = self.invoice.lineitem_set().order_by('-created').first()
+            end = self.invoice.lineitem_set().order_by('-created').last()
+            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end)['has_ice']
             return 1 if has_ice else 0
         except Exception as e:
             return 0
@@ -411,9 +411,9 @@ class LineItem(BaseModel):
     @cached_property
     def snowfall(self):
         try:
-            snowfall = _query_accumulation_data(self.building.zip_code,
-                                                settings.DEMO_SNOWFALL_DATA_START,
-                                                settings.DEMO_SNOWFALL_DATA_END)['snowfall']
+            start = self.invoice.lineitem_set().order_by('-created').first()
+            end = self.invoice.lineitem_set().order_by('-created').last()
+            snowfall = query_for_accumulation_zip(self.building.zip_code, start, end)['snowfall']
             return snowfall if snowfall else 0
         except Exception as e:
             return 0

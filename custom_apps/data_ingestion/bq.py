@@ -71,8 +71,5 @@ def fetch_for_accumulation_zip(zipcode, start, end, work_order=None):
         r = _query_accumulation_data(zipcode, start, end)
         redis_client.set_key(cache_key, json.dumps(r))
         redis_client.del_key(fetch_key)
-    if work_order:
-        work_order.flag_weatherready = True
-        work_order.save()
 
 # print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))
