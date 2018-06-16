@@ -116,49 +116,49 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     @cached_property
     def aggregate_snowfall(self):
         predicted_values = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_values += int(work_order.snowfall)
         return predicted_values
 
     @cached_property
     def aggregate_predicted_salts(self):
         predicted_values = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_values += int(work_order.aggregate_predicted_salts)
         return predicted_values
 
     @cached_property
     def aggregate_predicted_plows(self):
         predicted_values = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_values += int(work_order.aggregate_predicted_plows)
         return predicted_values
 
     @cached_property
     def aggregate_predicted_plow_cost(self):
         predicted_cost = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_cost += int(work_order.aggregate_predicted_plow_cost)
         return predicted_cost
 
     @cached_property
     def aggregate_predicted_salt_cost(self):
         predicted_cost = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_cost += int(work_order.aggregate_predicted_salt_cost)
         return predicted_cost
 
     @cached_property
     def aggregate_invoiced_plows(self):
         predicted_values = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_values += int(work_order.aggregate_invoiced_plows)
         return predicted_values
 
     @cached_property
     def aggregate_invoiced_salts(self):
         predicted_values = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_values += int(work_order.aggregate_invoiced_salts)
         return predicted_values
 
@@ -166,7 +166,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     @cached_property
     def aggregate_invoiced_plow_cost(self):
         predicted_cost = 0
-        for work_order in self.workorder_set.all():
+        for work_order in self.lineitem_set.all():
             predicted_cost += int(work_order.aggregate_invoiced_plow_cost)
         return predicted_cost
 

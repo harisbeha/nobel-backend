@@ -301,14 +301,14 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             #
             # Populate initial based on request
             #
-            if request.user.is_superuser and obj:
+            if obj:
                 locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
+                vend = obj.service_provider.id
             else:
-                vend = Vendor.objects.get(system_user=request.user)
+                vend = Vendor.objects.get(system_user=request.user).id
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
-
             for l in locations:
-                initial.append({'service_provider': 1, 'building': str(l), 'safe_to_open': True})
+                initial.append({'service_provider': vend, 'building': str(l), 'safe_to_open': True})
         formset = super(SafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
@@ -354,10 +354,9 @@ class VendorSafetyLineItemForm(ModelForm):
         fields = ['building', 'inspection_date', 'safe_to_open', 'service_provided', 'safety_concerns',
                   'haul_stack_status', 'haul_stack_estimate']
 
-    def save(self, commit=True):
+    def save(self, commit=True, vendor_id=None):
         m = super(VendorSafetyLineItemForm, self).save(commit=False)
-        v = Vendor.objects.get(id=1)
-        m.service_provider = v
+        #v = Vendor.objects.get(id=vendor_id)
         commit = True
         if commit:
             m.save()
@@ -443,15 +442,15 @@ class VendorSafetyReportForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(VendorSafetyReportForm, self).__init__(*args, **kwargs)
-        self.fields['service_provider'].initial = 2
         self.fields['service_provider'].disabled = True
         # self.fields['status'].widget.attrs.update({'disabled': 'disabled'})
 
-    def save(self, commit=True):
+    def save(self, commit=True, vendor_id=None):
         m = super(VendorSafetyReportForm, self).save(commit=False)
         print(self)
         print(m)
         m.status = 'safety_report_initial'
+        # service_provider = Vendor.objects.get(id=vendor_id)
         if commit:
             m.save()
         return m
@@ -468,8 +467,14 @@ class VendorSafetyReportManager(nested_admin.NestedModelAdmin):
 
     change_list_template = "admin/provider/safety_report_changelist.html"
 
+    def get_form(self, request, obj=None, *args, **kwargs):
+        form = super(VendorSafetyReportManager, self).get_form(request, *args, **kwargs)
+        #find the user via user profile forien key
+        vendor = Vendor.objects.filter(system_user=request.user)
+        form.base_fields['service_provider'].initial = vendor 
+        return form
+
     def save_model(self, request, obj, form, change):
-        obj.service_provider = Vendor.objects.get(id=2)
         super(VendorSafetyReportManager, self).save_model(request, obj, form, change)
 
     def get_queryset(self, request):
@@ -485,7 +490,8 @@ class VendorSafetyReportManager(nested_admin.NestedModelAdmin):
         return "{0}/{1}".format(marked_safe, total_lines)
 
     def get_changeform_initial_data(self, request):
-        return {'service_provider': '2'}
+        v = Vendor.objects.filter(system_user=request.user)[0] 
+        return {'service_provider': v}
 
     def reports(self, obj):
         return obj
@@ -533,8 +539,9 @@ class VendorWorkOrderInlineForm(ModelForm):
 
     def save(self, commit=True):
         m = super(VendorWorkOrderInlineForm, self).save(commit=False)
-        v = Vendor.objects.get(id=2)
-        m.service_provider = v
+        #v = Vendor.objects.get(id=vendor_id)
+        #m.service_provider = v
+        
         commit = True
         if commit:
             m.save()
@@ -604,6 +611,9 @@ class VendorWorkOrderInline(nested_admin.NestedTabularInline):
 
             for instance in instances:
                 instance.save()
+            inv = instances.last().invoice
+            inv.status = 'preliminary_created'
+            inv.save()
             formset.save_m2m()
 
         except Exception as e:
@@ -619,10 +629,10 @@ class VendorWorkOrderForm(ModelForm):
         super(VendorWorkOrderForm, self).__init__(*args, **kwargs)
         self.fields['service_provider'].disabled = True
 
-    def save(self, commit=True):
+    def save(self, commit=True, vendor_id=None):
         m = super(VendorWorkOrderForm, self).save(commit=False)
-        v = Vendor.objects.get(id=2)
-        m.service_provider = v
+        #v = Vendor.objects.get(id=vendor_id)
+        # m.service_provider = v
         m.save()
         return m
 
@@ -669,12 +679,19 @@ class VendorWorkOrderManager(nested_admin.NestedModelAdmin):
         first.lineitem_set.set(combined_list)
         remove.delete()
         rows_updated = queryset.update(status='preliminary_created')
-        return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
+        return HttpResponseRedirect("/provider/invoices/vendorworkorder/")
 
     rollup_invoices.short_description = "Roll Up Invoices"
 
     def submit_invoices(self, request, queryset):
         rows_updated = queryset.update(status='submitted')
-        return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
+        return HttpResponseRedirect("/provider/invoices/vendorworkorder/")
 
     submit_invoices.short_description = "Submit Invoices"
+
+    def get_form(self, request, obj=None, *args, **kwargs):
+        form = super(VendorWorkOrderManager, self).get_form(request, *args, **kwargs)
+        #find the user via user profile forien key
+        vendor = Vendor.objects.filter(system_user=request.user)
+        form.base_fields['service_provider'].initial = vendor
+        return form
