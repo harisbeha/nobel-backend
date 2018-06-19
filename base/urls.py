@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^cbre/', cbre_site.urls),
     url(r'^provider/', vendor_site.urls),
     url(r'^admin/', include("massadmin.urls")),
+    url(r'^hijack/', include('hijack.urls')),
     url(r'^nested_admin/', include('nested_admin.urls')),
     url(r'^', include('favicon.urls')),
 ]

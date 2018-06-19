@@ -12,6 +12,7 @@ from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_acc
 from django.conf import settings
 from django.contrib import admin
 from django.utils.functional import cached_property
+from decimal import Decimal
 
 
 # An invoice (e.g. https://drive.google.com/file/d/1XWeqbQ-VRXV4C4zy6mOwv2Sasnwpv2WO/view) has multiple work orders
@@ -31,6 +32,12 @@ SERVICE_TIME_CHOICES = (
 PLOW_COUNT = (
     (0,0),
     (1,1),
+)
+
+SALT_COUNT = (
+    (0,0),
+    (1,1),
+    (2, 2),
 )
 
 INVOICE_STATUSES = (
@@ -102,6 +109,8 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     storm_name = models.CharField(max_length=255, null=True, blank=True)
     storm_date = models.DateField(verbose_name="Report Date", null=True, blank=True)
     status = models.CharField(max_length=255, choices=INVOICE_STATUSES, default='not_created', null=True, blank=True)
+    dispute_status = models.CharField(max_length=255, null=True, blank=True, default='')
+    weather_ready = models.BooleanField(default=False)
 
     verbose_name = 'Closeout Reports'
 
@@ -112,70 +121,161 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 
     #audit = AuditTrailWatcher()
 
-    @cached_property
+    @property
     def aggregate_snowfall(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
-            predicted_values += int(work_order.snowfall)
+            predicted_values += work_order.snowfall
         return predicted_values
 
-    @cached_property
+    @property
+    def aggregate_refreeze(self):
+        predicted_values = 0
+        for work_order in self.workorder_set.all():
+            predicted_values += work_order.snowfall
+        return predicted_values
+
+    @property
     def aggregate_predicted_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
-            predicted_values += int(work_order.aggregate_predicted_salts)
+            predicted_values += work_order.aggregate_predicted_salts
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_predicted_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
-            predicted_values += int(work_order.aggregate_predicted_plows)
+            predicted_values += work_order.aggregate_predicted_plows
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_predicted_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
-            predicted_cost += int(work_order.aggregate_predicted_plow_cost)
+            predicted_cost += work_order.aggregate_predicted_plow_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_predicted_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
-            predicted_cost += int(work_order.aggregate_predicted_salt_cost)
+            predicted_cost += work_order.aggregate_predicted_salt_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_invoiced_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
-            predicted_values += int(work_order.aggregate_invoiced_plows)
+            predicted_values += work_order.aggregate_invoiced_plows
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_invoiced_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
-            predicted_values += int(work_order.aggregate_invoiced_salts)
+            predicted_values += work_order.aggregate_invoiced_salts
         return predicted_values
 
 
-    @cached_property
+    @property
     def aggregate_invoiced_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
-            predicted_cost += int(work_order.aggregate_invoiced_plow_cost)
+            predicted_cost += work_order.aggregate_invoiced_plow_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_invoiced_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
-            predicted_cost += int(work_order.aggregate_predicted_salt_cost)
+            predicted_cost += work_order.aggregate_predicted_salt_cost
         return predicted_cost
 
+    @property
+    def aggregate_predicted_storm_total(self):
+        predicted_cost = self.aggregate_predicted_salt_cost + self.aggregate_predicted_plow_cost
+        return predicted_cost
+
+    @property
+    def aggregate_invoiced_storm_total(self):
+        predicted_cost = self.aggregate_invoiced_salt_cost + self.aggregate_invoiced_plow_cost
+        return predicted_cost
+
+    @property
+    def locations(self):
+        return self.workorder_set.count()
+
+    @property
+    def storm_days_forecast(self):
+        first_sr = self.safetyreport_set.all().first()
+        last_sr = self.safetyreport_set.all().last()
+        first = ''
+        last = ''
+        if first_sr:
+            first = first_sr.storm_days
+        if last_sr:
+            last = first_sr.storm_days
+        return '{0}'.format(first)
+
+    @property
+    def storm_days_invoiced(self):
+        first_sr = self.workorder_set.all().first()
+        last_sr = self.workorder_set.all().last()
+        first = ''
+        last = ''
+        if first_sr:
+            first = first_sr.storm_days
+        if last_sr:
+            last = first_sr.storm_days
+        return '{0}'.format(first)
+
+    @property
+    def total_cost_delta(self):
+        return self.aggregate_predicted_storm_total - self.aggregate_invoiced_storm_total
+
+    # @property
+    @property
+    def marked_safe_count(self):
+        return self.safetyreport_set.first().safetyvisit_set.filter(safe_to_open=True).count()
+
+    # @property
+    @property
+    def serviced_count(self):
+        return self.safetyreport_set.first().safetyvisit_set.filter(site_serviced=True).count()
+
+    # @property
+    @property
+    def total_safety_count(self):
+        return self.safetyreport_set.first().safetyvisit_set.count()
+
+    @property
+    def aggregate_plow_delta(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += work_order.plow_delta
+        return predicted_cost
+
+    @property
+    def aggregate_salt_delta(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += work_order.salt_delta
+        return predicted_cost
+
+    @property
+    def aggregate_plow_cost_delta(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += work_order.plow_cost_delta
+        return predicted_cost
+
+    @property
+    def aggregate_salt_cost_delta(self):
+        predicted_cost = 0
+        for work_order in self.workorder_set.all():
+            predicted_cost += work_order.salt_cost_delta
+        return predicted_cost
 
 # manager for the below relation
 class BuildingManager(models.Manager):
@@ -246,6 +346,7 @@ class WorkOrder(BaseModel):
 
     storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100, blank=True, null=True)
     last_service_date = models.DateField(help_text='Date of the last service', blank=True, null=True)
+    is_discrepant = models.BooleanField(default=False)
 
     tracker = FieldTracker()
     #audit = AuditTrailWatcher()
@@ -259,95 +360,155 @@ class WorkOrder(BaseModel):
     @property
     def has_ice(self):
         try:
-            has_ice = _query_accumulation_data(self.building.zip_code,
-                                               settings.DEMO_SNOWFALL_DATA_START,
-                                               settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            return has_ice if has_ice else 0
+            # has_ice = _query_accumulation_data(self.building.zip_code,
+            #                                    settings.DEMO_SNOWFALL_DATA_START,
+            #                                    settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+            # return has_ice if has_ice else 0
+            return Decimal(1)
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
     def snowfall(self):
         try:
-            snowfall = _query_accumulation_data(self.building.zip_code,
-                                                settings.DEMO_SNOWFALL_DATA_START,
-                                                settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-            return snowfall if snowfall else 0
+            # snowfall = _query_accumulation_data(self.building.zip_code,
+            #                                     settings.DEMO_SNOWFALL_DATA_START,
+            #                                     settings.DEMO_SNOWFALL_DATA_END)['snowfall']
+            # return snowfall if snowfall else 0
+            return Decimal(1)
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
     def aggregate_predicted_plows(self):
         try:
-            snowfall = int(self.snowfall)
-            predicted = int(snowfall) / 2
+            snowfall = self.snowfall
+            predicted = snowfall / 2
             return predicted
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
     def aggregate_predicted_salts(self):
         try:
             refreeze = self.has_ice
             predicted = 2 if refreeze else 2
             return predicted
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
     def aggregate_predicted_plow_cost(self):
         try:
-            snowfall = int(self.snowfall)
-            return (int(self.aggregate_predicted_plows) * int(self.building.plow_rate)) + int(self.building.plow_tax)
+            snowfall = self.snowfall
+            if snowfall:
+                return (self.aggregate_predicted_plows * self.building.plow_rate) + self.building.plow_tax
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
     def aggregate_predicted_salt_cost(self):
         try:
-            refreeze = int(self.has_ice)
+            refreeze = self.has_ice
             if refreeze:
-                return (int(self.aggregate_predicted_salts) * int(self.building.deice_rate)) + int(self.building.deice_tax)
+                return (self.aggregate_predicted_salts * self.building.deice_rate) + self.building.deice_tax
         except Exception as e:
+            print(e)
             return 0
 
 
-    @cached_property
+    @property
     def aggregate_invoiced_plows(self):
         try:
             invoiced_count = 0
             invoiced_values = self.workvisit_set.values_list('num_plows', flat=True)
             for item in invoiced_values:
-                invoiced_count += int(item)
+                invoiced_count += item
             return invoiced_count
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
     def aggregate_invoiced_salts(self):
         try:
-            snowfall = int(self.snowfall)
+            snowfall = self.snowfall
             invoiced_count = 0
             invoiced_values = self.workvisit_set.values_list('num_salts', flat=True)
             for item in invoiced_values:
-                invoiced_count += int(item)
+                invoiced_count += item
             return invoiced_count
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
+    def aggregate_predicted_storm_total(self):
+        return self.aggregate_predicted_plow_cost + self.aggregate_predicted_salt_cost
+
+    @property
+    def storm_days(self):
+        try:
+            return '2'
+        except:
+            return '2'
+
+    @property
+    def deice_rate(self):
+        return self.building.deice_rate
+
+    @property
+    def deice_tax(self):
+        return self.building.deice_tax
+
+    @property
+    def plow_rate(self):
+        return self.building.plow_rate
+
+    @property
+    def plow_tax(self):
+        return self.building.plow_tax
+
+    @property
+    def service_provider(self):
+        return self.building.service_provider
+
+    @property
     def aggregate_invoiced_plow_cost(self):
         try:
-            return (int(self.aggregate_invoiced_plows) * int(self.building.plow_rate)) + int(self.building.plow_tax)
+            return (Decimal(self.aggregate_invoiced_plows) * Decimal(self.building.plow_rate)) + Decimal(self.building.plow_tax)
         except Exception as e:
+            print(e)
             return 0
 
-    @cached_property
+    @property
     def aggregate_invoiced_salt_cost(self):
         try:
-            return (int(self.aggregate_invoiced_salts) * int(self.building.deice_rate)) + int(self.building.deice_tax)
+            return (Decimal(self.aggregate_invoiced_salts) * Decimal(self.building.deice_rate)) + Decimal(self.building.deice_tax)
         except Exception as e:
+            print(e)
             return 0
+
+    @property
+    def plow_delta(self):
+        return Decimal(self.aggregate_predicted_plows) - Decimal(self.aggregate_invoiced_plows)
+
+    @property
+    def salt_delta(self):
+        return Decimal(self.aggregate_predicted_salts) - Decimal(self.aggregate_invoiced_salts)
+
+    @property
+    def plow_cost_delta(self):
+        return Decimal(self.plow_delta) * self.building.plow_rate
+
+    @property
+    def salt_cost_delta(self):
+        return Decimal(self.salt_delta) * self.building.deice_rate
 
 
 # manager for the below relation
@@ -374,7 +535,7 @@ class WorkVisit(BaseModel):
     service_date = models.DateField(help_text='Date the service was performed', blank=True, null=True)
     service_time = models.CharField(help_text='Last time serviced', max_length=255, null=True, blank=True, choices=SERVICE_TIME_CHOICES)
     num_plows = models.IntegerField('# Plows', null=True, blank=True, default=0, choices=PLOW_COUNT)
-    num_salts = models.IntegerField('# Salts', null=True, blank=True, default=0, choices=PLOW_COUNT)
+    num_salts = models.IntegerField('# Salts', null=True, blank=True, default=0, choices=SALT_COUNT)
     failed_service = models.BooleanField('Service Failed?', default=False)
 
     #audit = AuditTrailWatcher()
@@ -387,11 +548,112 @@ class WorkVisit(BaseModel):
 class SafetyReport(BaseModel):
     invoice = models.ForeignKey('invoices.Invoice', null=True, blank=True)
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
+    inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True, default='2017-12-08')
+    site_serviced = models.BooleanField('Site Serviced?', default=True)
+    safe_to_open = models.BooleanField('Safe to open site?', default=True)
+    safety_concerns = models.CharField('Concerns/Extra Instructions', max_length=255, blank=True, null=True)
+    haul_stack_status = models.IntegerField('Snow hauling or stacking required?', choices=SnowStatus.choices(), default=0, null=True, blank=True)
+    haul_stack_estimate = DollarsField('Cost estimate for future snow hauling or stacking', default=0, null=True, blank=True)
 
     #audit = AuditTrailWatcher()
 
     def __str__(self):
         return 'Safety Report #{0} for'.format(self.id)
+
+    @property
+    def has_ice(self):
+        try:
+            # has_ice = _query_accumulation_data(self.building.zip_code,
+            #                                    settings.DEMO_SNOWFALL_DATA_START,
+            #                                    settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+            # return has_ice if has_ice else 0
+            return 1
+        except Exception as e:
+            print(e)
+            return 0
+
+    @property
+    def snowfall(self):
+        try:
+            # snowfall = _query_accumulation_data(self.building.zip_code,
+            #                                     settings.DEMO_SNOWFALL_DATA_START,
+            #                                     settings.DEMO_SNOWFALL_DATA_END)['snowfall']
+            # return snowfall if snowfall else 0
+            return 1
+        except Exception as e:
+            print(e)
+            return 0
+
+    @property
+    def aggregate_predicted_plows(self):
+        try:
+            predicted = self.snowfall / 2
+            return predicted
+        except Exception as e:
+            print(e)
+            return 0
+
+    @property
+    def aggregate_predicted_salts(self):
+        try:
+            refreeze = self.has_ice
+            predicted = 2 if refreeze else 2
+            return predicted
+        except Exception as e:
+            print(e)
+            return 0
+
+    @property
+    def aggregate_predicted_plow_cost(self):
+        try:
+            snowfall = self.snowfall
+            return (self.aggregate_predicted_plows * self.building.plow_rate) + self.building.plow_tax
+        except Exception as e:
+            print(e)
+            return 0
+
+    @property
+    def aggregate_predicted_salt_cost(self):
+        try:
+            refreeze = self.has_ice
+            if refreeze:
+                return (self.aggregate_predicted_salts * self.building.deice_rate) + self.building.deice_tax
+        except Exception as e:
+            print(e)
+            return 0
+
+    @property
+    def aggregate_predicted_storm_total(self):
+        return self.aggregate_predicted_plow_cost + self.aggregate_predicted_salt_cost
+
+    @property
+    def storm_days(self):
+        try:
+            return '12-06-2017'
+        except:
+            return '12-10-2017'
+
+    @property
+    def deice_rate(self):
+        return self.building.deice_rate
+
+    @property
+    def deice_tax(self):
+        return self.building.deice_tax
+
+    @property
+    def plow_rate(self):
+        return self.building.plow_rate
+
+    @property
+    def plow_tax(self):
+        return self.building.plow_tax
+
+    @property
+    def service_provider(self):
+        return self.building.service_provider
+
+
 
 class SafetyVisit(BaseModel):
     safety_report = models.ForeignKey('invoices.SafetyReport', null=True, blank=True)
@@ -411,7 +673,7 @@ class SafetyVisit(BaseModel):
 class DiscrepancyReport(BaseModel):
     work_order = models.ForeignKey('invoices.WorkOrder', null=True, blank=True)
     author = models.CharField('author', max_length=100)
-    message = models.TextField('Discrepancy communication')
+    status = models.TextField('Discrepancy communication')
 
     #audit = AuditTrailWatcher()
 
@@ -419,87 +681,17 @@ class DiscrepancyReport(BaseModel):
         return 'Discrepancy Report #%s for %s' % (self.id, self.work_order)
 
 
-# Proxies
+# Vendor Proxies
 
-class RegionalAdminProxyNWA(RegionalAdmin):
-    class Meta(RegionalAdmin.Meta):
-        proxy = True
-        verbose_name = 'internal regional admin'
-
-    def __str__(self):
-        return 'CBRE admin %s' % ('temp')
-
-
-class WorkOrderProxyNWA(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'discrepancy reviewable work order'
-
-    def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.service_provider.name)
-
-class InvoiceForecastReportProxyNWA(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'forecast report work order'
-
-    def __str__(self):
-        return 'Invoice #%s' % (self.id)
-
-class VendorProxyCBRE(Vendor):
-    class Meta(Vendor.Meta):
-        proxy = True
-        verbose_name = 'client vendor'
-
-    def __str__(self):
-        return 'Vendor %s' % ('temp')
-
-
-class WorkOrderProxyCBRE(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'reviewable work orders'
-
-    def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.service_provider.name)
-
-
-class WorkOrderProxyVendor(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'vendor work order'
-
-    def __str__(self):
-        return 'WO#%s for %s' % (self.id, self.service_provider.name)
-
-
-# In use
-class InvoiceProxyVendor(Invoice):
+class SafetyReportVendor(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
         verbose_name = 'Safety Report'
 
     def __str__(self):
-        return 'Safety Report: %s' % (self.id)
+        return 'Safety Report # {0}'.format(self.id)
 
-class InvoiceProxyForecast(Invoice):
-    class Meta(Invoice.Meta):
-        proxy = True
-        verbose_name = 'Initial Spend Forecast'
-
-    def __str__(self):
-        return 'Inv # %s' % 'temp'
-
-class InvoiceProxyDiscrepancy(RegionalAdmin):
-    class Meta(RegionalAdmin.Meta):
-        proxy = True
-        verbose_name = 'Discrepancy Report'
-
-    def __str__(self):
-        return 'Discrepancy report for invoice # %s' % 'temp'
-
-
-class InvoiceProxyPrelim(Invoice):
+class InvoiceVendor(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
         verbose_name = 'Invoice'
@@ -508,160 +700,41 @@ class InvoiceProxyPrelim(Invoice):
         return 'Invoice # {0}'.format(self.id)
 
 
-class WorkProxyServiceForecast(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'Initial Spend Forecast'
+# NWA Proxies
 
-    def __str__(self):
-        return '{0} - {1}'.format(self.invoice_id, self.id)
-
-
-class WorkProxyServiceDiscrepancy(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'Discrepancy Report'
-
-    def __str__(self):
-        return 'Discrepancy repot for invoice {0}'.format(self.invoice_id)
-
-
-class ModifiablePrelimInvoice(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'Modify Preliminary Invoice'
-
-    def __str__(self):
-        return '{0} - {1}'.format(self.invoice_id, self.id)
-
-
-
-
-# Superuser
-
-
-class WeatherStationSuperProxy(WeatherStation):
-    class Meta(WeatherStation.Meta):
-        proxy = True
-        verbose_name = 'Weather Station'
-
-    def __str__(self):
-        return '{0}'.format(self.short_name)
-
-
-class WorkOrderIDSuperProxy(WorkOrderID):
-    class Meta(WeatherStation.Meta):
-        proxy = True
-        verbose_name = 'Available Work Order ID'
-
-    def __str__(self):
-        return '{0}'.format(self.work_order_code)
-
-
-
-
-
-
-# NWA
-class NWAServiceProvider(Vendor):
-    class Meta(Vendor.Meta):
-        proxy = True
-        verbose_name = 'Service Provider'
-
-    def __str__(self):
-        return '{0}'.format(self.name)
-
-class NWABuilding(Building):
-    class Meta(Building.Meta):
-        proxy = True
-        verbose_name = 'Building'
-
-    def __str__(self):
-        if self.building_code:
-            return 'BC#: {0} - {1} '.format(self.building_code, self.address)
-        return 'ID: {0} - {1} '.format(self.id, self.address)
-
-class NWASafetyProxy(Invoice):
+class ServiceForecastNWA(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Safety Report'
+        verbose_name = 'Service Forecast'
 
     def __str__(self):
-        return 'Safety Report # {0}'.format(self.id)
+        return 'Service Forecast for Inv # {0}'.format(self.id)
 
-class NWAInvoiceProxy(Invoice):
-    class Meta(Invoice.Meta):
-        proxy = True
-        verbose_name = 'Invoice'
-
-    def __str__(self):
-        return 'Invoice # {0}'.format(self.id)
-
-class NWAServiceForecast(WorkOrder):
-    class Meta(WorkOrder.Meta):
-        proxy = True
-        verbose_name = 'Initial Spend Forecast'
-
-    def __str__(self):
-        return '{0} - {1}'.format(self.invoice_id, self.id)
-
-
-class NWAServiceDiscrepancy(Invoice):
+class DiscrepancyReportNWA(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
         verbose_name = 'Discrepancy Report'
 
     def __str__(self):
-        return 'Discrepancy Report for invoice # {0}'.format(self.id)
+        return 'Discrepancy Report for Inv # {0}'.format(self.id)
 
-
-class NWASubmittedInvoiceProxy(Invoice):
-    class Meta(Invoice.Meta):
-        proxy = True
-        verbose_name = 'Submitted Invoice'
-
-    def __str__(self):
-        return '{0} Invoice # {1}'.format(self.service_provider, self.id)
-
-# CBRE
-class CBRESafetyProxy(Invoice):
-    class Meta(Invoice.Meta):
+class ServiceForecastItemNWA(SafetyReport):
+    class Meta(SafetyReport.Meta):
         proxy = True
         verbose_name = 'Safety Report'
 
     def __str__(self):
-        return 'Safety Report # {0}'.format(self.id)
+        return 'SR for Inv. # {0}'.format(self.invoice.id)
 
-class CBREInvoiceProxy(Invoice):
-    class Meta(Invoice.Meta):
+class DiscrepancyReportItemNWA(WorkOrder):
+    class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Submitted Invoice'
+        verbose_name = 'Work Order'
 
     def __str__(self):
-        return 'Invoice # {0}'.format(self.id)
+        return 'Work Order {0} for Inv # {1}'.format(self.id, self.invoice.id)
 
-
-# Vendor
-class VendorSafetyProxy(Invoice):
-    class Meta(Invoice.Meta):
-        proxy = True
-        verbose_name = 'Safety Report'
-
-    def __str__(self):
-        try:
-            if self.workorder_set.last():
-                return 'Safety Report # {0} ({1} - {2})'.format(self.id, self.storm_date,
-                                                                self.workorder_set.last().last_service_date)
-            elif self.storm_date:
-                return 'Safety Report # {0} ({1} - present)'.format(self.id, str(self.storm_date),
-                                                                    str(self.workorder_set.last().last_service_date))
-            else:
-                return 'Safety Report # {0}'.format(self.id)
-        except:
-            return 'Safety Report # {0}'.format(self.id)
-
-
-class VendorInvoiceProxy(Invoice):
+class SubmittedInvoiceNWA(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
         verbose_name = 'Invoice'

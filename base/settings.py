@@ -14,7 +14,6 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import dj_database_url
-from conversion import convert_bool
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', 'g!u%+x7#3(9@ix=o&377e2-!4=iqke-rnbkd*2s$9zf$orfm2v')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = convert_bool(os.environ.get('DEBUG', '0'))
+DEBUG = os.environ.get('DEBUG', '0')
 
 ALLOWED_HOSTS = ['*']
 
@@ -42,7 +41,7 @@ DJANGO_APPS = [
 
 # SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
 SUPPORT_APPS = ['rest_framework', 'django_extensions', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
-CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'raven.contrib.django.raven_compat',]
+CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'raven.contrib.django.raven_compat', 'admin_comments', 'hijack', 'hijack_admin']
 
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
 
@@ -258,8 +257,22 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS=10000
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-DEBUG = False
-TEMPLATE_DEBUG = False
+DEBUG = True
+development=True
+TEMPLATE_DEBUG = True
+HIJACK_ALLOW_GET_REQUESTS = True
+HIJACK_USE_BOOTSTRAP = True
+PROD = False
+if PROD:
+    DATABASES = {'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'nwadb',
+        'USER': 'nwadbadmin',
+        'PASSWORD': 'popsicles123',
+        'HOST': '/opt/bitnami/postgresql',
+        'PORT': '5432',
+        }
+    }
 
 
 RAVEN_CONFIG = {

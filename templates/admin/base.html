@@ -140,17 +140,14 @@ div.breadcrumbs a {
     <!-- END Content -->
 
     {% block footer %}
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-            <script>
-
-            setTimeout(function() { injectMarket(document.getElementsByClassName('module aligned')[0]); },1900);
-
-
-        function injectMarket(row) {
-            row.innerHTML += '<div class="form-row field-service_provider"><div><label for="id_market">Market:</label><div class="related-widget-wrapper"><select id="id_market"><option selected value="">Denver</option></select></div></div></div>'
-        }
-
+      <script type="text/javascript">
+        $( document ).ready(function() {
+            $('.model-invoicevendor .addlink').hide()
+        });
     </script>
+
         <style>
             #footer-o {
                 width: 100%;

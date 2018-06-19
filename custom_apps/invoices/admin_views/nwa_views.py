@@ -13,117 +13,12 @@ from django.shortcuts import HttpResponseRedirect
 import sendgrid
 import os
 from sendgrid.helpers.mail import *
+from .helpers import get_locations_by_system_user
+from .admin_forms import WOFormSet, SRFormSet
+from admin_comments.admin import CommentInline
 
 
-# all the views in this file should be visible only to the superuser
-class SuperuserModelAdmin(ImportExportActionModelAdmin):
-    exclude = ['address_info_storage']
-    def has_module_permission(self, request):
-        if request.user.is_superuser:
-            return True
-        return False
-
-
-def total_plows(self, obj=None):
-    return 1
-
-def total_salts(self, obj=None):
-    return 2
-
-def invoice(self, obj=None):
-    return self.invoice
-
-def vendor(self, obj=None):
-    return self.service_provider
-
-def service_provider(self, obj=None):
-    return self.service_provider
-
-def location(self, obj=None):
-    return self.building
-
-def deicing_rate(self, obj=None):
-    return self.building.deice_rate
-
-def deicing_tax(self, obj=None):
-    return self.building.deice_tax
-
-def plow_rate(self, obj=None):
-    return self.building.plow_rate
-
-def plow_tax(self, obj=None):
-    return self.building.plow_tax
-
-def work_order(self, obj=None):
-    return self.work_order_code
-
-def snowfall(self, obj=None):
-    return 1.4
-
-def storm_days(self, obj=None):
-    return 2
-
-def refreeze(self, obj=None):
-    return '0'
-
-def number_salts_predicted(self, obj=None):
-    try:
-        pred = self.num_salts - 1
-        if pred >= 0:
-            return pred
-        else:
-            return 0
-    except:
-        return ''
-    # import random
-    # return random.randint(1,3)
-
-def number_plows_predicted(self, obj=None):
-    try:
-        pred = self.num_plows - 1
-        if pred >= 0:
-            return pred
-        else:
-            return 0
-    except:
-        return ''
-
-def deicing_cost_delta(self, obj=None):
-    return '$128.99'
-
-def plowing_cost_delta(self, obj=None):
-    return '$199.10'
-
-def get_locations_by_system_user(user=None):
-    # vendor = Vendor.objects.filter(system_user__email='VENDOR@VENDOR.com')[0]
-    vend = Vendor.objects.get(system_user__username='vendor-user@bank.com')
-    locations = Building.objects.filter(service_provider=vend)
-    return locations
-
-
-class SRFormSet(BaseInlineFormSet):
-    model = SafetyReport
-
-    def __init__(self, *args, **kwargs):
-        super(SRFormSet, self).__init__(*args, **kwargs)
-        self.locations = get_locations_by_system_user(self.request.user)
-
-
-from django.forms import ModelForm
-# class WOrderForm(ModelForm):
-#     fields = ['vendor', 'building', 'number_plows', 'number_salts']
-
-
-class WOFormSet(BaseInlineFormSet):
-    model = WorkOrder
-
-    def __init__(self, *args, **kwargs):
-        super(WOFormSet, self).__init__(*args, **kwargs)
-        self.locations = get_locations_by_system_user(self.request.user)
-
-
-from django.utils.functional import curry
-
+# Subinlines
 
 class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     model = WorkVisit
@@ -131,6 +26,7 @@ class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     readonly_fields = []
     classes = ['collapse']
 
+# Inlines
 
 class WorkOrderInline(nested_admin.NestedTabularInline):
     model = WorkOrder
@@ -167,22 +63,8 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
         """
         initial = []
         if request.method == "GET":
-            #
-            # Populate initial based on request
-            #
-            locations = get_locations_by_system_user(request.user).values('id')
-            s_name = None if not obj else obj.storm_name
-            s_date = '2017-12-10' if not obj else obj.storm_date
-            s_provider = None if not obj else obj.service_provider
-
-            for l in locations:
-                # print({'building': str(l['id']), 'service_provider': s_provider,
-                #                 'storm_name': s_name,'storm_date': s_date,
-                #                 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
-                #                 'failed_service':False, 'work_order_code':'Td1290'})
-                initial.append({})
+            pass
         formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
-        formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
         return formset
 
@@ -196,7 +78,6 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 
 class SafetyReportInline(admin.TabularInline):
     model = SafetyReport
-    # form = SafetyReportForm
     formset = SRFormSet
 
     def get_formset(self, *args, **kwargs):
@@ -233,143 +114,172 @@ class SafetyReportInline(admin.TabularInline):
         return get_locations_by_system_user(request.user).count()
 
 
-class InvoiceAdmin(admin.ModelAdmin):
-    exclude=['remission_address', 'address_info_storage']
-    inlines = [SafetyReportInline]
-    limited_manytomany_fields = {}
-
-    def get_changeform_initial_data(self, request):
-        """
-        Get the initial form data from the request's GET params.
-        """
-        from django.db import models
-        initial_o = Invoice().__dict__
-        initial = initial_o
-        for k in initial:
-            try:
-                f = self.model._meta.get_field(k)
-            except Exception as e:
-                continue
-            # We have to special-case M2Ms as a list of comma-separated PKs.
-            if isinstance(f, models.ManyToManyField):
-                initial[k] = initial[k].split(",")
-        else:
-            from django.db import models
-            initial_o = Invoice().__dict__
-            initial = initial_o
-            for k in initial:
-                try:
-                    f = self.model._meta.get_field(k)
-                except Exception as e:
-                    continue
-                # We have to special-case M2Ms as a list of comma-separated PKs.
-                if isinstance(f, models.ManyToManyField):
-                    initial[k] = initial[k].split(",")
 
 
-class PrelimInvoiceAdmin(admin.ModelAdmin):
-    exclude=['remission_address', 'address_info_storage']
-    inlines = [WorkOrderInline]
-    limited_manytomany_fields = {}
-
-    def get_changeform_initial_data(self, request):
-        """
-        Get the initial form data from the request's GET params.
-        """
-        from django.db import models
-        initial_o = Invoice().__dict__
-        initial = initial_o
-        for k in initial:
-            try:
-                f = self.model._meta.get_field(k)
-            except Exception as e:
-                continue
-            # We have to special-case M2Ms as a list of comma-separated PKs.
-            if isinstance(f, models.ManyToManyField):
-                initial[k] = initial[k].split(",")
-        else:
-            from django.db import models
-            initial_o = Invoice().__dict__
-            initial = initial_o
-            for k in initial:
-                try:
-                    f = self.model._meta.get_field(k)
-                except Exception as e:
-                    continue
-                # We have to special-case M2Ms as a list of comma-separated PKs.
-                if isinstance(f, models.ManyToManyField):
-                    initial[k] = initial[k].split(",")
+# Model Admins
 
 
-# @register(Invoice)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = Invoice
-#     list_display = ['storm_name','storm_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [SafetyReportInline]
+
+class ServiceForecastAdmin(admin.ModelAdmin):
+    model = ServiceForecastNWA
+    list_filter = ('id', 'storm_name', 'storm_date', 'service_provider')
+    list_display = ['safety_report_url', 'id', 'service_provider', 'locations',
+                    'aggregate_snowfall', 'aggregate_refreeze', 'storm_days_forecast',
+                    'aggregate_predicted_salts', 'aggregate_predicted_plows', 'aggregate_predicted_salt_cost',
+                    'aggregate_predicted_plow_cost', 'aggregate_predicted_storm_total']
+
+    def safety_report_url(self, obj):
+        return '<a href="/nwa/invoices/serviceforecastitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
+
+    safety_report_url.allow_tags = True
+    safety_report_url.short_description = 'Safety Report'
 
 
-# @register(InvoiceProxyVendor)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = InvoiceProxyVendor
-#     list_display = ['storm_name','storm_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [SafetyReportInline]
-#     # change_form_template = 'admin/invoice_admin.html'
+class ServiceForecastItemAdmin(admin.ModelAdmin):
+    model = ServiceForecastItemNWA
+    list_filter = ('invoice_id',)
+    list_display = ['id', 'invoice_id', 'service_provider', 'building', 'deice_rate',
+                    'deice_tax', 'plow_rate',
+                    'plow_tax', 'snowfall', 'storm_days', 'has_ice',
+                    'aggregate_predicted_salts', 'aggregate_predicted_plows', 'aggregate_predicted_salt_cost',
+                    'aggregate_predicted_plow_cost', 'aggregate_predicted_storm_total']
 
 
-# @register(InvoiceProxyPrelim)
-# class InvoiceAdmin(admin.ModelAdmin):
-#     model = InvoiceProxyPrelim
-#     list_display = ['storm_name','storm_date']
-#     exclude = ['remission_address', 'address_info_storage']
-#     inlines = [WorkOrderInline]
-#     change_form_template = 'admin/invoice_admin.html'
+class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
+    model = DiscrepancyReportNWA
+    resource_class=InvoiceResource
+    list_filter = ('id',)
+    generated_discrept_dict = {}
+    list_display = ['show_id_url', 'id', 'service_provider', 'locations', 'aggregate_snowfall', 'aggregate_refreeze',
+                    'storm_days_invoiced', 'aggregate_refreeze', 'aggregate_invoiced_salts', 'aggregate_predicted_salts', 'aggregate_salt_delta',
+                    'aggregate_invoiced_plows', 'aggregate_predicted_plows', 'aggregate_plow_delta', 'aggregate_salt_cost_delta',
+                    'aggregate_plow_cost_delta', 'total_cost_delta']
+
+    def show_id_url(self, obj):
+        return '<a href="/nwa/invoices/discrepancyreportitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
+
+    show_id_url.allow_tags = True
+    show_id_url.short_description = 'Invoice'
+
+    def aggregate_salt_delta(self, obj):
+        try:
+            if obj.aggregate_salt_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_salt_delta)
+            else:
+                return obj.aggregate_salt_delta
+        except Exception as e:
+            print(e)
+            return 0
+
+    aggregate_salt_delta.allow_tags = True
+
+    def aggregate_plow_delta(self, obj):
+        try:
+            if obj.aggregate_plow_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_delta)
+            else:
+                return obj.aggregate_plow_delta
+        except Exception as e:
+            print(e)
+            return 0
+
+    aggregate_plow_delta.allow_tags = True
+
+    def aggregate_salt_cost_delta(self, obj):
+        try:
+            if obj.aggregate_salt_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_salt_cost_delta)
+            else:
+                return obj.aggregate_salt_cost_delta
+        except Exception as e:
+            print(e)
+            return 0
+
+    aggregate_salt_cost_delta.allow_tags = True
+
+    def aggregate_plow_cost_delta(self, obj):
+        try:
+            if obj.aggregate_plow_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_cost_delta)
+            else:
+                return obj.aggregate_plow_cost_delta
+        except Exception as e:
+            print(e)
+            return 0
+
+    aggregate_plow_cost_delta.allow_tags = True
 
 
-# @register(InvoiceProxyForecast)
-# class InvoiceForecastAdmin(admin.ModelAdmin):
-#
-#     pass
+class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
+    model = DiscrepancyReportItemNWA
+    resource_class=InvoiceResource
+    list_filter = ('invoice__id',)
+    inlines = [CommentInline,]
+    actions = ['override_discrepancy']
+    list_display = ['is_discrepant', 'view_work_order', 'invoice', 'service_provider', 'building', 'deice_rate',
+                    'deice_tax', 'plow_rate',
+                    'plow_tax', 'snowfall', 'storm_days', 'has_ice',
+                    'aggregate_predicted_salts', 'aggregate_invoiced_salts', 'aggregate_salt_delta', 'aggregate_predicted_plows',
+                    'aggregate_invoiced_plows', 'aggregate_plow_delta', 'aggregate_deice_cost_delta', 'aggregate_plow_cost_delta']
 
-class ServiceForecast(admin.ModelAdmin):
-    model = WorkProxyServiceForecast
-    list_filter = ('invoice_id', 'invoice__storm_name', 'invoice__storm_date')
-    list_display = [work_order, invoice, service_provider, location, 'deicing_rate', 'deicing_tax', 'plow_rate',
-                    plow_tax, snowfall, storm_days, refreeze,
-                    'number_salts', 'number_plows', 'deice_cost', 'plow_cost', 'storm_total']
+    generated_discrept_dict = {}
 
-    def deicing_rate(self, obj):
-        return obj.building.deice_rate
+    def override_discrepancy(self, request, queryset):
+        rows_updated = queryset.update(is_discrepant=False)
+        return HttpResponseRedirect("/nwa/invoices/discrepancyreportnwa/")
 
-    def plow_rate(self, obj):
-        return obj.building.plow_rate
+    def view_work_order(self, obj):
+        return u'<a href="/nwa/invoices/discrepancyreportitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.work_order_code)
 
-    def deicing_tax(self, obj):
-        return obj.building.deice_tax
+    def aggregate_salt_delta(self, obj):
+        try:
+            if obj.aggregate_salt_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_salt_delta)
+            else:
+                return obj.aggregate_salt_delta
+        except Exception as e:
+            print(e)
+            return 0
 
+    aggregate_salt_delta.allow_tags = True
 
-    def plow_tax(self, obj):
-        return obj.building.plow_tax
+    def aggregate_plow_delta(self, obj):
+        try:
+            if obj.aggregate_plow_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_delta)
+            else:
+                return obj.aggregate_plow_delta
+        except Exception as e:
+            print(e)
+            return 0
 
-    def plow_cost(self, obj):
-        return float(obj.aggregate_invoiced_plow_cost)
+    aggregate_plow_delta.allow_tags = True
 
-    def deice_cost(self, obj):
-        return float(obj.aggregate_invoiced_salt_cost)
+    def aggregate_deice_cost_delta(self, obj):
+        try:
+            if obj.aggregate_deice_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_deice_cost_delta)
+            else:
+                return obj.aggregate_deice_cost_delta
+        except Exception as e:
+            print(e)
+            return 0
 
-    def number_salts(self, obj):
-        return obj.aggregate_invoiced_salts
+    aggregate_deice_cost_delta.allow_tags = True
 
-    def number_plows(self, obj):
-        return obj.aggregate_invoiced_plows
+    def aggregate_plow_cost_delta(self, obj):
+        try:
+            if obj.aggregate_plow_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_cost_delta)
+            else:
+                return obj.aggregate_plow_cost_delta
+        except Exception as e:
+            print(e)
+            return 0
 
-    def storm_total(self, obj):
-        total = float(obj.aggregate_invoiced_salt_cost) + float(obj.aggregate_invoiced_plow_cost)
-        return total
+    aggregate_plow_cost_delta.allow_tags = True
 
-
-class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
+class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
     list_display=['invoices', 'status']
     inlines = [WorkOrderInline]
@@ -377,240 +287,8 @@ class NWASubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     limited_manytomany_fields = {}
 
     def get_queryset(self, request):
-        qs = super(NWASubmittedInvoiceAdmin, self).get_queryset(request)
+        qs = super(SubmittedInvoiceAdmin, self).get_queryset(request)
         return qs.filter(status__in=['submitted'])
 
     def invoices(self, obj):
         return obj
-
-
-class DiscrepancyReview(admin.ModelAdmin):
-    model = NWAServiceDiscrepancy
-    list_filter = ('id', 'storm_name', 'storm_date')
-    list_display = ['show_id_url', service_provider, 'snowfall', storm_days, refreeze,
-                    'number_salts', 'number_salts_predicted', 'salt_delta', 'number_plows', 'number_plows_predicted',
-                    'push_delta', 'deice_cost_delta', 'plow_cost_delta']
-
-    generated_discrept_dict = {}
-
-    def show_id_url(self, obj):
-        return '<a href="https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
-
-    show_id_url.allow_tags = True
-    show_id_url.short_description = 'Invoice'
-
-    resource_class = NWAServiceDiscrepancy
-
-    actions = ['override_discrepancy', 'flag_discrepant']
-
-    change_list_template = "admin/provider/safety_report_changelist.html"
-    # https://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyservicediscrepancy/?invoice__id=invoice__id
-
-    def get_urls(self):
-        urls = super(DiscrepancyReview, self).get_urls()
-        my_urls = [
-            url('override_discrepancy/', self.finalize_safety_report),
-            url('flag_discrepant/', self.finalize_safety_report),
-        ]
-        return my_urls + urls
-
-    def override_discrepancy(self, request, queryset):
-        rows_updated = queryset.update(status='dispute')
-        return HttpResponseRedirect("/nwa/")
-
-    def flag_discrepant(self, request, queryset):
-        rows_updated = queryset.update(status='reviewed')
-        return HttpResponseRedirect("/nwa/")
-
-    override_discrepancy.short_description = "Override Discrepancy"
-    flag_discrepant.short_description = "Generate Discrepancy Report"
-
-    def get_queryset(self, request):
-        qs = super(DiscrepancyReview, self).get_queryset(request)
-        return qs.filter(status__in=['submitted'])
-
-    def invoices(self, obj):
-        return obj
-
-    def get_urls(self):
-        urls = super(DiscrepancyReview, self).get_urls()
-        my_urls = [
-            url('flag_discrepancy/', self.flag_discrepancy),
-        ]
-        return my_urls + urls
-
-    def flag_discrepancy(self, request, queryset):
-        rows_updated = queryset.update(status='submitted')
-        if rows_updated == 1:
-            message_bit = "1 invoice was"
-        else:
-            message_bit = "%s invoices were" % rows_updated
-        self.message_user(request, "%s flagged for discrepancies." % message_bit)
-
-        sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
-        from_email = Email(settings.DEFAULT_FROM_EMAIL)
-        to_email = Email("harisbeha@gmail.com")
-        subject = "Discrepancies Flagged"
-        invoice_id = queryset[0].id
-        content = Content("text/plain", "Discrepancy flagged in Invoice #{0}".format(invoice_id))
-        mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body=mail.get())
-        # print(response)
-        return HttpResponseRedirect("/provider/invoices/nwaservicediscrepancy/")
-
-    flag_discrepancy.short_description = "Flag discrepancies"
-
-
-    def number_salts(self, obj):
-        return obj.aggregate_invoiced_salts
-
-    def number_plows(self, obj):
-        return obj.aggregate_invoiced_plows
-
-    def number_salts_predicted(self, obj):
-        import random
-        random_salts = random.choice([0,1,1,3,2,1,2,1,2])
-        random_plows = random.choice([0,2,1,1,2,1,2,1,2])
-        self.generated_discrept_dict = {'num_salts_pred': random_salts, 'num_plows_pred': random_plows}
-        return random_salts
-        # return obj.aggregate_predicted_salts
-
-    def number_plows_predicted(self, obj):
-        return self.generated_discrept_dict['num_plows_pred']
-        # return obj.aggregate_predicted_plows
-
-    def snowfall(self, obj):
-        import random
-        snowfall = random.choice([0,1,1,3,2,1,2,1,2])
-        return snowfall
-
-    def salt_delta(self, obj):
-        try:
-            # pred = self.num_plows - 1
-            delta = obj.number_salts - self.generated_discrept_dict['num_salts_pred']
-            self.generated_discrept_dict['salt_delta'] = delta
-            if delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
-            else:
-                return 0
-        except Exception as e:
-            return 0
-
-    salt_delta.allow_tags = True
-
-    def push_delta(self, obj):
-        try:
-            # pred = self.num_plows - 1
-            delta = obj.number_salts - self.generated_discrept_dict['num_plows_pred']
-            self.generated_discrept_dict['push_delta'] = delta
-            if delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
-            else:
-                return 0
-        except Exception as e:
-            return 0
-
-    push_delta.allow_tags = True
-
-    def deice_cost_delta(self, obj):
-        try:
-            # pred = self.num_plows - 1
-            deice_cost = self.generated_discrept_dict['salt_delta'] * obj.building.deice_rate
-            deice_tax = obj.building.deice_tax
-            delta = deice_cost + deice_tax
-            self.generated_discrept_dict['deice_cost_delta'] = delta
-            if delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
-            else:
-                return 0
-        except Exception as e:
-            return 0
-
-    deice_cost_delta.allow_tags = True
-
-    def plow_cost_delta(self, obj):
-        try:
-            # pred = self.num_plows - 1
-            plow_cost = self.generated_discrept_dict['plow_delta'] * obj.building.plow_rate
-            plow_tax = obj.building.plow_tax
-            delta = plow_cost + plow_tax
-            self.generated_discrept_dict['plow_cost_delta'] = delta
-            if delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(delta)
-            else:
-                return 0
-        except Exception as e:
-            return 0
-
-    plow_cost_delta.allow_tags = True
-
-
-class NWABuildingAdmin(SuperuserModelAdmin):
-    list_display = ['building_code', 'address', 'service_provider', 'weather_station', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'type']
-    filter_list = ['service_provider', 'weather_station']
-
-#
-#
-class RegionalManagerAdmin(SuperuserModelAdmin):
-    list_display = ['name', 'system_user']
-#
-#
-# @register(VendorSettings)
-# class VendorSettingsAdmin(SuperuserModelAdmin):
-#     list_display = ['const_a', 'const_b', 'vendor']
-#
-#
-class VendorAdmin(SuperuserModelAdmin):
-    list_display = ['name', 'address', 'system_user']
-#
-#
-# @register(WorkOrder)
-# class WorkOrderAdmin(SuperuserModelAdmin):
-#     list_display = ['vendor', 'invoice', 'building', 'storm_name']
-#     raw_id_fields = ("building",)
-#
-#
-# @register(WorkVisit)
-# class WorkVisitAdmin(SuperuserModelAdmin):
-#     list_display = ['work_order', 'response_time_start', 'response_time_end']
-#
-#
-
-
-def storm_date(obj):
-    return obj.invoice.storm_date
-
-
-def storm_name(obj):
-    return obj.invoice.storm_name
-
-# @register(SafetyReport)
-# class SafetyReportAdmin(admin.ModelAdmin):
-#     # list_filter = (storm_date, storm_date)
-#     list_display = ['building', storm_name, storm_date, 'existing_work_order', 'site_serviced', 'safe_to_open', 'service_time']
-#
-#     def existing_work_order(self, obj):
-#         existing_work_order = WorkOrder.objects.filter(invoice=obj.invoice, building=obj.building).exists()
-#         return existing_work_order
-#     existing_work_order.boolean = True
-
-
-# @register(ModifiablePrelimInvoice)
-# class ModifyPrelimInvoiceAdmin(admin.ModelAdmin):
-#     # list_filter = (storm_date, storm_date)
-#     list_filter = ['invoice_id', 'invoice__storm_name', 'invoice__storm_date', 'failed_service']
-#     list_editable = ['building', 'last_service_date', 'num_plows', 'num_salts', 'failed_service']
-#     list_display = ['id', 'building', service_provider, storm_name, storm_date, 'last_service_date',
-#                     'num_plows', 'num_salts', 'failed_service']
-
-
-#
-#
-# @register(DiscrepancyReport)
-# class DiscrepancyReportAdmin(SuperuserModelAdmin):
-#     list_display = ['work_order', 'author', 'message']
-#
-#
-# @register(Invoice)
-# class InvoiceAdmin(SuperuserModelAdmin):
-#     list_display = ['vendor', 'remission_address']
