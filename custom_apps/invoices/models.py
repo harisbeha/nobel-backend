@@ -256,7 +256,7 @@ class WorkOrder(BaseModel):
     # def get_plow_count(self):
     #     return self.
 
-    @property
+    @cached_property
     def has_ice(self):
         try:
             has_ice = _query_accumulation_data(self.building.zip_code,
