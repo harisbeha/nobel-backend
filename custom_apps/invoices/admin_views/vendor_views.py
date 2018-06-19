@@ -184,6 +184,13 @@ class WOFormSet(BaseInlineFormSet):
 
     def __init__(self, *args, **kwargs):
         super(WOFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            try:
+                init_build = form.initial.get('building')
+                b = Building.objects.get(id=init_build).service_provider
+                form.fields['building'].queryset = Building.objects.filter(service_provider=b)
+            except:
+                pass
         if self.request.user.is_superuser:
             #print('yes')
             self.locations = get_locations_by_system_user(None, self.instance.service_provider)
@@ -423,6 +430,19 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
     actions=['finalize_submit_invoice']
 
     change_list_template = "admin/provider/safety_report_changelist.html"
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        context['adminform'].form.fields['service_provider'].queryset = Vendor.objects.filter(system_user=request.user)
+        return super(PrelimInvoiceAdmin, self).render_change_form(request, context, args, kwargs)
+
+    def get_changeform_initial_data(self, request):
+        vend_id = '{0}'.format(Vendor.objects.get(system_user=request.user).id)
+        return {'service_provider': vend_id}
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "building":
+            kwargs["queryset"] = Building.objects.filter(service_provider__system_user=request.user)
+        return super(PrelimInvoiceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def invoices(self, obj):
         return obj
