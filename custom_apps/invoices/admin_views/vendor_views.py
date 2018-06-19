@@ -242,36 +242,6 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
         formset = super(WorkOrderInline, self).get_formset(*args, **kwargs)
         return formset
 
-    def get_formset(self, request, obj=None, **kwargs):
-        """
-        Pre-populating formset using GET params
-        """
-        initial = []
-        if request.method == "GET":
-            pass
-            # #
-            # # Populate initial based on request
-            # #
-            # if request.user.is_superuser:
-            #     locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
-            # else:
-            #     vend = Vendor.objects.get(system_user=request.user)
-            #     locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
-            # s_name = None if not obj else obj.storm_name
-            # s_date = '2017-12-10' if not obj else obj.storm_date
-            # s_provider = None if not obj else obj.service_provider
-
-            # for l in locations:
-                #print({'building': str(l['id']), 'service_provider': s_provider,
-                                # 'storm_name': s_name,'report_date': s_date,
-                                # 'last_service_date': '2017-12-09', 'num_plows':0, 'num_salts':0,
-                                # 'failed_service':False, 'work_order_code':'Td1290'})
-                # initial.append({})
-        formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
-        formset.__init__ = curry(formset.__init__, initial=initial)
-        formset.request = request
-        return formset
-
     def get_extra(self, request, obj=None, **kwargs):
         """Dynamically sets the number of extra forms. 0 if the related object
         already exists or the extra configuration otherwise."""
