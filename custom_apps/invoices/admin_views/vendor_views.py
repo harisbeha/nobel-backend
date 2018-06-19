@@ -398,7 +398,7 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "building":
             kwargs["queryset"] = Building.objects.filter(service_provider__system_user=request.user)
-        return super(InvoiceAdmin. self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(InvoiceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     finalize_safety_report.short_description = "Generate Closeout Report"
 
