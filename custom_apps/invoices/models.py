@@ -259,20 +259,22 @@ class WorkOrder(BaseModel):
     @cached_property
     def has_ice(self):
         try:
-            has_ice = _query_accumulation_data(self.building.zip_code,
-                                               settings.DEMO_SNOWFALL_DATA_START,
-                                               settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            return has_ice if has_ice else 0
+            # has_ice = _query_accumulation_data(self.building.zip_code,
+            #                                    settings.DEMO_SNOWFALL_DATA_START,
+            #                                    settings.DEMO_SNOWFALL_DATA_END)['has_ice']
+            # return has_ice if has_ice else 0
+            return 1
         except Exception as e:
             return 0
 
     @cached_property
     def snowfall(self):
         try:
-            snowfall = _query_accumulation_data(self.building.zip_code,
-                                                settings.DEMO_SNOWFALL_DATA_START,
-                                                settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-            return snowfall if snowfall else 0
+            # snowfall = _query_accumulation_data(self.building.zip_code,
+            #                                     settings.DEMO_SNOWFALL_DATA_START,
+            #                                     settings.DEMO_SNOWFALL_DATA_END)['snowfall']
+            # return snowfall if snowfall else 0
+            return 1
         except Exception as e:
             return 0
 
