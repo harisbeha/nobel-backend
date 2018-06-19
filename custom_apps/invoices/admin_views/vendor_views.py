@@ -242,6 +242,14 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
         formset = super(WorkOrderInline, self).get_formset(*args, **kwargs)
         return formset
 
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Pre-populating formset using GET params
+        """
+        formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
+        formset.request = request
+        return formset
+
     def get_extra(self, request, obj=None, **kwargs):
         """Dynamically sets the number of extra forms. 0 if the related object
         already exists or the extra configuration otherwise."""
