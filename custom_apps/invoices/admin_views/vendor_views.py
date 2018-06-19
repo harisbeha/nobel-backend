@@ -207,7 +207,7 @@ class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     model = WorkVisit
     extra = 1
     readonly_fields = []
-    classes = ['collapse']
+    classes = []
 
 
 class WorkOrderInline(nested_admin.NestedTabularInline):
