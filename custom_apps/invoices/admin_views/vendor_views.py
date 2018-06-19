@@ -2,6 +2,7 @@ from django.contrib.admin import register, ModelAdmin
 from import_export.admin import ImportExportActionModelAdmin
 from django.shortcuts import HttpResponseRedirect
 from django.conf.urls import url
+from django.forms import ModelForm
 import sendgrid
 import os
 from sendgrid.helpers.mail import *
@@ -141,11 +142,28 @@ def get_locations_by_system_user(user=None, provider=None):
     return locations
 
 
-class SRFormSet(BaseInlineFormSet):
+class SafetyReportForm(ModelForm):
+    fields = '__all__'
     model = SafetyReport
 
     def __init__(self, *args, **kwargs):
+        super(SafetyReportForm, self).__init__(*args, **kwargs)
+        # init_build = self.initial.get('building')
+        # b = Building.objects.get(id=init_build).service_provider
+        # self.fields.building.queryset = Building.objects.filter(service_provider=b)
+
+
+
+class SRFormSet(BaseInlineFormSet):
+    model = SafetyReport
+    # form = SafetyReportForm
+
+    def __init__(self, *args, **kwargs):
         super(SRFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            init_build = form.initial.get('building')
+            b = Building.objects.get(id=init_build).service_provider
+            form.fields['building'].queryset = Building.objects.filter(service_provider=b)
         if self.request.user.is_superuser:
             #print('yes')
             self.locations = get_locations_by_system_user(None, self.instance.service_provider)
@@ -253,11 +271,11 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
     model = SafetyVisit
     extra = 1
-    classes = ['collapse']
+    classes = []
 
 class SafetyReportInline(nested_admin.NestedTabularInline):
     model = SafetyReport
-    # form = SafetyReportForm
+    form = SafetyReportForm
     formset = SRFormSet
     inlines = [SafetyVisitProxyInline]
 
@@ -270,14 +288,15 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             #
             # Populate initial based on request
             #
-            if request.user.is_superuser and obj:
+            if request.user.is_superuser and obj.service_provider:
                 locations = Building.objects.filter(service_provider=obj.service_provider).values_list('id', flat=True)
+                vend = obj.service_provider
             else:
                 vend = Vendor.objects.get(system_user=request.user)
                 locations = Building.objects.filter(service_provider=vend).values_list('id', flat=True)
 
             for l in locations:
-                initial.append({'building': str(l), 'safe_to_open': True})
+                initial.append({'building': str(l), 'safe_to_open': True, 'service_provider_id': str(vend.id)})
         formset = super(SafetyReportInline, self).get_formset(request, obj, **kwargs)
         formset.__init__ = curry(formset.__init__, initial=initial)
         formset.request = request
@@ -325,6 +344,17 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             print(e)
 
 
+# class SafetyInvoiceForm(ModelForm):
+#     fields = '__all__'
+#     model = SafetyReport
+#
+#     def __init__(self, *args, **kwargs):
+#         super(SafetyInvoiceForm, self).__init__(*args, **kwargs)
+#         self.fields['service_provider'].queryset = Vendor.objects.get(id__in=service_provider_id)
+#
+#         # self.fields.building.queryset = Building.objects.filter(service_provider=b)
+
+
 @register(InvoiceProxyVendor)
 class InvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
@@ -333,6 +363,7 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
     readonly_fields = []
     limited_manytomany_fields = {}
     actions=['finalize_safety_report']
+    # form = SafetyInvoiceForm
 
     change_list_template = "admin/provider/safety_report_changelist.html"
 
@@ -341,6 +372,14 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
         prelim = VendorSafetyProxy.objects.filter(status__in=['not_created', 'safety_report'],
                                           service_provider__system_user=request.user)
         return prelim
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        context['adminform'].form.fields['service_provider'].queryset = Vendor.objects.filter(system_user=request.user)
+        return super(InvoiceAdmin, self).render_change_form(request, context, args, kwargs)
+
+    def get_changeform_initial_data(self, request):
+        vend_id = '{0}'.format(Vendor.objects.get(system_user=request.user).id)
+        return {'service_provider': vend_id}
 
     def reports(self, obj):
         return obj
@@ -355,6 +394,11 @@ class InvoiceAdmin(nested_admin.NestedModelAdmin):
     def finalize_safety_report(self, request, queryset):
         rows_updated = queryset.update(status='preliminary_created')
         return HttpResponseRedirect("/provider/invoices/vendorinvoiceproxy/")
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "building":
+            kwargs["queryset"] = Building.objects.filter(service_provider__system_user=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     finalize_safety_report.short_description = "Generate Closeout Report"
 
