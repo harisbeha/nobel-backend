@@ -161,9 +161,12 @@ class SRFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(SRFormSet, self).__init__(*args, **kwargs)
         for form in self.forms:
-            init_build = form.initial.get('building')
-            b = Building.objects.get(id=init_build).service_provider
-            form.fields['building'].queryset = Building.objects.filter(service_provider=b)
+            try:
+                init_build = form.initial.get('building')
+                b = Building.objects.get(id=init_build).service_provider
+                form.fields['building'].queryset = Building.objects.filter(service_provider=b)
+            except:
+                pass
         if self.request.user.is_superuser:
             #print('yes')
             self.locations = get_locations_by_system_user(None, self.instance.service_provider)
