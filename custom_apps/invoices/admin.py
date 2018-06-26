@@ -22,13 +22,6 @@ from .models import Invoice, WorkOrder, WorkVisit, SafetyReport, Vendor, VendorS
 from django.contrib.admin import AdminSite
 from .models import *
 
-
-from .admin_views.superuser_views import ServiceForecast, DiscrepancyReview, WorkProxyServiceForecast, WorkProxyServiceDiscrepancy
-
-admin.site.register(WorkProxyServiceForecast, ServiceForecast)
-admin.site.register(WorkProxyServiceDiscrepancy, DiscrepancyReview)
-
-
 class NWASite(AdminSite):
     site_url = None
     site_header = settings.SITE_NAME
@@ -60,14 +53,12 @@ vendor_site = VendorSite(name='vendor_site')
 from custom_apps.invoices.admin_views import nwa_views, vendor_views, cbre_views
 
 
-nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)
-nwa_site.register(NWAServiceForecast, nwa_views.ServiceForecast)
-nwa_site.register(NWAServiceDiscrepancy, nwa_views.DiscrepancyReview)
-nwa_site.register(NWASubmittedInvoiceProxy, nwa_views.NWASubmittedInvoiceAdmin)
+# nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)
+nwa_site.register(ServiceForecastNWA, nwa_views.ServiceForecastAdmin)
+nwa_site.register(ServiceForecastItemNWA, nwa_views.ServiceForecastItemAdmin)
+nwa_site.register(DiscrepancyReportNWA, nwa_views.DiscrepancyReport)
+nwa_site.register(DiscrepancyReportItemNWA, nwa_views.DiscrepancyReportItemAdmin)
 
-cbre_site.register(CBRESafetyProxy, cbre_views.InvoiceAdmin)
-cbre_site.register(CBREInvoiceProxy, cbre_views.PrelimInvoiceAdmin)
-
-vendor_site.register(VendorSafetyProxy, vendor_views.InvoiceAdmin)
-vendor_site.register(VendorInvoiceProxy, vendor_views.PrelimInvoiceAdmin)
-vendor_site.register(DiscrepancyReport, vendor_views.DiscrepancyReportAdmin)
+vendor_site.register(SafetyReportVendor, vendor_views.SafetyReportAdmin)
+vendor_site.register(InvoiceVendor, vendor_views.PrelimInvoiceAdmin)
+# vendor_site.register(DiscrepancyReport, vendor_views.DiscrepancyReview)

@@ -44,12 +44,12 @@ class InvoiceResource(resources.ModelResource):
 
 class VendorInvoiceProxyResource(resources.ModelResource):
     class Meta:
-        model = VendorInvoiceProxy
+        model = InvoiceVendor
         fields = '__all__'
 
 class NWADiscrepancyProxyResource(resources.ModelResource):
     class Meta:
-        model = NWAServiceDiscrepancy
+        model = ServiceForecastNWA
         fields = '__all__'
 
 class BuildingResource(resources.ModelResource):
@@ -110,32 +110,32 @@ class DiscrepancyReportResource(resources.ModelResource):
         model = DiscrepancyReport
         fields = '__all__'
 
-
-class RegionalAdminProxyNWAResource(resources.ModelResource):
-    class Meta:
-        model = RegionalAdminProxyNWA
-        fields = '__all__'
-
-
-class WorkOrderProxyNWAResource(resources.ModelResource):
-    class Meta:
-        model = WorkOrderProxyNWA
-        fields = '__all__'
-
-
-class VendorProxyCBREResource(resources.ModelResource):
-    class Meta:
-        model = VendorProxyCBRE
-        fields = '__all__'
-
-
-class WorkOrderProxyCBREResource(resources.ModelResource):
-    class Meta:
-        model = WorkOrderProxyCBRE
-        fields = '__all__'
-
-
-class WorkOrderProxyVendorResource(resources.ModelResource):
-    class Meta:
-        model = WorkOrderProxyVendor
-        fields = '__all__'
+#
+# class RegionalAdminProxyNWAResource(resources.ModelResource):
+#     class Meta:
+#         model = RegionalAdminProxyNWA
+#         fields = '__all__'
+#
+#
+# class WorkOrderProxyNWAResource(resources.ModelResource):
+#     class Meta:
+#         model = WorkOrderProxyNWA
+#         fields = '__all__'
+#
+#
+# class VendorProxyCBREResource(resources.ModelResource):
+#     class Meta:
+#         model = VendorProxyCBRE
+#         fields = '__all__'
+#
+#
+# class WorkOrderProxyCBREResource(resources.ModelResource):
+#     class Meta:
+#         model = WorkOrderProxyCBRE
+#         fields = '__all__'
+#
+#
+# class WorkOrderProxyVendorResource(resources.ModelResource):
+#     class Meta:
+#         model = WorkOrderProxyVendor
+#         fields = '__all__'

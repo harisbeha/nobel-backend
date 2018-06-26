@@ -9,11 +9,12 @@ from html.parser import HTMLParser
 SCRAPE_API_KEY = os.environ.get('SCRAPE_API_KEY', 'cst_37mqLLFuPbUfQUYEwKNO2fir2B')
 
 # default: 15 days
-SCRAPE_SINCE = int(time.time()) - int(os.environ.get('SCRAPE_SINCE', 60*60*24*180))
+SCRAPE_SINCE = int(time.time()) - int(os.environ.get('SCRAPE_SINCE', 60*60*24*365))
 
 
 def get_raw(scrape_since, api_key):
-    r = requests.get('https://certifiedsnowfalltotals.com/api/storms', params={'publish_start': str(scrape_since)}, auth=(api_key, ''))
+    r = requests.get('https://certifiedsnowfalltotals.com/api/storms',
+                     params={'publish_start': str(scrape_since)}, auth=(api_key, ''))
     for storm in r.json():
         for stormloc in storm['storm_locations']:
             out = dict()
