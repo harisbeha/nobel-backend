@@ -21,9 +21,32 @@ client = Client('https://4d87c7cd417f4e14be43597f3ffac1b3:d46f2a1776a54a8a80d3d8
 # Start Subinlines
 class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     model = WorkVisit
-    extra = 1
+    extra = 0
     readonly_fields = []
+    insert_after = 'subtotal'
     classes = []
+
+    template = "admin/provider/sr_tabular_subinline.html"
+
+    def get_readonly_fields(self, request, obj=None):
+        try:
+            if obj.invoice.status == 'submitted':
+                return ['num_plows', 'num_salts', 'failed_service', 'service_date', 'service_time']
+            else:
+                return ['work_order_code', 'building']
+        except:
+            return ['num_plows', 'num_salts', 'failed_service', 'service_date', 'service_time']
+
+    def get_max_num(self, request, obj=None, **kwargs):
+        """Dynamically sets the number of extra forms. 0 if the related object
+        already exists or the extra configuration otherwise."""
+        try:
+            if obj.invoice.status == 'submitted':
+                return obj.workvisit_set.count()
+            super(WorkVisitProxyInline, self).get_max_num(request, obj, **kwargs)
+        except:
+            super(WorkVisitProxyInline, self).get_max_num(request, obj, **kwargs)
+
 
 
 class SafetyVisitProxyInline(nested_admin.NestedTabularInline):
@@ -105,11 +128,17 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
         except Exception as e:
             print(e)
 
+from django.contrib.admin import TabularInline
 class WorkOrderInline(nested_admin.NestedTabularInline):
     model = WorkOrder
     formset = WOFormSet
     inlines = [WorkVisitProxyInline]
+    insert_after = 'subtotal'
     readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
+
+    template = "admin/provider/sr_tabular.html"
+    # fieldset_template = "admin/provider/sr_tabular.html"
+    # formset_template = "admin/provider/sr_tabular.html"
 
 
     def get_fields(self, request, obj=None):
@@ -152,13 +181,28 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
             return 0
         return len(get_locations_by_system_user(request.user).values_list('id', flat=True))
 
+    def get_max_num(self, request, obj=None, **kwargs):
+        """Dynamically sets the number of extra forms. 0 if the related object
+        already exists or the extra configuration otherwise."""
+        try:
+            if obj.invoice.status == 'submitted':
+                return get_locations_by_system_user(request.user).count()
+            super(WorkOrderInline, self).get_max_num(request, obj, **kwargs)
+        except:
+            super(WorkOrderInline, self).get_max_num(request, obj, **kwargs)
 
+    def get_readonly_fields(self, request, obj=None):
+        print(obj)
+        if obj.status == 'submitted':
+                return ['work_order_code', 'building', 'last_service_date', 'storm_name', 'is_discrepant']
+        else:
+            return ['work_order_code', 'building', 'is_discrepant']
 
 
 # Start ModelAdmins
 class SafetyReportAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
-    list_display=['reports', 'status']
+    list_display=['reports', 'status', 'marked_safe', 'serviced_count']
     inlines = [SafetyReportInline]
     readonly_fields = ['status', 'dispute_status']
     limited_manytomany_fields = {}
@@ -167,10 +211,25 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
 
     change_list_template = "admin/provider/safety_report_changelist.html"
 
+    def marked_safe(self, obj):
+        try:
+            marked_safe = obj.marked_safe_count
+            total_lines = obj.total_safety_count
+            return "{0}/{1}".format(marked_safe, total_lines)
+        except:
+            return 'N/A'
+
+    def serviced_count(self, obj):
+        try:
+            marked_serviced = obj.marked_safe_count
+            total_lines = obj.total_safety_count
+            return "{0}/{1}".format(marked_serviced, total_lines)
+        except:
+            return 'N/A'
+
     def get_queryset(self, request):
         qs = super(SafetyReportAdmin, self).get_queryset(request)
-        prelim = SafetyReportVendor.objects.filter(status__in=['not_created', 'safety_report'],
-                                          service_provider__system_user=request.user)
+        prelim = SafetyReportVendor.objects.filter(service_provider__system_user=request.user)
         return prelim
 
     def render_change_form(self, request, context, *args, **kwargs):
@@ -205,7 +264,9 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
         work_orders = []
         safety_reports = []
         for inv in remove:
-            parent.safetyreport_set.set(inv.safetyreport_set.all())
+            for sr in inv.safetyreport_set.all():
+                sr.invoice = parent
+                sr.save()
             inv.delete()
         for safety_report in parent.safetyreport_set.all():
             work_order_code = 'T'.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVXYZ') for i in range(6))
@@ -229,21 +290,19 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
 
 class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelAdmin):
     resource_class = VendorInvoiceProxyResource
-    exclude=['remission_address', 'address_info_storage']
-    list_display=['invoices', 'status']
+    exclude = ['remission_address', 'address_info_storage']
+    list_display = ['invoices', 'status']
     readonly_fields = ['status', 'dispute_status']
     inlines = [WorkOrderInline]
     limited_manytomany_fields = {}
 
     def get_queryset(self, request):
         qs = super(PrelimInvoiceAdmin, self).get_queryset(request)
-        prelim = InvoiceVendor.objects.filter(status__in=['preliminary_created', 'submitted'],
-                                          service_provider__system_user=request.user)
+        prelim = InvoiceVendor.objects.filter(service_provider__system_user=request.user)
         return prelim
 
     actions=['finalize_submit_invoice']
 
-    change_list_template = "admin/provider/safety_report_changelist.html"
 
     def render_change_form(self, request, context, *args, **kwargs):
         context['adminform'].form.fields['service_provider'].queryset = Vendor.objects.filter(system_user=request.user)
@@ -289,9 +348,13 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_readonly_fields(self, request, obj=None):
         if obj.status == 'submitted':
-            return ['status', 'storm_name', 'storm_date', 'dispute_status']
+            return ['status', 'storm_name', 'storm_date', 'dispute_status', 'status', 'dispute_status']
         else:
+            return ['remission_address', 'address_info_storage', 'status', 'dispute_status']
+
+    def get_hidden_fields(self, request, obj=None):
             return ['remission_address', 'address_info_storage']
+
 
     finalize_submit_invoice.short_description = "Finalize and submit invoice"
 

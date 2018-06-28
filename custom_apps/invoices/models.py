@@ -232,6 +232,21 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     def total_cost_delta(self):
         return self.aggregate_predicted_storm_total - self.aggregate_invoiced_storm_total
 
+    # @cached_property
+    @property
+    def marked_safe_count(self):
+        return self.safetyreport_set.first().safetyvisit_set.filter(safe_to_open=True).count()
+
+    # @cached_property
+    @property
+    def serviced_count(self):
+        return self.safetyreport_set.first().safetyvisit_set.filter(site_serviced=True).count()
+
+    # @cached_property
+    @property
+    def total_safety_count(self):
+        return self.safetyreport_set.first().safetyvisit_set.count()
+
 # manager for the below relation
 class BuildingManager(models.Manager):
     def get_queryset(self):
@@ -476,6 +491,12 @@ class WorkVisit(BaseModel):
 class SafetyReport(BaseModel):
     invoice = models.ForeignKey('invoices.Invoice', null=True, blank=True)
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
+    inspection_date = models.DateField(help_text='Date of the safety check', blank=True, null=True, default='2017-12-08')
+    site_serviced = models.BooleanField('Site Serviced?', default=True)
+    safe_to_open = models.BooleanField('Safe to open site?', default=True)
+    safety_concerns = models.CharField('Concerns/Extra Instructions', max_length=255, blank=True, null=True)
+    haul_stack_status = models.IntegerField('Snow hauling or stacking required?', choices=SnowStatus.choices(), default=0, null=True, blank=True)
+    haul_stack_estimate = DollarsField('Cost estimate for future snow hauling or stacking', default=0, null=True, blank=True)
 
     #audit = AuditTrailWatcher()
 
@@ -507,8 +528,7 @@ class SafetyReport(BaseModel):
     @cached_property
     def aggregate_predicted_plows(self):
         try:
-            snowfall = int(self.snowfall)
-            predicted = int(snowfall) / 2
+            predicted = self.snowfall / 2
             return predicted
         except Exception as e:
             return 0

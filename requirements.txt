@@ -35,3 +35,7 @@ django-admin-easy==0.4.1
 django-admin-view-permission
 django-admin-rangefilter
 django-inline-actions
+django-admin-comments
+django-hijack
+django-hijack-admin
+Werkzeug

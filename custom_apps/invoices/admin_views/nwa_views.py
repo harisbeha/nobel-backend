@@ -127,7 +127,7 @@ class ServiceForecastAdmin(admin.ModelAdmin):
                     'aggregate_predicted_plow_cost', 'aggregate_predicted_storm_total']
 
     def safety_report_url(self, obj):
-        return '<a href="https://nobel-weather-dev.herokuapp.com/nwa/invoices/workproxyservicediscrepancy/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
+        return '<a href="/nwa/invoices/serviceforecastitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
 
     safety_report_url.allow_tags = True
     safety_report_url.short_description = 'Safety Report'
@@ -153,7 +153,7 @@ class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
                     'plow_cost_delta', 'total_cost_delta']
 
     def show_id_url(self, obj):
-        return '<a href="https://nobel-weather-dev.herokuapp.com/nwa/invoices/workproxyservicediscrepancy/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
+        return '<a href="/nwa/invoices/discrepancyreportitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
 
     show_id_url.allow_tags = True
     show_id_url.short_description = 'Invoice'

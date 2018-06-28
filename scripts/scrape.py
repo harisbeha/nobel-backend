@@ -9,8 +9,7 @@ from html.parser import HTMLParser
 SCRAPE_API_KEY = os.environ.get('SCRAPE_API_KEY', 'cst_37mqLLFuPbUfQUYEwKNO2fir2B')
 
 # default: 15 days
-SCRAPE_SINCE = int(time.time()) - int(os.environ.get('SCRAPE_SINCE', 60*60*24*365))
-
+SCRAPE_SINCE = int(time.time()) - int(os.environ.get('SCRAPE_SINCE', 60*60*24*1000))
 
 def get_raw(scrape_since, api_key):
     r = requests.get('https://certifiedsnowfalltotals.com/api/storms',
@@ -38,7 +37,7 @@ class MLStripper(HTMLParser):
         self.fed.append(d)
 
     def get_data(self):
-        return '. '.join(self.fed)
+        return ', \r\n'.join(self.fed)
 
 
 def strip_tags(html):
