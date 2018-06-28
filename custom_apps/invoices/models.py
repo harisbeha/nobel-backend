@@ -160,7 +160,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     def aggregate_predicted_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
-            predicted_cost += work_order.aggregate_predicted_salt_cost
+            predicted_cost += Decimal(work_order.aggregate_predicted_salt_cost)
         return predicted_cost
 
     @property
@@ -417,7 +417,7 @@ class WorkOrder(BaseModel):
     def aggregate_predicted_plow_cost(self):
         try:
             snowfall = self.snowfall
-            if snowfall:
+            if snowfall != None:
                 return (self.aggregate_predicted_plows * self.building.plow_rate) + self.building.plow_tax
         except Exception as e:
             print(e)
@@ -427,7 +427,7 @@ class WorkOrder(BaseModel):
     def aggregate_predicted_salt_cost(self):
         try:
             refreeze = self.has_ice
-            if refreeze:
+            if refreeze != None:
                 return (self.aggregate_predicted_salts * self.building.deice_rate) + self.building.deice_tax
         except Exception as e:
             print(e)
