@@ -26,6 +26,12 @@ class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     readonly_fields = []
     classes = ['collapse']
 
+class SubmittedWorkOrderInline(nested_admin.NestedTabularInline):
+    model = WorkVisit
+    extra = 1
+    readonly_fields = ['num_plows', 'num_salts', 'service_failed']
+    classes = ['collapse']
+
 # Inlines
 
 class WorkOrderInline(nested_admin.NestedTabularInline):
@@ -284,17 +290,22 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
 class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
     list_display=['invoices', 'status']
-    inlines = [WorkOrderInline]
+    inlines = [SubmittedWorkOrderInline]
     readonly_fields = []
     limited_manytomany_fields = {}
+
+    actions = ['approve_invoice']
 
     def get_queryset(self, request):
         qs = super(SubmittedInvoiceAdmin, self).get_queryset(request)
         return qs.filter(status__in=['submitted'])
 
     def get_readonly_fields(self, request, obj=None):
-            return ['status', 'storm_name', 'storm_date', 'dispute_status', 'status', 'dispute_status']
-
+            return ['status', 'storm_name', 'storm_date', 'dispute_status', 'status', 'dispute_status', 'service_provider']
 
     def invoices(self, obj):
         return obj
+
+    def approve_invoice(self, request, queryset):
+        rows_updated = queryset.update(status='approved')
+        return HttpResponseRedirect("/nwa/invoices/discrepancyreportnwa/")

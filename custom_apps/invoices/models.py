@@ -47,7 +47,7 @@ INVOICE_STATUSES = (
     ('submitted', 'Invoice Submitted - In Review'),
     ('reviewed', 'Reviewed'),
     ('dispute', 'In Dispute'),
-    ('finalized', 'Finalized'),
+    ('approved', 'Approved'),
 )
 
 
