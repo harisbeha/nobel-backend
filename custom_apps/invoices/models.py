@@ -8,12 +8,12 @@ from model_utils import FieldTracker
 from custom_apps.invoices.enums import *
 from custom_apps.utils.fields import AddressField, DollarsField, AddressMetadataStorageMixin
 from ..utils.models import BaseModel
-from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_accumulation_data
+from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_accumulation_data, fetch_for_accumulation_zip
 from django.conf import settings
 from django.contrib import admin
 from django.utils.functional import cached_property
 from decimal import Decimal
-
+from django.contrib.postgres.fields import JSONField
 
 # An invoice (e.g. https://drive.google.com/file/d/1XWeqbQ-VRXV4C4zy6mOwv2Sasnwpv2WO/view) has multiple work orders
 # and a work order has multiple jobs
@@ -160,7 +160,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     def aggregate_predicted_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
-            predicted_cost += work_order.aggregate_predicted_salt_cost
+            predicted_cost += Decimal(work_order.aggregate_predicted_salt_cost)
         return predicted_cost
 
     @property
@@ -350,7 +350,7 @@ class WorkOrder(BaseModel):
     service_provider = models.ForeignKey('invoices.Vendor', null=True, blank=True)
     invoice = models.ForeignKey('invoices.Invoice', blank=True, null=True)
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
-
+    verify_weather = JSONField(null=True, blank=True, default={})
     storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100, blank=True, null=True)
     is_discrepant = models.BooleanField(default=False)
 
@@ -366,26 +366,38 @@ class WorkOrder(BaseModel):
     @property
     def has_ice(self):
         try:
-            # has_ice = _query_accumulation_data(self.building.zip_code,
-            #                                    settings.DEMO_SNOWFALL_DATA_START,
-            #                                    settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            # return has_ice if has_ice else 0
-            return Decimal(1)
+            start = self.workvisit_set.first().order_by('-created').first()
+            end = self.workvisit_set.first().order_by('-created').last()
+            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
+            ice = Decimal(1) if has_ice else Decimal(0)
+            return ice
         except Exception as e:
-            print(e)
-            return 0
+            return Decimal(0)
+
+    @property
+    def refreeze(self):
+        try:
+            start = self.workvisit_set.first().order_by('-created').first()
+            end = self.workvisit_set.first().order_by('-created').last()
+            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
+            ice = Decimal(1) if has_ice else Decimal(0)
+            return ice
+        except Exception as e:
+            return Decimal(0)
 
     @property
     def snowfall(self):
         try:
-            # snowfall = _query_accumulation_data(self.building.zip_code,
-            #                                     settings.DEMO_SNOWFALL_DATA_START,
-            #                                     settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-            # return snowfall if snowfall else 0
-            return Decimal(1)
+            start = self.workvisit_set.first().order_by('-created').first()
+            end = self.workvisit_set.first().order_by('-created').last()
+            snowfall = self.verify_weather.get('snowfall', 'pull')
+            if snowfall == 'pull':
+                snowfall = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['snowfall']
+            if snowfall == None:
+                return Decimal(0)
+            return Decimal(snowfall)
         except Exception as e:
-            print(e)
-            return 0
+            return Decimal(0)
 
     @property
     def aggregate_predicted_plows(self):
@@ -411,7 +423,7 @@ class WorkOrder(BaseModel):
     def aggregate_predicted_plow_cost(self):
         try:
             snowfall = self.snowfall
-            if snowfall:
+            if snowfall != None:
                 return (self.aggregate_predicted_plows * self.building.plow_rate) + self.building.plow_tax
         except Exception as e:
             print(e)
@@ -421,7 +433,7 @@ class WorkOrder(BaseModel):
     def aggregate_predicted_salt_cost(self):
         try:
             refreeze = self.has_ice
-            if refreeze:
+            if refreeze != None:
                 return (self.aggregate_predicted_salts * self.building.deice_rate) + self.building.deice_tax
         except Exception as e:
             print(e)
@@ -560,6 +572,7 @@ class SafetyReport(BaseModel):
     safety_concerns = models.CharField('Concerns/Extra Instructions', max_length=255, blank=True, null=True)
     haul_stack_status = models.IntegerField('Snow hauling or stacking required?', choices=SnowStatus.choices(), default=0, null=True, blank=True)
     haul_stack_estimate = DollarsField('Cost estimate for future snow hauling or stacking', default=0, null=True, blank=True)
+    verify_weather = JSONField(null=True, blank=True, default={})
 
     #audit = AuditTrailWatcher()
 
@@ -569,51 +582,61 @@ class SafetyReport(BaseModel):
     @property
     def has_ice(self):
         try:
-            # has_ice = _query_accumulation_data(self.building.zip_code,
-            #                                    settings.DEMO_SNOWFALL_DATA_START,
-            #                                    settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            # return has_ice if has_ice else 0
-            return 1
+            has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
+            ice = Decimal(1) if has_ice else Decimal(0)
+            return ice
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
+
+    @property
+    def refreeze(self):
+        try:
+            has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
+            ice = Decimal(1) if has_ice else Decimal(0)
+            return ice
+        except Exception as e:
+            print(e)
+            return Decimal(0)
 
     @property
     def snowfall(self):
         try:
-            # snowfall = _query_accumulation_data(self.building.zip_code,
-            #                                     settings.DEMO_SNOWFALL_DATA_START,
-            #                                     settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-            # return snowfall if snowfall else 0
-            return 1
+            snowfall = self.verify_weather.get('snowfall', 'pull')
+            if snowfall != 'pull':
+                return snowfall
+            else:
+                snowfall = _query_accumulation_data(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['snowfall']
+                return snowfall
+            return Decimal(0)
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
     @property
     def aggregate_predicted_plows(self):
         try:
             predicted = self.snowfall / 2
-            return predicted
+            return Decimal(predicted)
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
     @property
     def aggregate_predicted_salts(self):
         try:
             refreeze = self.has_ice
-            predicted = 2 if refreeze else 2
+            predicted = Decimal(2) if refreeze else Decimal(2)
             return predicted
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
     @property
     def aggregate_predicted_plow_cost(self):
         try:
             snowfall = self.snowfall
-            return (self.aggregate_predicted_plows * self.building.plow_rate) + self.building.plow_tax
+            return (Decimal(self.aggregate_predicted_plows) * self.building.plow_rate) + self.building.plow_tax
         except Exception as e:
             print(e)
             return 0
@@ -623,14 +646,17 @@ class SafetyReport(BaseModel):
         try:
             refreeze = self.has_ice
             if refreeze:
-                return (self.aggregate_predicted_salts * self.building.deice_rate) + self.building.deice_tax
+                return (Decimal(self.aggregate_predicted_salts) * self.building.deice_rate) + self.building.deice_tax
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
     @property
     def aggregate_predicted_storm_total(self):
-        return self.aggregate_predicted_plow_cost + self.aggregate_predicted_salt_cost
+        try:
+            return Decimal(self.aggregate_predicted_plow_cost + self.aggregate_predicted_salt_cost)
+        except:
+            return Decimal(0)
 
     @property
     def storm_days(self):

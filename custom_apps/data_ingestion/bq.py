@@ -3,9 +3,10 @@ import json
 from django.conf import settings
 from google.cloud.bigquery import Client, ScalarQueryParameter, QueryJobConfig
 import random
-
+import time
+import datetime
 from custom_apps.utils import redis_client
-
+from datetime import timezone
 _client = None
 
 
@@ -16,19 +17,19 @@ def _get_client():
     return _client
 
 
-ACCUMULATION_QUERY = '''SELECT
-  logical_or(precip_type LIKE '%Sleet%') AS has_ice,
-  max(timestamp_diff(`end`, `start`, HOUR)) AS duration,
-  sum(total_accumulation) as snowfall
+ACCUMULATION_QUERY = '''
+SELECT
+  logical_or(precipitationType = 6) AS has_ice,
+  sum(total) as snowfall
   FROM
     dev.cst_snowfall_data
   WHERE
-    precip_type = 'Snow'
-    AND `zipcode` = @zipcode
-    AND `end` <= @enddate
-    AND `start` >= @startdate
+    zipCode = @zipcode
+    AND startTime <= @startdate
+    AND endTime >= @enddate
   LIMIT
-   1000 '''
+   1200
+'''
 
 
 def make_accumulation_key(zipcode, start, end):
@@ -36,31 +37,39 @@ def make_accumulation_key(zipcode, start, end):
 
 
 # TODO: NOTHING TO DO - STUFF IS HARDCODED HERE - NEVER FORGET
-def _query_accumulation_data(zipcode, start, end):
+def _query_accumulation_data(zipcode, start, end, safety_report=None, work_order=None):
     bq = _get_client()
+    start_time = start.strftime("%F")
+    end_time = end.strftime("%F")
     query_params = [
         ScalarQueryParameter('zipcode', 'INT64', zipcode),
-        ScalarQueryParameter('startdate', 'TIMESTAMP', '2017-12-06'),
-        ScalarQueryParameter('enddate', 'TIMESTAMP', '2018-12-11'),
+        ScalarQueryParameter('startdate', 'TIMESTAMP', start_time),
+        ScalarQueryParameter('enddate', 'TIMESTAMP', end_time)
     ]
     job_config = QueryJobConfig()
     job_config.query_parameters = query_params
     query = bq.query(ACCUMULATION_QUERY, job_config=job_config)
+    print('failing here?')
     result = query.result()
-    r = dict(list(result)[0].items())
+    r = result._field_to_index
     return r
 
 
-def query_for_accumulation_zip(zipcode, start, end):
+def query_for_accumulation_zip(zipcode, start, end, safety_report=None, work_order=None):
     cache_key = make_accumulation_key(zipcode, start, end)
     cached_result = redis_client.get_key(cache_key)
+    print(cache_key)
+    print(cached_result)
     if cached_result is not None:
         try:
-            return json.loads(cached_result)
-        except ValueError:
-            pass
+            return cached_result
+        except Exception as e:
+            print(e)
     from .tasks import ingest_snowfall_data
-    ingest_snowfall_data.delay(zipcode, start, end)
+    if safety_report:
+        ingest_snowfall_data.delay(zipcode, start, end, safety_report)
+    if work_order:
+        ingest_snowfall_data.delay(zipcode, start, end, work_order)
 
 
 def fetch_for_accumulation_zip(zipcode, start, end, safety_report=None, work_order=None):
@@ -71,20 +80,5 @@ def fetch_for_accumulation_zip(zipcode, start, end, safety_report=None, work_ord
         r = _query_accumulation_data(zipcode, start, end)
         redis_client.set_key(cache_key, json.dumps(r))
         redis_client.del_key(fetch_key)
-    if safety_report:
-        snowfall = safety_report.snowfall
-        has_ice = safety_report.has_ice
-        predicted_plows = safety_report.aggregate_predicted_plows
-        predicted_salts = safety_report.aggregate_predicted_salts
-        work_order.is_discrepant = True
-        work_order.save()
-
-    if work_order:
-        snowfall = work_order.snowfall
-        has_ice = work_order.has_ice
-        predicted_plows = work_order.aggregate_predicted_plows
-        predicted_salts = work_order.aggregate_predicted_salts
-        work_order.is_discrepant = True
-        work_order.save()
 
 # print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))
