@@ -150,7 +150,7 @@ class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
     resource_class=InvoiceResource
     list_filter = ('id',)
     generated_discrept_dict = {}
-    list_display = ['show_id_url', 'id', 'service_provider', 'locations', 'aggregate_snowfall', 'aggregate_refreeze',
+    list_display = ['show_id_url', 'discrepancy_count', 'id', 'service_provider', 'locations', 'aggregate_snowfall', 'aggregate_refreeze',
                     'storm_days_invoiced', 'aggregate_refreeze', 'aggregate_invoiced_salts', 'aggregate_predicted_salts', 'aggregate_salt_delta',
                     'aggregate_invoiced_plows', 'aggregate_predicted_plows', 'aggregate_plow_delta', 'aggregate_salt_cost_delta',
                     'aggregate_plow_cost_delta', 'total_cost_delta']
@@ -216,7 +216,7 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
     list_filter = ('invoice__id',)
     inlines = [CommentInline,]
     actions = ['override_discrepancy']
-    list_display = ['is_discrepant', 'view_work_order', 'invoice', 'service_provider', 'building', 'deice_rate',
+    list_display = ['view_work_order', 'is_discrepant', 'invoice', 'service_provider', 'building', 'deice_rate',
                     'deice_tax', 'plow_rate',
                     'plow_tax', 'snowfall', 'storm_days', 'has_ice',
                     'aggregate_predicted_salts', 'aggregate_invoiced_salts', 'aggregate_salt_delta', 'aggregate_predicted_plows',
@@ -224,12 +224,14 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
 
     generated_discrept_dict = {}
 
+
     def override_discrepancy(self, request, queryset):
         rows_updated = queryset.update(is_discrepant=False)
         return HttpResponseRedirect("/nwa/invoices/discrepancyreportnwa/")
 
     def view_work_order(self, obj):
-        return u'<a href="/nwa/invoices/discrepancyreportitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.work_order_code)
+        # return u'<a href="/nwa/invoices/discrepancyreportitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.work_order_code)
+        return '{0}'.format(obj.work_order_code)
 
     def aggregate_salt_delta(self, obj):
         try:

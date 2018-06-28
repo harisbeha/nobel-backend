@@ -22,20 +22,19 @@ client = Client('https://4d87c7cd417f4e14be43597f3ffac1b3:d46f2a1776a54a8a80d3d8
 class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     model = WorkVisit
     extra = 0
-    readonly_fields = []
     insert_after = 'subtotal'
     classes = []
 
     template = "admin/provider/sr_tabular_subinline.html"
 
-    def get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(self, request, obj=None, **kwargs):
         try:
             if obj.invoice.status == 'submitted':
                 return ['num_plows', 'num_salts', 'failed_service', 'service_date', 'service_time']
             else:
-                return ['work_order_code', 'building']
+                return super(WorkVisitProxyInline, self).get_readonly_fields(request, obj, **kwargs)
         except:
-            return ['num_plows', 'num_salts', 'failed_service', 'service_date', 'service_time']
+            return super(WorkVisitProxyInline, self).get_readonly_fields(request, obj, **kwargs)
 
     def get_max_num(self, request, obj=None, **kwargs):
         """Dynamically sets the number of extra forms. 0 if the related object
@@ -62,7 +61,6 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
     model = SafetyReport
     form = SafetyReportForm
     formset = SRFormSet
-    inlines = [SafetyVisitProxyInline]
 
     def get_formset(self, request, obj=None, **kwargs):
         """
@@ -194,9 +192,9 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
     def get_readonly_fields(self, request, obj=None):
         print(obj)
         if obj.status == 'submitted':
-                return ['work_order_code', 'building', 'last_service_date', 'storm_name', 'is_discrepant']
+                return ['work_order_code', 'building', 'storm_name', 'is_discrepant', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
         else:
-            return ['work_order_code', 'building', 'is_discrepant']
+            return ['work_order_code', 'building', 'is_discrepant', 'deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
 
 
 # Start ModelAdmins
@@ -221,7 +219,7 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
 
     def serviced_count(self, obj):
         try:
-            marked_serviced = obj.marked_safe_count
+            marked_serviced = obj.serviced_count
             total_lines = obj.total_safety_count
             return "{0}/{1}".format(marked_serviced, total_lines)
         except:
@@ -256,28 +254,32 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
 
 
     def rollup_closeout(self, request, queryset):
-        import random
-        from itertools import chain
-        combined_list = []
-        parent = queryset.first()
-        remove = queryset.exclude(id=parent.id)
-        work_orders = []
-        safety_reports = []
-        for inv in remove:
-            for sr in inv.safetyreport_set.all():
-                sr.invoice = parent
-                sr.save()
-            inv.delete()
-        for safety_report in parent.safetyreport_set.all():
-            work_order_code = 'T'.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVXYZ') for i in range(6))
-            work_order, wo_created = WorkOrder.objects.get_or_create(building=safety_report.building,
-                                            invoice=safety_report.invoice,
-                                            work_order_code=work_order_code)
-            for safety_visit in safety_report.safetyvisit_set.filter(site_serviced=True):
-                workvisit, wv_created = WorkVisit.objects.get_or_create(service_date=safety_visit.inspection_date, work_order_id=work_order.id)
-        parent.status = 'preliminary_created'
-        parent.save()
-        return HttpResponseRedirect("/provider/invoices/invoicevendor/")
+        try:
+            import random
+            from itertools import chain
+            combined_list = []
+            parent = queryset.first()
+            remove = queryset.exclude(id=parent.id)
+            work_orders = []
+            safety_reports = []
+            for inv in remove:
+                for sr in inv.safetyreport_set.all():
+                    sr.invoice = parent
+                    sr.save()
+            for safety_report in parent.safetyreport_set.all():
+                work_order_code = 'T'.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVXYZ') for i in range(6))
+                work_order, wo_created = WorkOrder.objects.get_or_create(building=safety_report.building,
+                                                invoice=safety_report.invoice,
+                                                work_order_code=work_order_code)
+                if safety_report.site_serviced:
+                    workvisit, wv_created = WorkVisit.objects.get_or_create(service_date=safety_report.inspection_date,
+                                                                            work_order=work_order)
+            parent.status = 'preliminary_created'
+            parent.save()
+            remove.delete()
+            return HttpResponseRedirect("/provider/invoices/invoicevendor/")
+        except Exception as e:
+            print(e)
 
     rollup_closeout.short_description = "Generate Closeout Report"
 
