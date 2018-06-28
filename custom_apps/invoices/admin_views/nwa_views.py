@@ -259,7 +259,7 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
 
     def salt_cost_delta(self, obj):
         try:
-            if obj.aggregate_deice_cost_delta > 0:
+            if obj.salt_cost_delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.salt_cost_delta)
             else:
                 return obj.salt_cost_delta
@@ -271,7 +271,7 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
 
     def plow_cost_delta(self, obj):
         try:
-            if obj.aggregate_plow_cost_delta > 0:
+            if obj.plow_cost_delta > 0:
                 return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.plow_cost_delta)
             else:
                 return obj.plow_cost_delta
