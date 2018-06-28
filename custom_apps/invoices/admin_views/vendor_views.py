@@ -15,8 +15,6 @@ from django.utils.functional import curry
 from decimal import *
 from django.contrib.admin.utils import flatten_fieldsets
 
-client = Client('https://4d87c7cd417f4e14be43597f3ffac1b3:d46f2a1776a54a8a80d3d8ab57717c71@sentry.io/1219530')
-
 
 # Start Subinlines
 class WorkVisitProxyInline(nested_admin.NestedTabularInline):
@@ -61,6 +59,7 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
     model = SafetyReport
     form = SafetyReportForm
     formset = SRFormSet
+    exclude = ['verify_weather']
 
     def get_formset(self, request, obj=None, **kwargs):
         """
@@ -199,8 +198,8 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
 
 # Start ModelAdmins
 class SafetyReportAdmin(nested_admin.NestedModelAdmin):
-    exclude=['remission_address', 'address_info_storage']
-    list_display=['reports', 'status', 'marked_safe', 'serviced_count']
+    exclude=['remission_address', 'address_info_storage', 'weather_ready']
+    list_display=['reports', 'status', 'marked_safe', 'serviced_count', 'storm_date']
     inlines = [SafetyReportInline]
     readonly_fields = ['status', 'dispute_status']
     limited_manytomany_fields = {}
@@ -292,7 +291,7 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
 
 class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelAdmin):
     resource_class = VendorInvoiceProxyResource
-    exclude = ['remission_address', 'address_info_storage']
+    exclude = ['remission_address', 'address_info_storage', 'weather_ready']
     list_display = ['invoices', 'status']
     readonly_fields = ['status', 'dispute_status']
     inlines = [WorkOrderInline]
@@ -350,7 +349,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_readonly_fields(self, request, obj=None):
         if obj.status == 'submitted':
-            return ['status', 'storm_name', 'storm_date', 'dispute_status', 'status', 'dispute_status']
+            return ['status', 'storm_name', 'storm_date', 'weather_ready', 'dispute_status']
         else:
             return ['remission_address', 'address_info_storage', 'status', 'dispute_status']
 
