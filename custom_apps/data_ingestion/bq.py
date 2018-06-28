@@ -16,19 +16,19 @@ def _get_client():
     return _client
 
 
-ACCUMULATION_QUERY = '''SELECT
-  logical_or(precip_type LIKE '%Sleet%') AS has_ice,
-  max(timestamp_diff(`end`, `start`, HOUR)) AS duration,
-  sum(total_accumulation) as snowfall
+ACCUMULATION_QUERY = '''
+SELECT
+  logical_or(precipitationType = 6) AS has_ice,
+  sum(total) as snowfall
   FROM
     dev.cst_snowfall_data
   WHERE
-    precip_type = 'Snow'
-    AND `zipcode` = @zipcode
-    AND `end` <= @enddate
-    AND `start` >= @startdate
+    zipCode = @zipcode
+    AND startTime <= @startdate
+    AND endTime >= @enddate
   LIMIT
-   1000 '''
+   1200
+'''
 
 
 def make_accumulation_key(zipcode, start, end):
@@ -51,16 +51,19 @@ def _query_accumulation_data(zipcode, start, end):
     return r
 
 
-def query_for_accumulation_zip(zipcode, start, end):
+def query_for_accumulation_zip(zipcode, start, end, safety_report=None, work_order=None):
     cache_key = make_accumulation_key(zipcode, start, end)
     cached_result = redis_client.get_key(cache_key)
     if cached_result is not None:
         try:
             return json.loads(cached_result)
-        except ValueError:
-            pass
+        except Exception as e:
+            print(e)
     from .tasks import ingest_snowfall_data
-    ingest_snowfall_data.delay(zipcode, start, end)
+    if safety_report:
+        ingest_snowfall_data.delay(zipcode, start, end, safety_report)
+    if work_order:
+        ingest_snowfall_data.delay(zipcode, start, end, work_order)
 
 
 def fetch_for_accumulation_zip(zipcode, start, end, safety_report=None, work_order=None):
@@ -71,20 +74,5 @@ def fetch_for_accumulation_zip(zipcode, start, end, safety_report=None, work_ord
         r = _query_accumulation_data(zipcode, start, end)
         redis_client.set_key(cache_key, json.dumps(r))
         redis_client.del_key(fetch_key)
-    if safety_report:
-        snowfall = safety_report.snowfall
-        has_ice = safety_report.has_ice
-        predicted_plows = safety_report.aggregate_predicted_plows
-        predicted_salts = safety_report.aggregate_predicted_salts
-        work_order.is_discrepant = True
-        work_order.save()
-
-    if work_order:
-        snowfall = work_order.snowfall
-        has_ice = work_order.has_ice
-        predicted_plows = work_order.aggregate_predicted_plows
-        predicted_salts = work_order.aggregate_predicted_salts
-        work_order.is_discrepant = True
-        work_order.save()
 
 # print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))

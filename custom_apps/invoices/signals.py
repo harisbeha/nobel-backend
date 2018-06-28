@@ -2,7 +2,6 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 # replace with shortcut get grab auth model
-
 from .models import *
 
 
@@ -28,6 +27,16 @@ def create_work_orders(sender, instance, created, **kwargs):
     #                                 work_order_code=work_order_code)
 
 @receiver(post_save, sender=SafetyReport)
-def email_safety_report(sender, instance, created, **kwargs):
-    import random
-    from custom_apps.invoices.models import WorkOrder
+def ingest_safetyreport_data(sender, instance, created, **kwargs):
+    from custom_apps.data_ingestion.bq import query_for_accumulation_zip
+    if created:
+        query_for_accumulation_zip(instance.building.zip_code, instance.first().service_date,
+                                   instance.last().service_date, work_order=instance)
+
+@receiver(post_save, sender=WorkOrder)
+def ingest_workorder_data(sender, instance, created, **kwargs):
+    from custom_apps.data_ingestion.bq import query_for_accumulation_zip
+    if created:
+        query_for_accumulation_zip(instance.building.zip_code, instance.inspection_date, instance.inspection_date,
+                                   safety_report=instance)
+

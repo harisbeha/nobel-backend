@@ -8,7 +8,7 @@ from model_utils import FieldTracker
 from custom_apps.invoices.enums import *
 from custom_apps.utils.fields import AddressField, DollarsField, AddressMetadataStorageMixin
 from ..utils.models import BaseModel
-from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_accumulation_data
+from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_accumulation_data, fetch_for_accumulation_zip
 from django.conf import settings
 from django.contrib import admin
 from django.utils.functional import cached_property
@@ -366,25 +366,31 @@ class WorkOrder(BaseModel):
     @property
     def has_ice(self):
         try:
-            # has_ice = _query_accumulation_data(self.building.zip_code,
-            #                                    settings.DEMO_SNOWFALL_DATA_START,
-            #                                    settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            # return has_ice if has_ice else 0
-            return Decimal(1)
+            start = self.workvisit_set.first().order_by('-created').first()
+            end = self.workvisit_set.first().order_by('-created').last()
+            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
+            return 1 if has_ice else 0
         except Exception as e:
-            print(e)
+            return 0
+
+    @property
+    def refreeze(self):
+        try:
+            start = self.workvisit_set.first().order_by('-created').first()
+            end = self.workvisit_set.first().order_by('-created').last()
+            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
+            return 1 if has_ice else 0
+        except Exception as e:
             return 0
 
     @property
     def snowfall(self):
         try:
-            # snowfall = _query_accumulation_data(self.building.zip_code,
-            #                                     settings.DEMO_SNOWFALL_DATA_START,
-            #                                     settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-            # return snowfall if snowfall else 0
-            return Decimal(1)
+            start = self.workvisit_set.first().order_by('-created').first()
+            end = self.workvisit_set.first().order_by('-created').last()
+            snowfall = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['snowfall']
+            return snowfall if snowfall else 0
         except Exception as e:
-            print(e)
             return 0
 
     @property
@@ -569,25 +575,25 @@ class SafetyReport(BaseModel):
     @property
     def has_ice(self):
         try:
-            # has_ice = _query_accumulation_data(self.building.zip_code,
-            #                                    settings.DEMO_SNOWFALL_DATA_START,
-            #                                    settings.DEMO_SNOWFALL_DATA_END)['has_ice']
-            # return has_ice if has_ice else 0
-            return 1
+            has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
+            return 1 if has_ice else 0
         except Exception as e:
-            print(e)
+            return 0
+
+    @property
+    def refreeze(self):
+        try:
+            has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
+            return 1 if has_ice else 0
+        except Exception as e:
             return 0
 
     @property
     def snowfall(self):
         try:
-            # snowfall = _query_accumulation_data(self.building.zip_code,
-            #                                     settings.DEMO_SNOWFALL_DATA_START,
-            #                                     settings.DEMO_SNOWFALL_DATA_END)['snowfall']
-            # return snowfall if snowfall else 0
-            return 1
+            snowfall = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['snowfall']
+            return snowfall if snowfall else 0
         except Exception as e:
-            print(e)
             return 0
 
     @property
