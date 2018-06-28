@@ -40,8 +40,8 @@ def _query_accumulation_data(zipcode, start, end):
     bq = _get_client()
     query_params = [
         ScalarQueryParameter('zipcode', 'INT64', zipcode),
-        ScalarQueryParameter('startdate', 'TIMESTAMP', '2017-12-06'),
-        ScalarQueryParameter('enddate', 'TIMESTAMP', '2018-12-11'),
+        ScalarQueryParameter('startdate', 'TIMESTAMP', start),
+        ScalarQueryParameter('enddate', 'TIMESTAMP', end),
     ]
     job_config = QueryJobConfig()
     job_config.query_parameters = query_params
