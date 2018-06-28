@@ -39,7 +39,7 @@ def make_accumulation_key(zipcode, start, end):
 def _query_accumulation_data(zipcode, start, end):
     bq = _get_client()
     query_params = [
-        ScalarQueryParameter('zipcode', 'INT64', zipcode),
+        ScalarQueryParameter('zipcode', 'INT64', int(zipcode)),
         ScalarQueryParameter('startdate', 'TIMESTAMP', start),
         ScalarQueryParameter('enddate', 'TIMESTAMP', end),
     ]

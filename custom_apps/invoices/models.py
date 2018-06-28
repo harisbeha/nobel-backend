@@ -369,7 +369,8 @@ class WorkOrder(BaseModel):
             start = self.workvisit_set.first().order_by('-created').first()
             end = self.workvisit_set.first().order_by('-created').last()
             has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
-            return 1 if has_ice else 0
+            ice = 1 if has_ice else 0
+            return ice
         except Exception as e:
             return 0
 
@@ -379,7 +380,8 @@ class WorkOrder(BaseModel):
             start = self.workvisit_set.first().order_by('-created').first()
             end = self.workvisit_set.first().order_by('-created').last()
             has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
-            return 1 if has_ice else 0
+            ice = 1 if has_ice else 0
+            return ice
         except Exception as e:
             return 0
 
@@ -389,7 +391,8 @@ class WorkOrder(BaseModel):
             start = self.workvisit_set.first().order_by('-created').first()
             end = self.workvisit_set.first().order_by('-created').last()
             snowfall = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['snowfall']
-            return snowfall if snowfall else 0
+            accum = snowfall if snowfall else 0
+            return accum
         except Exception as e:
             return 0
 
@@ -576,24 +579,31 @@ class SafetyReport(BaseModel):
     def has_ice(self):
         try:
             has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
-            return 1 if has_ice else 0
+            ice = 1 if has_ice else 0
+            return ice
         except Exception as e:
+            print(e)
             return 0
 
     @property
     def refreeze(self):
         try:
             has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
-            return 1 if has_ice else 0
+            ice = 1 if has_ice else 0
+            return ice
         except Exception as e:
+            print(e)
             return 0
 
     @property
     def snowfall(self):
         try:
             snowfall = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['snowfall']
-            return snowfall if snowfall else 0
+            accum = snowfall if snowfall else 0
+            print('here it is', accum)
+            return accum
         except Exception as e:
+            print(e)
             return 0
 
     @property
