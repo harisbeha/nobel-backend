@@ -292,5 +292,9 @@ class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
         qs = super(SubmittedInvoiceAdmin, self).get_queryset(request)
         return qs.filter(status__in=['submitted'])
 
+    def get_readonly_fields(self, request, obj=None):
+            return ['status', 'storm_name', 'storm_date', 'dispute_status', 'status', 'dispute_status']
+
+
     def invoices(self, obj):
         return obj

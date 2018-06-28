@@ -63,6 +63,7 @@ nwa_site.register(ServiceForecastNWA, nwa_views.ServiceForecastAdmin)
 nwa_site.register(ServiceForecastItemNWA, nwa_views.ServiceForecastItemAdmin)
 nwa_site.register(DiscrepancyReportNWA, nwa_views.DiscrepancyReport)
 nwa_site.register(DiscrepancyReportItemNWA, nwa_views.DiscrepancyReportItemAdmin)
+nwa_site.register(DiscrepancyReportItemNWA, nwa_views.SubmittedInvoiceAdmin)
 
 vendor_site.register(SafetyReportVendor, vendor_views.SafetyReportAdmin)
 vendor_site.register(InvoiceVendor, vendor_views.PrelimInvoiceAdmin)
