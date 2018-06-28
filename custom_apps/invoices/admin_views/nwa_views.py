@@ -15,6 +15,8 @@ import os
 from sendgrid.helpers.mail import *
 from .helpers import get_locations_by_system_user
 from .admin_forms import WOFormSet, SRFormSet
+from admin_comments.admin import CommentInline
+
 
 # Subinlines
 
@@ -147,10 +149,11 @@ class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
     model = DiscrepancyReportNWA
     resource_class=InvoiceResource
     list_filter = ('id',)
+    generated_discrept_dict = {}
     list_display = ['show_id_url', 'id', 'service_provider', 'locations', 'aggregate_snowfall', 'aggregate_refreeze',
-                    'storm_days_invoiced', 'aggregate_refreeze', 'aggregate_invoiced_salts', 'aggregate_predicted_salts', 'salt_delta',
-                    'aggregate_invoiced_plows', 'aggregate_predicted_plows', 'push_delta', 'deice_cost_delta',
-                    'plow_cost_delta', 'total_cost_delta']
+                    'storm_days_invoiced', 'aggregate_refreeze', 'aggregate_invoiced_salts', 'aggregate_predicted_salts', 'aggregate_salt_delta',
+                    'aggregate_invoiced_plows', 'aggregate_predicted_plows', 'aggregate_plow_delta', 'aggregate_salt_cost_delta',
+                    'aggregate_plow_cost_delta', 'total_cost_delta']
 
     def show_id_url(self, obj):
         return '<a href="/nwa/invoices/discrepancyreportitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.id)
@@ -158,108 +161,123 @@ class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
     show_id_url.allow_tags = True
     show_id_url.short_description = 'Invoice'
 
-    generated_discrept_dict = {}
-
-    def salt_delta(self, obj):
+    def aggregate_salt_delta(self, obj):
         try:
-            if obj.salt_count_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.salt_count_delta)
+            if obj.aggregate_salt_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_salt_delta)
             else:
-                return 0
+                return obj.aggregate_salt_delta
         except Exception as e:
+            print(e)
             return 0
 
-    salt_delta.allow_tags = True
+    aggregate_salt_delta.allow_tags = True
 
-    def push_delta(self, obj):
+    def aggregate_plow_delta(self, obj):
         try:
-            if obj.plow_count_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.plow_count_delta)
+            if obj.aggregate_plow_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_delta)
             else:
-                return 0
+                return obj.aggregate_plow_delta
         except Exception as e:
+            print(e)
             return 0
 
-    push_delta.allow_tags = True
+    aggregate_plow_delta.allow_tags = True
 
-    def deice_cost_delta(self, obj):
+    def aggregate_salt_cost_delta(self, obj):
         try:
-            if obj.deice_cost_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.deice_cost_delta)
+            if obj.aggregate_salt_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_salt_cost_delta)
             else:
-                return 0
+                return obj.aggregate_salt_cost_delta
         except Exception as e:
+            print(e)
             return 0
 
-    deice_cost_delta.allow_tags = True
+    aggregate_salt_cost_delta.allow_tags = True
 
-    def plow_cost_delta(self, obj):
+    def aggregate_plow_cost_delta(self, obj):
         try:
-            if obj.plow_cost_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.plow_cost_delta)
+            if obj.aggregate_plow_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_cost_delta)
             else:
-                return 0
+                return obj.aggregate_plow_cost_delta
         except Exception as e:
+            print(e)
             return 0
 
-    plow_cost_delta.allow_tags = True
+    aggregate_plow_cost_delta.allow_tags = True
 
 
 class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
     model = DiscrepancyReportItemNWA
     resource_class=InvoiceResource
     list_filter = ('invoice__id',)
-    list_display = ['id', 'invoice', 'service_provider', 'building', 'deice_rate',
+    inlines = [CommentInline,]
+    actions = ['override_discrepancy']
+    list_display = ['is_discrepant', 'view_work_order', 'invoice', 'service_provider', 'building', 'deice_rate',
                     'deice_tax', 'plow_rate',
                     'plow_tax', 'snowfall', 'storm_days', 'has_ice',
-                    'aggregate_predicted_salts', 'aggregate_invoiced_salts', 'salt_delta', 'aggregate_predicted_plows',
-                    'aggregate_invoiced_plows', 'push_delta', 'deice_cost_delta', 'plow_cost_delta']
+                    'aggregate_predicted_salts', 'aggregate_invoiced_salts', 'aggregate_salt_delta', 'aggregate_predicted_plows',
+                    'aggregate_invoiced_plows', 'aggregate_plow_delta', 'aggregate_deice_cost_delta', 'aggregate_plow_cost_delta']
 
     generated_discrept_dict = {}
 
-    def salt_delta(self, obj):
+    def override_discrepancy(self, request, queryset):
+        rows_updated = queryset.update(is_discrepant=False)
+        return HttpResponseRedirect("/nwa/invoices/discrepancyreportnwa/")
+
+    def view_work_order(self, obj):
+        return u'<a href="/nwa/invoices/discrepancyreportitemnwa/?invoice__id={0}">{1}</a>'.format(obj.id, obj.work_order_code)
+
+    def aggregate_salt_delta(self, obj):
         try:
-            if obj.salt_count_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.salt_count_delta)
+            if obj.aggregate_salt_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_salt_delta)
             else:
-                return 0
+                return obj.aggregate_salt_delta
         except Exception as e:
+            print(e)
             return 0
 
-    salt_delta.allow_tags = True
+    aggregate_salt_delta.allow_tags = True
 
-    def push_delta(self, obj):
+    def aggregate_plow_delta(self, obj):
         try:
-            if obj.plow_count_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.plow_count_delta)
+            if obj.aggregate_plow_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_delta)
             else:
-                return 0
+                return obj.aggregate_plow_delta
         except Exception as e:
+            print(e)
             return 0
 
-    push_delta.allow_tags = True
+    aggregate_plow_delta.allow_tags = True
 
-    def deice_cost_delta(self, obj):
+    def aggregate_deice_cost_delta(self, obj):
         try:
-            if obj.deice_cost_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.deice_cost_delta)
+            if obj.aggregate_deice_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_deice_cost_delta)
             else:
-                return 0
+                return obj.aggregate_deice_cost_delta
         except Exception as e:
+            print(e)
             return 0
 
-    deice_cost_delta.allow_tags = True
+    aggregate_deice_cost_delta.allow_tags = True
 
-    def plow_cost_delta(self, obj):
+    def aggregate_plow_cost_delta(self, obj):
         try:
-            if obj.plow_cost_delta > 0:
-                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.plow_cost_delta)
+            if obj.aggregate_plow_cost_delta > 0:
+                return u'<div style = "background-color: red; color:white; font-weight:bold; text-align:center;" >{0}</div>'.format(obj.aggregate_plow_cost_delta)
             else:
-                return 0
+                return obj.aggregate_plow_cost_delta
         except Exception as e:
+            print(e)
             return 0
 
-    plow_cost_delta.allow_tags = True
+    aggregate_plow_cost_delta.allow_tags = True
 
 class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']

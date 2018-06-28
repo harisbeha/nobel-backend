@@ -63,7 +63,7 @@ def query_for_accumulation_zip(zipcode, start, end):
     ingest_snowfall_data.delay(zipcode, start, end)
 
 
-def fetch_for_accumulation_zip(zipcode, start, end, work_order=None):
+def fetch_for_accumulation_zip(zipcode, start, end, safety_report=None, work_order=None):
     cache_key = make_accumulation_key(zipcode, start, end)
     fetch_key = 'fetch-%s' % cache_key
     if redis_client.get_key(fetch_key) is not None:
@@ -71,8 +71,20 @@ def fetch_for_accumulation_zip(zipcode, start, end, work_order=None):
         r = _query_accumulation_data(zipcode, start, end)
         redis_client.set_key(cache_key, json.dumps(r))
         redis_client.del_key(fetch_key)
+    if safety_report:
+        snowfall = safety_report.snowfall
+        has_ice = safety_report.has_ice
+        predicted_plows = safety_report.aggregate_predicted_plows
+        predicted_salts = safety_report.aggregate_predicted_salts
+        work_order.is_discrepant = True
+        work_order.save()
+
     if work_order:
-        work_order.flag_weatherready = True
+        snowfall = work_order.snowfall
+        has_ice = work_order.has_ice
+        predicted_plows = work_order.aggregate_predicted_plows
+        predicted_salts = work_order.aggregate_predicted_salts
+        work_order.is_discrepant = True
         work_order.save()
 
 # print query_for_accumulation_zip(6051, parse('2018-04-02 03:00:00.000 UTC'), parse('2018-04-02 14:00:00.000 UTC'))
