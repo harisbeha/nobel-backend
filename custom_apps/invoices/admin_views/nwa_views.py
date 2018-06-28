@@ -26,13 +26,60 @@ class WorkVisitProxyInline(nested_admin.NestedTabularInline):
     readonly_fields = []
     classes = ['collapse']
 
-class SubmittedWorkOrderInline(nested_admin.NestedTabularInline):
+class SubmittedWorkVisitInline(nested_admin.NestedTabularInline):
     model = WorkVisit
     extra = 1
     readonly_fields = ['num_plows', 'num_salts', 'service_failed']
     classes = ['collapse']
 
 # Inlines
+
+class SubmittedWorkOrderInline(nested_admin.NestedTabularInline):
+    model = WorkOrder
+    formset = WOFormSet
+    inlines = [SubmittedWorkVisitInline]
+    readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax']
+
+
+    def get_fields(self, request, obj=None):
+        fields = super(WorkOrderInline, self).get_fields(request, obj)
+        rate_fields = fields[10:14]
+        new_fields = fields[0:4] + rate_fields + fields[5:9]
+        return new_fields
+
+    def deice_rate(self, obj):
+        return obj.building.deice_rate
+
+    def deice_tax(self, obj):
+        return obj.building.deice_tax
+
+    def plow_rate(self, obj):
+        return obj.building.plow_rate
+
+    def plow_tax(self, obj):
+        return obj.building.plow_tax
+
+    def get_formset(self, *args, **kwargs):
+        formset = super(WorkOrderInline, self).get_formset(*args, **kwargs)
+        return formset
+
+    def get_formset(self, request, obj=None, **kwargs):
+        """
+        Pre-populating formset using GET params
+        """
+        initial = []
+        if request.method == "GET":
+            pass
+        formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
+        formset.request = request
+        return formset
+
+    def get_extra(self, request, obj=None, **kwargs):
+        """Dynamically sets the number of extra forms. 0 if the related object
+        already exists or the extra configuration otherwise."""
+        if obj:
+            return 0
+        return get_locations_by_system_user(request.user).count()
 
 class WorkOrderInline(nested_admin.NestedTabularInline):
     model = WorkOrder
