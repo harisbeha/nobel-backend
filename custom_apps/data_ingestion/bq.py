@@ -3,9 +3,10 @@ import json
 from django.conf import settings
 from google.cloud.bigquery import Client, ScalarQueryParameter, QueryJobConfig
 import random
-
+import time
+import datetime
 from custom_apps.utils import redis_client
-
+from datetime import timezone
 _client = None
 
 
@@ -36,8 +37,10 @@ def make_accumulation_key(zipcode, start, end):
 
 
 # TODO: NOTHING TO DO - STUFF IS HARDCODED HERE - NEVER FORGET
-def _query_accumulation_data(zipcode, start, end):
+def _query_accumulation_data(zipcode, start, end, safety_report=None, work_order=None):
     bq = _get_client()
+    start = datetime.datetime.strftime(start, "%F %H:%M") 
+    ends = datetime.datetime.strftime(end, "%F %H:%M")
     query_params = [
         ScalarQueryParameter('zipcode', 'INT64', int(zipcode)),
         ScalarQueryParameter('startdate', 'TIMESTAMP', start),
@@ -47,6 +50,7 @@ def _query_accumulation_data(zipcode, start, end):
     job_config.query_parameters = query_params
     query = bq.query(ACCUMULATION_QUERY, job_config=job_config)
     result = query.result()
+    print(result)
     r = dict(list(result)[0].items())
     return r
 
