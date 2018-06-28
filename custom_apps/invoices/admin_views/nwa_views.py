@@ -220,7 +220,7 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
                     'deice_tax', 'plow_rate',
                     'plow_tax', 'snowfall', 'storm_days', 'has_ice',
                     'aggregate_predicted_salts', 'aggregate_invoiced_salts', 'salt_delta', 'aggregate_predicted_plows',
-                    'aggregate_invoiced_plows', 'plow_delta', 'aggregate_deice_cost_delta', 'aggregate_plow_cost_delta']
+                    'aggregate_invoiced_plows', 'plow_delta', 'salt_cost_delta', 'plow_cost_delta']
 
     generated_discrept_dict = {}
 
