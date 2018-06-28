@@ -607,6 +607,7 @@ class SafetyReport(BaseModel):
                 return snowfall
             else:
                 snowfall = _query_accumulation_data(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['snowfall']
+                return snowfall
             return Decimal(0)
         except Exception as e:
             print(e)

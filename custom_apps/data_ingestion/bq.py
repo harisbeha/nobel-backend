@@ -39,28 +39,30 @@ def make_accumulation_key(zipcode, start, end):
 # TODO: NOTHING TO DO - STUFF IS HARDCODED HERE - NEVER FORGET
 def _query_accumulation_data(zipcode, start, end, safety_report=None, work_order=None):
     bq = _get_client()
-    start = datetime.datetime.strftime(start, "%F %H:%M") 
-    ends = datetime.datetime.strftime(end, "%F %H:%M")
+    start_time = start.strftime("%F")
+    end_time = end.strftime("%F")
     query_params = [
-        ScalarQueryParameter('zipcode', 'INT64', int(zipcode)),
-        ScalarQueryParameter('startdate', 'TIMESTAMP', start),
-        ScalarQueryParameter('enddate', 'TIMESTAMP', end),
+        ScalarQueryParameter('zipcode', 'INT64', zipcode),
+        ScalarQueryParameter('startdate', 'TIMESTAMP', start_time),
+        ScalarQueryParameter('enddate', 'TIMESTAMP', end_time)
     ]
     job_config = QueryJobConfig()
     job_config.query_parameters = query_params
     query = bq.query(ACCUMULATION_QUERY, job_config=job_config)
+    print('failing here?')
     result = query.result()
-    print(result)
-    r = dict(list(result)[0].items())
+    r = result._field_to_index
     return r
 
 
 def query_for_accumulation_zip(zipcode, start, end, safety_report=None, work_order=None):
     cache_key = make_accumulation_key(zipcode, start, end)
     cached_result = redis_client.get_key(cache_key)
+    print(cache_key)
+    print(cached_result)
     if cached_result is not None:
         try:
-            return json.loads(cached_result)
+            return cached_result
         except Exception as e:
             print(e)
     from .tasks import ingest_snowfall_data
