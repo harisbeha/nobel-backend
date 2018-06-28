@@ -237,17 +237,17 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     # @property
     @property
     def marked_safe_count(self):
-        return self.safetyreport_set.first().safetyvisit_set.filter(safe_to_open=True).count()
+        return self.safetyreport_set.filter(safe_to_open=True).count()
 
     # @property
     @property
     def serviced_count(self):
-        return self.safetyreport_set.first().safetyvisit_set.filter(site_serviced=True).count()
+        return self.safetyreport_set.filter(site_serviced=True).count()
 
     # @property
     @property
     def total_safety_count(self):
-        return self.safetyreport_set.first().safetyvisit_set.count()
+        return self.safetyreport_set.count()
 
     @property
     def aggregate_plow_delta(self):
@@ -276,6 +276,13 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.salt_cost_delta
         return predicted_cost
+
+    @property
+    def discrepancy_count(self):
+        discrep_count = self.workorder_set.filter(is_discrepant=True).count()
+        total_wo_count = self.workorder_set.count()
+        return '{0}/{1}'.format(discrep_count, total_wo_count)
+
 
 # manager for the below relation
 class BuildingManager(models.Manager):
@@ -345,7 +352,6 @@ class WorkOrder(BaseModel):
     building = models.ForeignKey('invoices.Building', null=True, blank=True)
 
     storm_name = models.CharField(help_text='Name of the event for which work is being done in response', max_length=100, blank=True, null=True)
-    last_service_date = models.DateField(help_text='Date of the last service', blank=True, null=True)
     is_discrepant = models.BooleanField(default=False)
 
     tracker = FieldTracker()
