@@ -399,6 +399,8 @@ class DiscrepancyReview(admin.ModelAdmin):
         return super(DiscrepancyReview, self).render_change_form(request, context, args, kwargs)
 
     def return_adjusted_invoices(self, request, queryset):
-        rows_updated = queryset.update(status='adjusted_by_provider')
-        return HttpResponseRedirect("/provider/invoices/")
+        for work_order in queryset:
+            work_order.invoice.dispute_status = 'adjusted_by_provider'
+            work_order.save()
+        return HttpResponseRedirect("/provider/invoices/discrepancyreviewvendor/")
 

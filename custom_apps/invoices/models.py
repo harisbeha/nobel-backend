@@ -778,7 +778,7 @@ class SubmittedInvoiceNWA(Invoice):
 class DiscrepancyReviewVendor(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Invoice Review'
+        verbose_name = 'Work Order Review'
 
     def __str__(self):
-        return 'Work Order {0} for Inv # {1} (Review)'.format(self.id, self.invoice.id)
+        return 'Review for Work Order {0} (Inv # {1})'.format(self.id, self.invoice.id)
