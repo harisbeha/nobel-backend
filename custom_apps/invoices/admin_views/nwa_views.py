@@ -29,7 +29,7 @@ class WorkVisitProxyInline(nested_admin.NestedTabularInline):
 class SubmittedWorkVisitInline(nested_admin.NestedTabularInline):
     model = WorkVisit
     extra = 1
-    readonly_fields = ['num_plows', 'num_salts', 'service_failed']
+    readonly_fields = ['num_plows', 'num_salts']
     classes = ['collapse']
 
 # Inlines
@@ -42,7 +42,7 @@ class SubmittedWorkOrderInline(nested_admin.NestedTabularInline):
 
 
     def get_fields(self, request, obj=None):
-        fields = super(WorkOrderInline, self).get_fields(request, obj)
+        fields = super(SubmittedWorkOrderInline, self).get_fields(request, obj)
         rate_fields = fields[10:14]
         new_fields = fields[0:4] + rate_fields + fields[5:9]
         return new_fields
@@ -60,7 +60,7 @@ class SubmittedWorkOrderInline(nested_admin.NestedTabularInline):
         return obj.building.plow_tax
 
     def get_formset(self, *args, **kwargs):
-        formset = super(WorkOrderInline, self).get_formset(*args, **kwargs)
+        formset = super(SubmittedWorkOrderInline, self).get_formset(*args, **kwargs)
         return formset
 
     def get_formset(self, request, obj=None, **kwargs):
@@ -70,7 +70,7 @@ class SubmittedWorkOrderInline(nested_admin.NestedTabularInline):
         initial = []
         if request.method == "GET":
             pass
-        formset = super(WorkOrderInline, self).get_formset(request, obj, **kwargs)
+        formset = super(SubmittedWorkOrderInline, self).get_formset(request, obj, **kwargs)
         formset.request = request
         return formset
 
@@ -336,12 +336,12 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
 
 class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
-    list_display=['invoices', 'status']
+    list_display=['invoices', 'status', 'dispute_status']
     inlines = [SubmittedWorkOrderInline]
     readonly_fields = []
     limited_manytomany_fields = {}
 
-    actions = ['approve_invoice']
+    actions = ['approve_invoice', 'return_invoice']
 
     def get_queryset(self, request):
         qs = super(SubmittedInvoiceAdmin, self).get_queryset(request)
@@ -356,3 +356,9 @@ class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     def approve_invoice(self, request, queryset):
         rows_updated = queryset.update(status='approved')
         return HttpResponseRedirect("/nwa/invoices/discrepancyreportnwa/")
+
+    def return_invoice(self, request, queryset):
+        rows_updated = queryset.update(dispute_status='sent_for_review')
+        return HttpResponseRedirect("/nwa/invoices/submittedinvoicenwa/")
+
+    return_invoice.short_description = "Return invoice for review"

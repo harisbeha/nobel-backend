@@ -61,6 +61,8 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
     model = SafetyReport
     form = SafetyReportForm
     formset = SRFormSet
+    list_display = ['report_date']
+    exclude = ['is_discrepant', 'verify_weather']
 
     def get_formset(self, request, obj=None, **kwargs):
         """
@@ -133,6 +135,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
     inlines = [WorkVisitProxyInline]
     insert_after = 'subtotal'
     readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
+    exclude = ['weather_ready', 'is_discrepant']
 
     template = "admin/provider/sr_tabular.html"
     # fieldset_template = "admin/provider/sr_tabular.html"
@@ -202,7 +205,7 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
     list_display=['reports', 'status', 'marked_safe', 'serviced_count']
     inlines = [SafetyReportInline]
-    readonly_fields = ['status', 'dispute_status']
+    readonly_fields = ['status', 'dispute_status', 'weather_ready']
     limited_manytomany_fields = {}
     actions=['rollup_closeout']
     # form = SafetyInvoiceForm
@@ -350,9 +353,9 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_readonly_fields(self, request, obj=None):
         if obj.status == 'submitted':
-            return ['status', 'storm_name', 'storm_date', 'dispute_status', 'status', 'dispute_status']
+            return ['status', 'storm_name', 'storm_date', 'dispute_status', 'status', 'dispute_status', 'weather_ready']
         else:
-            return ['remission_address', 'address_info_storage', 'status', 'dispute_status']
+            return ['remission_address', 'address_info_storage', 'status', 'dispute_status', 'weather_ready']
 
     def get_hidden_fields(self, request, obj=None):
             return ['remission_address', 'address_info_storage']
