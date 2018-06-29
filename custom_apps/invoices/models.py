@@ -50,6 +50,18 @@ INVOICE_STATUSES = (
     ('finalized', 'Finalized'),
 )
 
+class WeatherData(models.Model):
+    storm_id = models.CharField(max_length=100, null=True, blank=True)
+    location_id = models.CharField(max_length=100, null=True, blank=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+    precipitation_type = models.CharField(max_length=100, null=True, blank=True)
+    precipititation_description = models.CharField(max_length=100, null=True, blank=True)
+    total = models.CharField(max_length=100, null=True, blank=True)
+    zip_code = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    narrative = models.TextField(null=True, blank=True)
 
 class VendorSettings(BaseModel):
     class Meta:
@@ -203,32 +215,20 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
         return predicted_cost
 
     @cached_property
-    def locations(self):
+    def work_visits(self):
         return self.workorder_set.count()
 
-    @cached_property
+    @property
     def storm_days_forecast(self):
-        first_sr = self.safetyreport_set.all().first()
-        last_sr = self.safetyreport_set.all().last()
-        first = ''
-        last = ''
-        if first_sr:
-            first = first_sr.storm_days
-        if last_sr:
-            last = first_sr.storm_days
-        return '{0}'.format(first)
+        storm_length = len(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
+        print(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
+        return '{0}'.format(storm_length)
 
-    @cached_property
+    @property
     def storm_days_invoiced(self):
-        first_sr = self.workorder_set.all().first()
-        last_sr = self.workorder_set.all().last()
-        first = ''
-        last = ''
-        if first_sr:
-            first = first_sr.storm_days
-        if last_sr:
-            last = first_sr.storm_days
-        return '{0}'.format(first)
+        storm_length = len(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
+        print(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
+        return '{0}'.format(storm_length)
 
     @cached_property
     def total_cost_delta(self):
@@ -368,9 +368,8 @@ class WorkOrder(BaseModel):
         try:
             start = self.workvisit_set.first().order_by('-created').first()
             end = self.workvisit_set.first().order_by('-created').last()
-            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
-            ice = Decimal(1) if has_ice else Decimal(0)
-            return ice
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('has_ice', flat=True)
+            return has_ice
         except Exception as e:
             return Decimal(0)
 
@@ -379,9 +378,8 @@ class WorkOrder(BaseModel):
         try:
             start = self.workvisit_set.first().order_by('-created').first()
             end = self.workvisit_set.first().order_by('-created').last()
-            has_ice = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['has_ice']
-            ice = Decimal(1) if has_ice else Decimal(0)
-            return ice
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('has_ice', flat=True)
+            return has_ice
         except Exception as e:
             return Decimal(0)
 
@@ -390,11 +388,7 @@ class WorkOrder(BaseModel):
         try:
             start = self.workvisit_set.first().order_by('-created').first()
             end = self.workvisit_set.first().order_by('-created').last()
-            snowfall = self.verify_weather.get('snowfall', 'pull')
-            if snowfall == 'pull':
-                snowfall = query_for_accumulation_zip(self.building.zip_code, start, end, work_order=self)['snowfall']
-            if snowfall == None:
-                return Decimal(0)
+            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('snowfall', flat=True)
             return Decimal(snowfall)
         except Exception as e:
             return Decimal(0)
@@ -582,9 +576,8 @@ class SafetyReport(BaseModel):
     @cached_property
     def has_ice(self):
         try:
-            has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
-            ice = Decimal(1) if has_ice else Decimal(0)
-            return ice
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=self.inspection_date, end__lte=self.inspection_date).values_list('has_ice', flat=True)
+            return has_ice
         except Exception as e:
             print(e)
             return Decimal(0)
@@ -592,9 +585,8 @@ class SafetyReport(BaseModel):
     @cached_property
     def refreeze(self):
         try:
-            has_ice = query_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['has_ice']
-            ice = Decimal(1) if has_ice else Decimal(0)
-            return ice
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=self.inspection_date, end__lte=self.inspection_date).values_list('has_ice', flat=True)
+            return has_ice
         except Exception as e:
             print(e)
             return Decimal(0)
@@ -602,13 +594,8 @@ class SafetyReport(BaseModel):
     @cached_property
     def snowfall(self):
         try:
-            snowfall = self.verify_weather.get('snowfall', 'pull')
-            if snowfall != 'pull':
-                return snowfall
-            else:
-                snowfall = fetch_for_accumulation_zip(self.building.zip_code, self.inspection_date, self.inspection_date, safety_report=self)['snowfall']
-                return snowfall
-            return Decimal(0)
+            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=self.inspection_date, end__lte=self.inspection_date).values_list('snowfall', flat=True)
+            return Decimal(snowfall)
         except Exception as e:
             print(e)
             return Decimal(0)
@@ -782,3 +769,5 @@ class DiscrepancyReviewVendor(WorkOrder):
 
     def __str__(self):
         return 'Review for Work Order {0} (Inv # {1})'.format(self.id, self.invoice.id)
+
+
