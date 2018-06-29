@@ -133,56 +133,56 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 
     #audit = AuditTrailWatcher()
 
-    @cached_property
+    @property
     def aggregate_snowfall(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.snowfall
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_refreeze(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
-            predicted_values += work_order.snowfall
+            predicted_values += work_order.has_ice
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_predicted_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.aggregate_predicted_salts
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_predicted_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.aggregate_predicted_plows
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_predicted_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.aggregate_predicted_plow_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_predicted_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
-            predicted_cost += Decimal(work_order.aggregate_predicted_salt_cost)
+            predicted_cost += work_order.aggregate_predicted_salt_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_invoiced_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.aggregate_invoiced_plows
         return predicted_values
 
-    @cached_property
+    @property
     def aggregate_invoiced_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
@@ -190,94 +190,92 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
         return predicted_values
 
 
-    @cached_property
+    @property
     def aggregate_invoiced_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.aggregate_invoiced_plow_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_invoiced_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.aggregate_predicted_salt_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_predicted_storm_total(self):
         predicted_cost = self.aggregate_predicted_salt_cost + self.aggregate_predicted_plow_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_invoiced_storm_total(self):
         predicted_cost = self.aggregate_invoiced_salt_cost + self.aggregate_invoiced_plow_cost
         return predicted_cost
 
-    @cached_property
+    @property
     def work_visits(self):
         return self.workorder_set.count()
 
     @property
     def storm_days_forecast(self):
         storm_length = len(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
-        print(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
         return '{0}'.format(storm_length)
 
     @property
     def storm_days_invoiced(self):
         storm_length = len(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
-        print(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
         return '{0}'.format(storm_length)
 
-    @cached_property
+    @property
     def total_cost_delta(self):
         return self.aggregate_predicted_storm_total - self.aggregate_invoiced_storm_total
 
-    # @cached_property
-    @cached_property
+    # @property
+    @property
     def marked_safe_count(self):
         return self.safetyreport_set.filter(safe_to_open=True).count()
 
-    # @cached_property
-    @cached_property
+    # @property
+    @property
     def serviced_count(self):
         return self.safetyreport_set.filter(site_serviced=True).count()
 
-    # @cached_property
-    @cached_property
+    # @property
+    @property
     def total_safety_count(self):
         return self.safetyreport_set.count()
 
-    @cached_property
+    @property
     def aggregate_plow_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.plow_delta
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_salt_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.salt_delta
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_plow_cost_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.plow_cost_delta
         return predicted_cost
 
-    @cached_property
+    @property
     def aggregate_salt_cost_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.salt_cost_delta
         return predicted_cost
 
-    @cached_property
+    @property
     def discrepancy_count(self):
         discrep_count = self.workorder_set.filter(is_discrepant=True).count()
         total_wo_count = self.workorder_set.count()
@@ -363,39 +361,37 @@ class WorkOrder(BaseModel):
     # def get_plow_count(self):
     #     return self.
 
-    @cached_property
+    @property
     def has_ice(self):
         try:
-            start = self.workvisit_set.first().order_by('-created').first()
-            end = self.workvisit_set.first().order_by('-created').last()
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end, precipitation_type=6).exists()
-            ice = 2 if has_ice else 0
-            return Decimal(ice)
+            start = self.workvisit_set.first().order_by('-created').first().values('service_date', flat=True)
+            end = self.workvisit_set.first().order_by('-created').last().values('service_date', flat=True)
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('has_ice', flat=True)
+            return has_ice
         except Exception as e:
             return Decimal(0)
 
-    @cached_property
+    @property
     def refreeze(self):
         try:
-            start = self.workvisit_set.first().order_by('-created').first()
-            end = self.workvisit_set.first().order_by('-created').last()
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end, precipitation_type=6).exists()
-            ice = 2 if has_ice else 0
-            return Decimal(ice)
+            start = self.workvisit_set.first().order_by('-created').first().values('service_date', flat=True)
+            end = self.workvisit_set.first().order_by('-created').last().values('service_date', flat=True)
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('has_ice', flat=True)
+            return has_ice
         except Exception as e:
             return Decimal(0)
 
-    @cached_property
+    @property
     def snowfall(self):
         try:
-            start = self.workvisit_set.first().order_by('-created').first()
-            end = self.workvisit_set.first().order_by('-created').last()
-            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('total', flat=True)
+            start = self.workvisit_set.first().order_by('-created').first().values('service_date', flat=True)
+            end = self.workvisit_set.first().order_by('-created').last().values('service_date', flat=True)
+            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start__date__gte=start, end__lte=end).values_list('total', flat=True)
             return Decimal(snowfall)
         except Exception as e:
             return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_plows(self):
         try:
             snowfall = self.snowfall
@@ -403,40 +399,34 @@ class WorkOrder(BaseModel):
             return predicted
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_salts(self):
         try:
-            refreeze = self.has_ice
-            predicted = 2 if refreeze else 2
-            return predicted
+            return self.refreeze
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_plow_cost(self):
         try:
-            snowfall = self.snowfall
-            if snowfall != None:
-                return (self.aggregate_predicted_plows * self.building.plow_rate) + self.building.plow_tax
+            return (Decimal(self.aggregate_predicted_plows) * self.building.plow_rate) + (Decimal(self.aggregate_predicted_plows) * self.building.plow_tax)
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_salt_cost(self):
         try:
-            refreeze = self.has_ice
-            if refreeze != None:
-                return (self.aggregate_predicted_salts * self.building.deice_rate) + self.building.deice_tax
+            return (Decimal(self.aggregate_predicted_salts) * self.building.deice_rate) + (Decimal(self.aggregate_predicted_salts) * self.building.deice_tax)
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
 
-    @cached_property
+    @property
     def aggregate_invoiced_plows(self):
         try:
             invoiced_count = 0
@@ -446,9 +436,9 @@ class WorkOrder(BaseModel):
             return invoiced_count
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_invoiced_salts(self):
         try:
             snowfall = self.snowfall
@@ -459,68 +449,68 @@ class WorkOrder(BaseModel):
             return invoiced_count
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_storm_total(self):
         return self.aggregate_predicted_plow_cost + self.aggregate_predicted_salt_cost
 
-    @cached_property
+    @property
     def storm_days(self):
         try:
             return '2'
         except:
             return '2'
 
-    @cached_property
+    @property
     def deice_rate(self):
         return self.building.deice_rate
 
-    @cached_property
+    @property
     def deice_tax(self):
         return self.building.deice_tax
 
-    @cached_property
+    @property
     def plow_rate(self):
         return self.building.plow_rate
 
-    @cached_property
+    @property
     def plow_tax(self):
         return self.building.plow_tax
 
-    @cached_property
+    @property
     def service_provider(self):
         return self.building.service_provider
 
-    @cached_property
+    @property
     def aggregate_invoiced_plow_cost(self):
         try:
-            return (Decimal(self.aggregate_invoiced_plows) * Decimal(self.building.plow_rate)) + Decimal(self.building.plow_tax)
+            return (Decimal(self.aggregate_invoiced_plows) * Decimal(self.building.plow_rate)) + Decimal(self.aggregate_invoiced_plows) * Decimal(self.building.plow_tax)
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_invoiced_salt_cost(self):
         try:
-            return (Decimal(self.aggregate_invoiced_salts) * Decimal(self.building.deice_rate)) + Decimal(self.building.deice_tax)
+            return (Decimal(self.aggregate_invoiced_salts) * Decimal(self.building.deice_rate)) + (Decimal(self.aggregate_invoiced_salts) * Decimal(self.building.deice_tax))
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def plow_delta(self):
         return Decimal(self.aggregate_predicted_plows) - Decimal(self.aggregate_invoiced_plows)
 
-    @cached_property
+    @property
     def salt_delta(self):
         return Decimal(self.aggregate_predicted_salts) - Decimal(self.aggregate_invoiced_salts)
 
-    @cached_property
+    @property
     def plow_cost_delta(self):
         return Decimal(self.plow_delta) * self.building.plow_rate
 
-    @cached_property
+    @property
     def salt_cost_delta(self):
         return Decimal(self.salt_delta) * self.building.deice_rate
 
@@ -575,36 +565,35 @@ class SafetyReport(BaseModel):
     def __str__(self):
         return 'Safety Report #{0} for'.format(self.id)
 
-    @cached_property
+    @property
     def has_ice(self):
         try:
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date, precipitation_type=6).values_list('has_ice', flat=True).exists()
-            ice = 2 if has_ice else 0
-            return Decimal(ice)
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('has_ice', flat=True).exists()
+            return has_ice
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @cached_property
+    @property
     def refreeze(self):
         try:
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date, precipitation_type=6).values_list('has_ice', flat=True).exists()
-            ice = Decimal(2) if has_ice else Decimal(0)
-            return ice
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('has_ice', flat=True).exists()
+            return has_ice
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @cached_property
+    @property
     def snowfall(self):
         try:
-            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('totl', flat=True)
+            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('snowfall', flat=True).exists()
+            print(snowfall)
             return Decimal(snowfall)
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_plows(self):
         try:
             predicted = self.snowfall / 2
@@ -613,66 +602,63 @@ class SafetyReport(BaseModel):
             print(e)
             return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_salts(self):
         try:
-            refreeze = self.has_ice
-            predicted = Decimal(2) if refreeze else Decimal(2)
-            return predicted
+            return self.refreeze
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_plow_cost(self):
         try:
-            snowfall = self.snowfall
-            return (Decimal(self.aggregate_predicted_plows) * self.building.plow_rate) + self.building.plow_tax
+            return (Decimal(self.aggregate_predicted_plows) * self.building.plow_rate) + (Decimal(self.aggregate_predicted_plows) * self.building.plow_tax)
         except Exception as e:
             print(e)
-            return 0
+            return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_salt_cost(self):
         try:
             refreeze = self.has_ice
             if refreeze:
-                return (Decimal(self.aggregate_predicted_salts) * self.building.deice_rate) + self.building.deice_tax
+                return (Decimal(self.aggregate_predicted_salts) * self.building.deice_rate) + (Decimal(self.aggregate_predicted_salts) * self.building.deice_tax)
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @cached_property
+    @property
     def aggregate_predicted_storm_total(self):
         try:
             return Decimal(self.aggregate_predicted_plow_cost + self.aggregate_predicted_salt_cost)
         except:
             return Decimal(0)
 
-    @cached_property
+    @property
     def storm_days(self):
         try:
             return '12-06-2017'
         except:
             return '12-10-2017'
 
-    @cached_property
+    @property
     def deice_rate(self):
         return self.building.deice_rate
 
-    @cached_property
+    @property
     def deice_tax(self):
         return self.building.deice_tax
 
-    @cached_property
+    @property
     def plow_rate(self):
         return self.building.plow_rate
 
-    @cached_property
+    @property
     def plow_tax(self):
         return self.building.plow_tax
 
-    @cached_property
+    @property
     def service_provider(self):
         return self.building.service_provider
 
