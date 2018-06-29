@@ -123,7 +123,7 @@ class SafetyReportInline(admin.TabularInline):
 class ServiceForecastAdmin(admin.ModelAdmin):
     model = ServiceForecastNWA
     list_filter = ('id', 'storm_name', 'storm_date', 'service_provider')
-    list_display = ['safety_report_url', 'id', 'service_provider', 'locations',
+    list_display = ['safety_report_url', 'id', 'service_provider',
                     'aggregate_snowfall', 'aggregate_refreeze', 'storm_days_forecast',
                     'aggregate_predicted_salts', 'aggregate_predicted_plows', 'aggregate_predicted_salt_cost',
                     'aggregate_predicted_plow_cost', 'aggregate_predicted_storm_total']
@@ -150,7 +150,7 @@ class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
     resource_class=InvoiceResource
     list_filter = ('id',)
     generated_discrept_dict = {}
-    list_display = ['show_id_url', 'discrepancy_count', 'id', 'service_provider', 'locations', 'aggregate_snowfall', 'aggregate_refreeze',
+    list_display = ['show_id_url', 'discrepancy_count', 'id', 'service_provider', 'work_visits', 'aggregate_snowfall', 'aggregate_refreeze',
                     'storm_days_invoiced', 'aggregate_refreeze', 'aggregate_invoiced_salts', 'aggregate_predicted_salts', 'aggregate_salt_delta',
                     'aggregate_invoiced_plows', 'aggregate_predicted_plows', 'aggregate_plow_delta', 'aggregate_salt_cost_delta',
                     'aggregate_plow_cost_delta', 'total_cost_delta']
@@ -213,7 +213,7 @@ class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
 class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
     model = DiscrepancyReportItemNWA
     resource_class=InvoiceResource
-    list_filter = ('invoice__id',)
+    list_filter = ('is_discrepant', 'invoice__id')
     inlines = [CommentInline,]
     actions = ['override_discrepancy']
     list_display = ['view_work_order', 'is_discrepant', 'invoice', 'service_provider', 'building', 'deice_rate',
@@ -283,7 +283,7 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
 
 class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
-    list_display=['invoices', 'status']
+    list_display=['invoices', 'status', 'discrepancy_count']
     inlines = [WorkOrderInline]
     readonly_fields = []
     limited_manytomany_fields = {}
