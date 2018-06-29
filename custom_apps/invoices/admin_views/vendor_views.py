@@ -380,7 +380,7 @@ class DiscrepancyReview(admin.ModelAdmin):
     readonly_fields = ['invoice_status', 'invoice_dispute_status']
     exclude = ['invoice', 'work_order_code', 'is_discrepant', 'verify_weather',]
     inlines = [WorkVisitReviewProxyInline, CommentInline]
-    actions = ['return_adjusted_invoice']
+    actions = ['return_adjusted_invoices']
 
     def invoice_status(self, obj):
         return '{0}'.format(obj.invoice.status)
