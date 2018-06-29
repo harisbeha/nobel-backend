@@ -132,6 +132,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
     inlines = [WorkVisitProxyInline]
     insert_after = 'subtotal'
     readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax', 'subtotal']
+    exclude = ['verify_weather', 'is_discrepant']
 
     template = "admin/provider/sr_tabular.html"
     # fieldset_template = "admin/provider/sr_tabular.html"
@@ -360,5 +361,20 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
     finalize_submit_invoice.short_description = "Finalize and submit invoice"
 
 
+# !TODO Rename all instances of Vendor to Provider or Service Provider
+class DiscrepancyReview(admin.ModelAdmin):
+    model = DiscrepancyReviewVendor
+    list_filter = ('id',)
+    generated_discrept_dict = {}
+    list_display = ['work_order_code', 'invoice_status', 'invoice_dispute_status']
 
+    def invoice_status(self, obj):
+        return '{0}'.format(obj.invoice.status)
 
+    def invoice_dispute_status(self, obj):
+        return '{0}'.format(obj.invoice.dispute_status)
+
+    def get_queryset(self, request):
+        qs = super(DiscrepancyReview, self).get_queryset(request)
+        prelim = DiscrepancyReviewVendor.objects.filter(is_discrepant=True, invoice__service_provider__system_user=request.user, invoice__dispute_status__isnull=False)
+        return prelim

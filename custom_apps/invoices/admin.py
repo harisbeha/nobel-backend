@@ -66,4 +66,4 @@ nwa_site.register(DiscrepancyReportItemNWA, nwa_views.DiscrepancyReportItemAdmin
 
 vendor_site.register(SafetyReportVendor, vendor_views.SafetyReportAdmin)
 vendor_site.register(InvoiceVendor, vendor_views.PrelimInvoiceAdmin)
-# vendor_site.register(DiscrepancyReport, vendor_views.DiscrepancyReview)
+vendor_site.register(DiscrepancyReviewVendor, vendor_views.DiscrepancyReview)
