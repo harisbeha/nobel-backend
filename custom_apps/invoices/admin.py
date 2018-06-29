@@ -59,6 +59,7 @@ admin.site.register(WeatherStation)
 admin.site.register(RegionalAdmin)
 admin.site.register(WorkOrder)
 admin.site.register(SafetyReport)
+admin.site.register(WeatherData)
 
 
 # nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)

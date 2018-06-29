@@ -568,7 +568,7 @@ class SafetyReport(BaseModel):
     @property
     def has_ice(self):
         try:
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('has_ice', flat=True).exists()
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).exists()
             return has_ice
         except Exception as e:
             print(e)
