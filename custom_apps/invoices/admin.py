@@ -55,7 +55,10 @@ from custom_apps.invoices.admin_views import nwa_views, vendor_views, cbre_views
 
 admin.site.register(Building)
 admin.site.register(Vendor)
-
+admin.site.register(WeatherStation)
+admin.site.register(RegionalAdmin)
+admin.site.register(WorkOrder)
+admin.site.register(SafetyReport)
 
 
 # nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)

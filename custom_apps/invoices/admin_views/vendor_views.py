@@ -14,6 +14,7 @@ from .admin_forms import SafetyReportForm, SRFormSet, WOFormSet
 from django.utils.functional import curry
 from decimal import *
 from django.contrib.admin.utils import flatten_fieldsets
+from admin_comments.admin import CommentInline
 
 
 # Start Subinlines
@@ -43,6 +44,15 @@ class WorkVisitProxyInline(nested_admin.NestedTabularInline):
             super(WorkVisitProxyInline, self).get_max_num(request, obj, **kwargs)
         except:
             super(WorkVisitProxyInline, self).get_max_num(request, obj, **kwargs)
+
+
+class WorkVisitReviewProxyInline(nested_admin.NestedTabularInline):
+    model = WorkVisit
+    extra = 0
+    insert_after = 'subtotal'
+    classes = []
+
+    template = "admin/provider/sr_tabular_subinline.html"
 
 
 
@@ -367,6 +377,10 @@ class DiscrepancyReview(admin.ModelAdmin):
     list_filter = ('id',)
     generated_discrept_dict = {}
     list_display = ['work_order_code', 'invoice_status', 'invoice_dispute_status']
+    readonly_fields = ['invoice_status', 'invoice_dispute_status']
+    exclude = ['invoice', 'work_order_code', 'is_discrepant', 'verify_weather',]
+    inlines = [WorkVisitReviewProxyInline, CommentInline]
+    actions = ['return_adjusted_invoice']
 
     def invoice_status(self, obj):
         return '{0}'.format(obj.invoice.status)
@@ -378,3 +392,13 @@ class DiscrepancyReview(admin.ModelAdmin):
         qs = super(DiscrepancyReview, self).get_queryset(request)
         prelim = DiscrepancyReviewVendor.objects.filter(is_discrepant=True, invoice__service_provider__system_user=request.user, invoice__dispute_status__isnull=False)
         return prelim
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        vendor = Vendor.objects.filter(system_user=request.user)
+        context['adminform'].form.fields['building'].queryset = Building.objects.filter(service_provider=vendor)
+        return super(DiscrepancyReview, self).render_change_form(request, context, args, kwargs)
+
+    def return_adjusted_invoices(self, request, queryset):
+        rows_updated = queryset.update(status='adjusted_by_provider')
+        return HttpResponseRedirect("/provider/invoices/")
+
