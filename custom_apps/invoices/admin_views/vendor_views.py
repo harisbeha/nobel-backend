@@ -404,4 +404,3 @@ class DiscrepancyReview(admin.ModelAdmin):
             invoice.dispute_status = 'adjusted_by_provider'
             invoice.save()
         return HttpResponseRedirect("/provider/invoices/discrepancyreviewvendor/")
-
