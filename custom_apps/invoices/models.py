@@ -568,7 +568,7 @@ class SafetyReport(BaseModel):
     @property
     def has_ice(self):
         try:
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).exists()
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date, precipitation_type=6).exists()
             return has_ice
         except Exception as e:
             print(e)
@@ -577,7 +577,7 @@ class SafetyReport(BaseModel):
     @property
     def refreeze(self):
         try:
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('has_ice', flat=True).exists()
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date, precipitation_type=6).exists()
             return has_ice
         except Exception as e:
             print(e)
@@ -586,7 +586,7 @@ class SafetyReport(BaseModel):
     @property
     def snowfall(self):
         try:
-            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('snowfall', flat=True).exists()
+            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('total', flat=True).exists()
             print(snowfall)
             return Decimal(snowfall)
         except Exception as e:
