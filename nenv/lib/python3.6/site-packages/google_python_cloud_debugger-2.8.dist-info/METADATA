@@ -1,0 +1,28 @@
+Metadata-Version: 2.0
+Name: google-python-cloud-debugger
+Version: 2.8
+Summary: Python Cloud Debugger
+Home-page: https://github.com/GoogleCloudPlatform/cloud-debug-python
+Author: Google Inc.
+Author-email: UNKNOWN
+License: Apache License, Version 2.0
+Description-Content-Type: UNKNOWN
+Keywords: google cloud debugger
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Requires-Dist: google-api-python-client
+Requires-Dist: google-auth (>=1.0.0)
+Requires-Dist: google-auth-httplib2
+Requires-Dist: pyyaml
+Requires-Dist: six (>=1.10.0)
+
+The Cloud Debugger lets you inspect the state of an application at any
+code location without stopping or slowing it down. The debugger makes it
+easier to view the application state without adding logging statements.
+
+For more details please see https://github.com/GoogleCloudPlatform/cloud-debug-python
+
+

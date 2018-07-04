@@ -1,0 +1,31 @@
+Metadata-Version: 2.0
+Name: django-admin-comments
+Version: 1.0.1
+Summary: UNKNOWN
+Home-page: https://github.com/jamiecounsell/django-admin-comments
+Author: Jamie Counsell
+Author-email: jamiecounsell@me.com
+License: MIT
+Description-Content-Type: UNKNOWN
+Keywords: django-admin-comments
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 1.8
+Classifier: Framework :: Django :: 1.9
+Classifier: Framework :: Django :: 1.10
+Classifier: Framework :: Django :: 1.11
+Classifier: Framework :: Django :: 2.0
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+
+UNKNOWN
+
+

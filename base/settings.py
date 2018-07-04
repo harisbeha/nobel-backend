@@ -194,13 +194,13 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': 'custom_apps.utils.djdt.callback'
 }
 
-# google specific setup
-GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', 'AIzaSyAFd7fBl1dVKvfNFxLDFchKbYxeC_QU490')
+# google specific setup APIHARIS
+GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', 'HARISAPI')
 
-# email
+# email APIHARIS
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY',
-                                  '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')
+                                  'HARISAPI')
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 DEFAULT_FROM_EMAIL = 'noreply@nobelw.co'
 
@@ -224,7 +224,7 @@ JET_DEFAULT_THEME = 'light-blue'
 DEMO_SNOWFALL_DATA_START = '2017-01-01'
 DEMO_SNOWFALL_DATA_END = '2019-01-01'
 
-DEBUG = False 
+DEBUG = False
 
 from django.utils import timezone
 
