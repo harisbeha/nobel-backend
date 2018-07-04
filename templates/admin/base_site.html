@@ -1,79 +1,71 @@
-{% extends "admin/base.html" %}
-
-{% block title %}
-    {{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
-{% block branding %}
-        <style>
-
-
-    body {
+{% extends "admin/base.html" %} {% block title %} {{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %} {% block branding %}
+<style>
+  body {
     margin: 0;
     padding: 0;
     font-size: 14px;
-    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif;
     color: #333;
     background: #f1f1f1;
-}
+  }
 
-    #header {
+  #header {
     width: auto;
     height: 60px;
     padding: 10px 40px;
-    background-color: #4E3629 !important;
+    background-color: #1A5336 !important;
     line-height: 40px;
     color: #ffc;
     overflow: hidden;
-}
+  }
 
-    #user-tools {
-        float: right;
-        padding: 0;
-        margin: 10px 0 0 40px;
-        font-weight: 300;
-        font-size: 11px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        text-align: right;
-        color: #FFF !important;
-}
+  #user-tools {
+    float: right;
+    padding: 0;
+    margin: 10px 0 0 40px;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: right;
+    color: #FFF !important;
+  }
 
-a.section:link, a.section:visited{
-    color:#FFF !important;
-}
+  a.section:link,
+  a.section:visited {
+    color: #FFF !important;
+  }
 
-        #header a:link, #header a:visited {
-            color: #FFF !important;
-        }
+  #header a:link,
+  #header a:visited {
+    color: #FFF !important;
+  }
 
-        a:link, a:visited {
-            color: #333 !important;
-            text-decoration: none;
-        }
+  a:link,
+  a:visited {
+    color: #333 !important;
+    text-decoration: none;
+  }
 
-        .module h2, .module caption, .inline-group h2 {
-            margin: 0;
-            padding: 8px;
-            font-weight: 400;
-            font-size: 13px;
-            text-align: left;
-            background: #4E3629 !important;
-            color: #fff !important;
-        }
+  .module h2,
+  .module caption,
+  .inline-group h2 {
+    margin: 0;
+    padding: 8px;
+    font-weight: 400;
+    font-size: 13px;
+    text-align: left;
+    background: #1A5336 !important;
+    color: #fff !important;
+  }
 
-        #branding {
-            margin-left: 20px;
-        }
-
-
-        #changelist #toolbar form input[type="submit"] {
-            color: #FFF !important;
-        }
-
-    </style>
-    <h1 id="site-name"><img src="https://storage.googleapis.com/nwanwanwanwanwa/unnamed.png" style="margin-bottom: 10px; margin-top:20px;" /></h1>
+  #branding {
+    margin-left: 20px;
+  }
 
 
-{% endblock %}
-
-
-{% block nav-global %}{% endblock %}
+  #changelist #toolbar form input[type="submit"] {
+    color: #FFF !important;
+  }
+</style>
+<h1 id="site-name"><img src="https://sigwordpress-z0ts7gjirzqwhstk.netdna-ssl.com/wp-content/uploads/2017/08/TD-Bank-Logo.png" style="margin-bottom:-100px; margin-top:-200px;" /></h1> {% endblock %} {% block nav-global %}{% endblock %}
