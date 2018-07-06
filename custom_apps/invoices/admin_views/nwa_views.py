@@ -1,4 +1,3 @@
-from django.contrib.admin import register, ModelAdmin
 from import_export.admin import ImportExportActionModelAdmin
 
 from ..models import *
@@ -33,7 +32,7 @@ class WorkOrderInline(nested_admin.NestedTabularInline):
     formset = WOFormSet
     inlines = [WorkVisitProxyInline]
     readonly_fields = ['deice_rate', 'deice_tax', 'plow_rate', 'plow_tax']
-
+    exclude = ['verify_weather']
 
     def get_fields(self, request, obj=None):
         fields = super(WorkOrderInline, self).get_fields(request, obj)
@@ -148,7 +147,7 @@ class ServiceForecastItemAdmin(admin.ModelAdmin):
 class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
     model = DiscrepancyReportNWA
     resource_class=InvoiceResource
-    list_filter = ('id',)
+    list_filter = ('id', 'service_provider',)
     generated_discrept_dict = {}
     list_display = ['show_id_url', 'discrepancy_count', 'id', 'service_provider', 'work_visits', 'aggregate_snowfall', 'aggregate_refreeze',
                     'storm_days_invoiced', 'aggregate_refreeze', 'aggregate_invoiced_salts', 'aggregate_predicted_salts', 'aggregate_salt_delta',
@@ -160,6 +159,12 @@ class DiscrepancyReport(admin.ModelAdmin, ExportMixin):
 
     show_id_url.allow_tags = True
     show_id_url.short_description = 'Invoice'
+
+    def discrepant(self, obj):
+        if self.discrepancy_count > 0:
+            return True
+        else:
+            return False
 
     def aggregate_salt_delta(self, obj):
         try:
@@ -283,14 +288,36 @@ class DiscrepancyReportItemAdmin(admin.ModelAdmin, ExportMixin):
 
 class SubmittedInvoiceAdmin(nested_admin.NestedModelAdmin):
     exclude=['remission_address', 'address_info_storage']
-    list_display=['invoices', 'status', 'discrepancy_count']
+    list_display=['invoices', 'service_provider', 'status', 'dispute_status', 'discrepancy_count']
     inlines = [WorkOrderInline]
     readonly_fields = []
     limited_manytomany_fields = {}
+    actions = ['send_for_provider_review', 'approve_invoices']
+
+    def send_for_provider_review(self, request, queryset):
+        queryset.update(dispute_status='Return Invoice for Provider Review')
+        return HttpResponseRedirect('/nwa/invoices/submittedinvoicenwa/')
+
+    def approve_invoices(self, request, queryset):
+        queryset.update(status='finalized') 
+        queryset.update(dispute_status=None)
+        for invoice in queryset:
+            sg = sendgrid.SendGridAPIClient(apikey='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')
+            from_email = Email('system@nobelw.com')
+            to_email = Email("matt@samaradata.com")
+            subject = "Invoice Approved"
+            invoice_id = invoice.id
+            content = Content("text/plain", "Invoice #{0} approved".format(invoice.id))
+            mail = Mail(from_email, subject, to_email, content)
+            data = mail.get()
+            response = sg.client.mail.send.post(request_body=data)
+            print(response.__dict__) 
+        return HttpResponseRedirect('/nwa/invoices/submittedinvoicenwa/')
 
     def get_queryset(self, request):
         qs = super(SubmittedInvoiceAdmin, self).get_queryset(request)
-        return qs.filter(status__in=['submitted'])
+        return qs.filter(status__in=['submitted', 'finalized'])
+        #return qs 
 
     def invoices(self, obj):
         return obj

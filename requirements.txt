@@ -39,3 +39,4 @@ django-admin-comments
 django-hijack
 django-hijack-admin
 Werkzeug
+cached-property

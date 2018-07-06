@@ -11,14 +11,18 @@ from ..utils.models import BaseModel
 from custom_apps.data_ingestion.bq import query_for_accumulation_zip, _query_accumulation_data, fetch_for_accumulation_zip
 from django.conf import settings
 from django.contrib import admin
-from django.utils.functional import cached_property
-from decimal import Decimal
-from django.contrib.postgres.fields import JSONField
 
+from django.utils.functional import cached_property
+#from cached_property import cached_property
+
+from decimal import Decimal, getcontext
+from django.contrib.postgres.fields import JSONField
+from django.db.models import Avg, Count, Min, Sum
 # An invoice (e.g. https://drive.google.com/file/d/1XWeqbQ-VRXV4C4zy6mOwv2Sasnwpv2WO/view) has multiple work orders
 # and a work order has multiple jobs
 # that document has rows of jobs joined with their work orders
 
+getcontext().prec = 2
 
 SERVICE_TIME_CHOICES = (
     ('Midnight - 4 AM','Midnight - 4 AM'),
@@ -47,7 +51,7 @@ INVOICE_STATUSES = (
     ('submitted', 'Invoice Submitted - In Review'),
     ('reviewed', 'Reviewed'),
     ('dispute', 'In Dispute'),
-    ('finalized', 'Finalized'),
+    ('finalized', 'Approved'),
 )
 
 class WeatherData(models.Model):
@@ -230,7 +234,7 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 
     @property
     def total_cost_delta(self):
-        return self.aggregate_predicted_storm_total - self.aggregate_invoiced_storm_total
+        return self.aggregate_invoiced_storm_total - self.aggregate_predicted_storm_total
 
     # @property
     @property
@@ -358,45 +362,48 @@ class WorkOrder(BaseModel):
     def __str__(self):
         return '{0}'.format(self.work_order_code)
 
-    # def get_plow_count(self):
-    #     return self.
-
     @property
     def has_ice(self):
         try:
-            start = self.workvisit_set.first().order_by('-created').first().values('service_date', flat=True)
-            end = self.workvisit_set.first().order_by('-created').last().values('service_date', flat=True)
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('has_ice', flat=True)
-            return has_ice
+            start = self.workvisit_set.order_by('-created').values_list('service_date', flat=True).first()
+            end = self.workvisit_set.order_by('-created').values_list('service_date', flat=True).last()
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, precipitation_type=6, start_time__date__gte=start,end_time__date__lte=end).annotate(total_accumulation=Sum('total')).values_list('total', flat=True)
+            ice = Decimal(2) if has_ice else Decimal(0)
+            #print(self.building.zip_code, start, end, ice)
+            return ice
         except Exception as e:
             return Decimal(0)
-
+                                                                            
     @property
     def refreeze(self):
         try:
-            start = self.workvisit_set.first().order_by('-created').first().values('service_date', flat=True)
-            end = self.workvisit_set.first().order_by('-created').last().values('service_date', flat=True)
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start__gte=start, end__lte=end).values_list('has_ice', flat=True)
-            return has_ice
+            start = self.workvisit_set.order_by('-created').values_list('service_date', flat=True).first()
+            end = self.workvisit_set.order_by('-created').values_list('service_date', flat=True).last()
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, precipitation_type=6, start_time__date__gte=start,end_time__date__lte=end).annotate(total_accumulation=Sum('total')).values_list('total', flat=True)
+            ice = Decimal(2) if has_ice else Decimal(0)
+            #print(self.building.zip_code, start, end, ice)
+            return ice 
         except Exception as e:
             return Decimal(0)
 
     @property
     def snowfall(self):
         try:
-            start = self.workvisit_set.first().order_by('-created').first().values('service_date', flat=True)
-            end = self.workvisit_set.first().order_by('-created').last().values('service_date', flat=True)
-            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start__date__gte=start, end__lte=end).values_list('total', flat=True)
-            return Decimal(snowfall)
+            start = self.workvisit_set.order_by('-created').values_list('service_date', flat=True).first()
+            end = self.workvisit_set.order_by('-created').values_list('service_date', flat=True).last()
+            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__date__gte=start,end_time__date__lte=end).annotate(total_accumulation=Sum('total')).values_list('total', flat=True)
+            snowfall = Decimal(snowfall[0]) if snowfall else Decimal(0)
+            #print(self.building.zip_code, start, end, snowfall)
+            return snowfall
         except Exception as e:
-            return Decimal(0)
+           return Decimal(0) 
 
     @property
     def aggregate_predicted_plows(self):
         try:
             snowfall = self.snowfall
             predicted = snowfall / 2
-            return predicted
+            return round(predicted, 0)
         except Exception as e:
             print(e)
             return Decimal(0)
@@ -404,7 +411,7 @@ class WorkOrder(BaseModel):
     @property
     def aggregate_predicted_salts(self):
         try:
-            return self.refreeze
+            return round(self.refreeze, 0)
         except Exception as e:
             print(e)
             return Decimal(0)
@@ -500,19 +507,19 @@ class WorkOrder(BaseModel):
 
     @property
     def plow_delta(self):
-        return Decimal(self.aggregate_predicted_plows) - Decimal(self.aggregate_invoiced_plows)
+        return Decimal(self.aggregate_invoiced_plows) - Decimal(self.aggregate_predicted_plows)
 
     @property
     def salt_delta(self):
-        return Decimal(self.aggregate_predicted_salts) - Decimal(self.aggregate_invoiced_salts)
+        return Decimal(self.aggregate_invoiced_salts) - Decimal(self.aggregate_predicted_salts)
 
     @property
     def plow_cost_delta(self):
-        return Decimal(self.plow_delta) * self.building.plow_rate
+        return Decimal(self.plow_delta) * self.building.plow_rate + Decimal(self.plow_delta) * self.building.plow_tax
 
     @property
     def salt_cost_delta(self):
-        return Decimal(self.salt_delta) * self.building.deice_rate
+        return Decimal(self.salt_delta) * self.building.deice_rate + Decimal(self.salt_delta) * self.building.deice_tax
 
 
 # manager for the below relation
@@ -565,52 +572,55 @@ class SafetyReport(BaseModel):
     def __str__(self):
         return 'Safety Report #{0} for'.format(self.id)
 
-    @property
+    @cached_property
     def has_ice(self):
         try:
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date, precipitation_type=6).exists()
-            return has_ice
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__date__gte=self.inspection_date, end_time__date__lte=self.inspection_date, precipitation_type=6).exists()
+            ice = Decimal(2) if has_ice else Decimal(0)
+            return ice
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @property
+    @cached_property
     def refreeze(self):
         try:
-            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date, precipitation_type=6).exists()
-            return has_ice
+            has_ice = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__date__gte=self.inspection_date, end_time__date__lte=self.inspection_date, precipitation_type=6).exists()
+            ice = Decimal(2) if has_ice else Decimal(0)
+            return ice
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @property
+    @cached_property
     def snowfall(self):
         try:
-            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__gte=self.inspection_date, end_time__lte=self.inspection_date).values_list('total', flat=True).exists()
-            print(snowfall)
-            return Decimal(snowfall)
+            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__date__gte=self.inspection_date, end_time__date__lte=self.inspection_date).values_list('total', flat=True).values_list('total', flat=True)
+            snow_accum = Decimal(snowfall[0]) if snowfall else Decimal(0)
+            print(snow_accum)
+            return snow_accum
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @property
+    @cached_property
     def aggregate_predicted_plows(self):
         try:
             predicted = self.snowfall / 2
-            return Decimal(predicted)
+            return round(Decimal(predicted), 0)
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @property
+    @cached_property
     def aggregate_predicted_salts(self):
         try:
-            return self.refreeze
+            return round(self.refreeze)
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @property
+    @cached_property
     def aggregate_predicted_plow_cost(self):
         try:
             return (Decimal(self.aggregate_predicted_plows) * self.building.plow_rate) + (Decimal(self.aggregate_predicted_plows) * self.building.plow_tax)
@@ -618,47 +628,46 @@ class SafetyReport(BaseModel):
             print(e)
             return Decimal(0)
 
-    @property
+    @cached_property
     def aggregate_predicted_salt_cost(self):
         try:
             refreeze = self.has_ice
-            if refreeze:
-                return (Decimal(self.aggregate_predicted_salts) * self.building.deice_rate) + (Decimal(self.aggregate_predicted_salts) * self.building.deice_tax)
+            return (Decimal(self.aggregate_predicted_salts) * self.building.deice_rate) + (Decimal(self.aggregate_predicted_salts) * self.building.deice_tax)
         except Exception as e:
             print(e)
             return Decimal(0)
 
-    @property
+    @cached_property
     def aggregate_predicted_storm_total(self):
         try:
             return Decimal(self.aggregate_predicted_plow_cost + self.aggregate_predicted_salt_cost)
         except:
             return Decimal(0)
 
-    @property
+    @cached_property
     def storm_days(self):
         try:
             return '12-06-2017'
         except:
             return '12-10-2017'
 
-    @property
+    @cached_property
     def deice_rate(self):
         return self.building.deice_rate
 
-    @property
+    @cached_property
     def deice_tax(self):
         return self.building.deice_tax
 
-    @property
+    @cached_property
     def plow_rate(self):
         return self.building.plow_rate
 
-    @property
+    @cached_property
     def plow_tax(self):
         return self.building.plow_tax
 
-    @property
+    @cached_property
     def service_provider(self):
         return self.building.service_provider
 
@@ -714,10 +723,10 @@ class InvoiceVendor(Invoice):
 class ServiceForecastNWA(Invoice):
     class Meta(Invoice.Meta):
         proxy = True
-        verbose_name = 'Service Forecast'
+        verbose_name = 'Initial Spend Forecast'
 
     def __str__(self):
-        return 'Service Forecast for Inv # {0}'.format(self.id)
+        return 'Initial Spend Forecast for Inv # {0}'.format(self.id)
 
 class DiscrepancyReportNWA(Invoice):
     class Meta(Invoice.Meta):
@@ -730,7 +739,7 @@ class DiscrepancyReportNWA(Invoice):
 class ServiceForecastItemNWA(SafetyReport):
     class Meta(SafetyReport.Meta):
         proxy = True
-        verbose_name = 'Safety Report'
+        verbose_name = 'Invoice'
 
     def __str__(self):
         return 'SR for Inv. # {0}'.format(self.invoice.id)
@@ -755,7 +764,7 @@ class SubmittedInvoiceNWA(Invoice):
 class DiscrepancyReviewVendor(WorkOrder):
     class Meta(WorkOrder.Meta):
         proxy = True
-        verbose_name = 'Work Order Review'
+        verbose_name = 'Discrepancy Review'
 
     def __str__(self):
         return 'Review for Work Order {0} (Inv # {1})'.format(self.id, self.invoice.id)

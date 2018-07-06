@@ -53,13 +53,17 @@ vendor_site = VendorSite(name='vendor_site')
 from custom_apps.invoices.admin_views import nwa_views, vendor_views, cbre_views
 
 
+class WeatherDataAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in WeatherData._meta.get_fields()]
+
+
 admin.site.register(Building)
 admin.site.register(Vendor)
 admin.site.register(WeatherStation)
 admin.site.register(RegionalAdmin)
 admin.site.register(WorkOrder)
 admin.site.register(SafetyReport)
-admin.site.register(WeatherData)
+admin.site.register(WeatherData, WeatherDataAdmin)
 
 
 # nwa_site.register(NWABuilding, nwa_views.NWABuildingAdmin)
@@ -67,6 +71,8 @@ nwa_site.register(ServiceForecastNWA, nwa_views.ServiceForecastAdmin)
 nwa_site.register(ServiceForecastItemNWA, nwa_views.ServiceForecastItemAdmin)
 nwa_site.register(DiscrepancyReportNWA, nwa_views.DiscrepancyReport)
 nwa_site.register(DiscrepancyReportItemNWA, nwa_views.DiscrepancyReportItemAdmin)
+nwa_site.register(SubmittedInvoiceNWA, nwa_views.SubmittedInvoiceAdmin)
+
 
 vendor_site.register(SafetyReportVendor, vendor_views.SafetyReportAdmin)
 vendor_site.register(InvoiceVendor, vendor_views.PrelimInvoiceAdmin)

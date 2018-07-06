@@ -122,9 +122,11 @@ class SafetyReportInline(nested_admin.NestedTabularInline):
             to_email = Email(send_to)
             subject = "Closeout Report Generated"
             content = Content("text/plain", "Closeout report generated: {0}".format(
-                'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', 'temp'))
+                '/admin/invoices/workproxyserviceforecast/', 'temp'))
             mail = Mail(from_email, subject, to_email, content)
-
+            data = mail.get()
+            response = sg.client.mail.send.post(response_body=data)
+            # sg.
             for instance in instances:
                 instance.save()
             formset.save_m2m()
@@ -352,7 +354,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
         to_email = Email("harisbeha@gmail.com")
         subject = "Invoice Submitted"
         invoice_id = queryset[0].id
-        content = Content("text/plain", "Invoice #{0} submitted: {1}{2}".format(invoice_id, 'http://nobel-weather-dev.herokuapp.com/admin/invoices/workproxyserviceforecast/', invoice_id))
+        content = Content("text/plain", "Invoice #{0} submitted: {1}{2}".format(invoice_id, '/admin/invoices/workproxyserviceforecast/', invoice_id))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
         # #print(response)
@@ -360,12 +362,12 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
     def get_readonly_fields(self, request, obj=None):
         if obj.status == 'submitted':
-            return ['status', 'storm_name', 'storm_date', 'weather_ready', 'dispute_status']
+            return ['status', 'storm_name', 'storm_date', 'dispute_status']
         else:
             return ['remission_address', 'address_info_storage', 'status', 'dispute_status']
 
     def get_hidden_fields(self, request, obj=None):
-            return ['remission_address', 'address_info_storage']
+            return ['remission_address', 'address_info_storage', 'weather_ready']
 
 
     finalize_submit_invoice.short_description = "Finalize and submit invoice"

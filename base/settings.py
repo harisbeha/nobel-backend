@@ -41,7 +41,7 @@ DJANGO_APPS = [
 
 # SUPPORT_APPS = ['jet', 'rest_framework', 'django_extensions', 'debug_toolbar', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
 SUPPORT_APPS = ['rest_framework', 'django_extensions', 'nested_admin', 'audit_trail', 'massadmin', 'import_export']
-CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'raven.contrib.django.raven_compat', 'admin_comments', 'hijack', 'hijack_admin']
+CUSTOM_APPS = ['custom_apps.invoices', 'custom_apps.utils', 'raven.contrib.django.raven_compat', 'admin_comments', 'hijack', 'hijack_admin', 'adminactions']
 
 INSTALLED_APPS = CUSTOM_APPS + SUPPORT_APPS + DJANGO_APPS
 
@@ -199,9 +199,8 @@ GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', 'HARISAPI')
 
 # email APIHARIS
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY',
-                                  'HARISAPI')
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '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') 
+SENDGRID_SANDBOX_MODE_IN_DEBUG = True 
 DEFAULT_FROM_EMAIL = 'noreply@nobelw.co'
 
 # celery
@@ -257,7 +256,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS=10000
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-DEBUG = True
+DEBUG = False 
 development=True
 TEMPLATE_DEBUG = True
 HIJACK_ALLOW_GET_REQUESTS = True
