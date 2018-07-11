@@ -281,14 +281,16 @@ class SafetyReportAdmin(nested_admin.NestedModelAdmin):
             for safety_report in parent.safetyreport_set.all():
                 work_order_code = 'T'.join(random.choice('0123456789ABCDEFGHIJKLMNOPQRSTUVXYZ') for i in range(6))
                 work_order, wo_created = WorkOrder.objects.get_or_create(building=safety_report.building,
-                                                invoice=safety_report.invoice,
-                                                work_order_code=work_order_code)
+                                                invoice=parent)
+                                                
                 if safety_report.site_serviced:
-                    workvisit, wv_created = WorkVisit.objects.get_or_create(service_date=safety_report.inspection_date,
-                                                                            work_order=work_order)
+                    workvisit, wv_created = WorkVisit.objects.get_or_create(service_date=safety_report.inspection_date, work_order=work_order)
             parent.status = 'preliminary_created'
             parent.save()
             remove.delete()
+            for wo in workorder_set.all():
+                wo.work_order_code = 'T'.join(random.choice('012345679asdfghjklqwerty') for i in range(6))
+                wo.save()
             return HttpResponseRedirect("/provider/invoices/invoicevendor/")
         except Exception as e:
             print(e)

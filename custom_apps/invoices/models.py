@@ -127,6 +127,16 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     status = models.CharField(max_length=255, choices=INVOICE_STATUSES, default='not_created', null=True, blank=True)
     dispute_status = models.CharField(max_length=255, null=True, blank=True, default='')
     weather_ready = models.BooleanField(default=False)
+#    aggregate_snowfall 
+#    aggregate_refreeze =
+#    forecasted_plows =
+#    forecasted_salts = 
+
+
+#    disc_plows =
+#    disc_salts = 
+#    invoiced_plows = 
+#    invoiced_salts =
 
     verbose_name = 'Closeout Reports'
 
@@ -137,56 +147,56 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
 
     #audit = AuditTrailWatcher()
 
-    @property
+    @cached_property
     def aggregate_snowfall(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.snowfall
         return predicted_values
 
-    @property
+    @cached_property
     def aggregate_refreeze(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.has_ice
         return predicted_values
 
-    @property
+    @cached_property
     def aggregate_predicted_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.aggregate_predicted_salts
         return predicted_values
 
-    @property
+    @cached_property
     def aggregate_predicted_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.aggregate_predicted_plows
         return predicted_values
 
-    @property
+    @cached_property
     def aggregate_predicted_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.aggregate_predicted_plow_cost
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_predicted_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.aggregate_predicted_salt_cost
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_invoiced_plows(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
             predicted_values += work_order.aggregate_invoiced_plows
         return predicted_values
 
-    @property
+    @cached_property
     def aggregate_invoiced_salts(self):
         predicted_values = 0
         for work_order in self.workorder_set.all():
@@ -194,45 +204,45 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
         return predicted_values
 
 
-    @property
+    @cached_property
     def aggregate_invoiced_plow_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.aggregate_invoiced_plow_cost
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_invoiced_salt_cost(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.aggregate_predicted_salt_cost
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_predicted_storm_total(self):
         predicted_cost = self.aggregate_predicted_salt_cost + self.aggregate_predicted_plow_cost
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_invoiced_storm_total(self):
         predicted_cost = self.aggregate_invoiced_salt_cost + self.aggregate_invoiced_plow_cost
         return predicted_cost
 
-    @property
+    @cached_property
     def work_visits(self):
         return self.workorder_set.count()
 
-    @property
+    @cached_property
     def storm_days_forecast(self):
         storm_length = len(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
         return '{0}'.format(storm_length)
 
-    @property
+    @cached_property
     def storm_days_invoiced(self):
         storm_length = len(set(self.safetyreport_set.values_list('inspection_date', flat=True)))
         return '{0}'.format(storm_length)
 
-    @property
+    @cached_property
     def total_cost_delta(self):
         return self.aggregate_invoiced_storm_total - self.aggregate_predicted_storm_total
 
@@ -251,35 +261,35 @@ class Invoice(AddressMetadataStorageMixin, BaseModel):
     def total_safety_count(self):
         return self.safetyreport_set.count()
 
-    @property
+    @cached_property
     def aggregate_plow_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.plow_delta
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_salt_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.salt_delta
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_plow_cost_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.plow_cost_delta
         return predicted_cost
 
-    @property
+    @cached_property
     def aggregate_salt_cost_delta(self):
         predicted_cost = 0
         for work_order in self.workorder_set.all():
             predicted_cost += work_order.salt_cost_delta
         return predicted_cost
 
-    @property
+    @cached_property
     def discrepancy_count(self):
         discrep_count = self.workorder_set.filter(is_discrepant=True).count()
         total_wo_count = self.workorder_set.count()
