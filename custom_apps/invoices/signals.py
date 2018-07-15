@@ -32,6 +32,12 @@ def ingest_workorder_data(sender, instance, created, **kwargs):
     if created:
         query_for_accumulation_zip(instance.work_order.building.zip_code, instance.service_date,
                                    instance.service_date, work_order=instance)
+        work_order = instance.work_order
+        if work_order.salt_delta > 0.0:
+            work_order.is_discrepant = True
+        if work_order.plow_delta > 0.0:
+            work_order.is_discrepant = True
+        work_order.save()
 
 @receiver(post_save, sender=SafetyReport)
 def ingest_safetyreport_data(sender, instance, created, **kwargs):
