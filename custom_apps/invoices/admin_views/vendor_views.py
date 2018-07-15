@@ -353,7 +353,7 @@ class PrelimInvoiceAdmin(nested_admin.NestedModelAdmin, ImportExportActionModelA
 
         sg = sendgrid.SendGridAPIClient(apikey=settings.SENDGRID_API_KEY)
         from_email = Email(settings.DEFAULT_FROM_EMAIL)
-        to_email = Email("harisbeha@gmail.com")
+        to_email = Email("matt@samaradata.com")
         subject = "Invoice Submitted"
         invoice_id = queryset[0].id
         content = Content("text/plain", "Invoice #{0} submitted: {1}{2}".format(invoice_id, '/admin/invoices/workproxyserviceforecast/', invoice_id))
