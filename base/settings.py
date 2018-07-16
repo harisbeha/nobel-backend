@@ -245,19 +245,19 @@ BROKER_URL_WITH_DB = os.environ.get('BROKER_URL_WITH_DB', '')
 #     }
 # }
 
-#CACHES = {
-#    'default': {
-#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#        'LOCATION': 'unique-snowflake',
-#    }
-#}
-
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'weather_cache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#        'LOCATION': 'unique-snowflake',
     }
 }
+
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+#        'LOCATION': 'weather_cache',
+#    }
+#}
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS=10000
 
