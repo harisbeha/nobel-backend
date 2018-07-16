@@ -28,21 +28,21 @@ def create_work_orders(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=WorkVisit)
 def ingest_workorder_data(sender, instance, created, **kwargs):
-    from custom_apps.data_ingestion.bq import query_for_accumulation_zip
-    if created:
-        query_for_accumulation_zip(instance.work_order.building.zip_code, instance.service_date,
-                                   instance.service_date, work_order=instance)
-        work_order = instance.work_order
-        if work_order.salt_delta > 0.0:
-            work_order.is_discrepant = True
-        if work_order.plow_delta > 0.0:
-            work_order.is_discrepant = True
-        work_order.save()
+    # from custom_apps.data_ingestion.bq import query_for_accumulation_zip
+    #if created:
+    #    query_for_accumulation_zip(instance.work_order.building.zip_code, instance.service_date,
+     #                              instance.service_date, work_order=instance)
+    work_order = instance.work_order
+    if work_order.salt_delta > 0.0:
+        work_order.is_discrepant = True
+    if work_order.plow_delta > 0.0:
+        work_order.is_discrepant = True
+    work_order.save()
 
-@receiver(post_save, sender=SafetyReport)
-def ingest_safetyreport_data(sender, instance, created, **kwargs):
-    from custom_apps.data_ingestion.bq import query_for_accumulation_zip
-    if created:
-        query_for_accumulation_zip(instance.building.zip_code, instance.inspection_date, instance.inspection_date,
-                                   safety_report=instance)
+#@receiver(post_save, sender=SafetyReport)
+#def ingest_safetyreport_data(sender, instance, created, **kwargs):
+    # from custom_apps.data_ingestion.bq import query_for_accumulation_zip
+    #if created:
+    #    query_for_accumulation_zip(instance.building.zip_code, instance.inspection_date, instance.inspection_date,
+#                                   safety_report=instance)
 
