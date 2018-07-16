@@ -611,10 +611,18 @@ class SafetyReport(BaseModel):
     @cached_property
     def snowfall(self):
         try:
-            snowfall = WeatherData.objects.filter(zip_code=self.building.zip_code, start_time__date__gte=self.inspection_date, end_time__date__lte=self.inspection_date).values_list('total', flat=True).values_list('total', flat=True)
-            snow_accum = Decimal(snowfall[0]) if snowfall else Decimal(0)
-            print(snow_accum)
-            return snow_accum
+            from django.db.models import Q
+            from datetime import date, datetime, time, timedelta
+            start = self.inspection_date
+            end = self.inspection_date
+            min_pub = datetime.combine(start - timedelta(days=3), time.min)
+            max_pub = datetime.combine(timedelta(days=4)+end, time.max)
+            sff = WeatherData.objects.filter(Q(zip_code=self.building.zip_code) & Q(start_time__gte=min_pub) & Q(end_time__lte=max_pub)).values_list('total', flat=True)
+            # sff = sf.filter(Q(start_time__date__gte=start) | Q(end_time__date__lte=end)).values_list('total',flat=True)
+            sf_typed = [Decimal(x) for x in sff]
+            sum_sf = sum(sf_typed) 
+            snowfall = Decimal(sum_sf) if sum_sf else Decimal(0)
+            return Decimal(snowfall) 
         except Exception as e:
             print(e)
             return Decimal(0)
