@@ -32,8 +32,8 @@ ALLOWED_HOSTS = ['*']
 
 DJANGO_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -245,10 +245,17 @@ BROKER_URL_WITH_DB = os.environ.get('BROKER_URL_WITH_DB', '')
 #     }
 # }
 
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#        'LOCATION': 'unique-snowflake',
+#    }
+#}
+
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'weather_cache',
     }
 }
 
@@ -265,7 +272,7 @@ PROD = True
 if PROD:
     DATABASES = {'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nwadb',
+        'NAME': 'nwadb2',
         'USER': 'nwadbadmin',
         'PASSWORD': 'popsicles123',
         'HOST': '/opt/bitnami/postgresql',
